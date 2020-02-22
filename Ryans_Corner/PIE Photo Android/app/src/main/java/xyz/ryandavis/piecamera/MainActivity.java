@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -38,12 +39,25 @@ public class MainActivity extends AppCompatActivity {
 
         protected void onActivityResult(int requestCode, int resultCode, Intent data) {
             if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+
+                try
+                {
+                    Thread c = new Client(InetAddress.getByName("10.8.0.1"), 25595, currentPhotoPath);
+                    c.start();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+                Toast.makeText(this, "Image Sent", Toast.LENGTH_SHORT).show();
+
                 /*ImageView imageView = findViewById(R.id.imageView);
                 Bundle extras = data.getExtras();
                 Bitmap imageBitmap = (Bitmap) extras.get("data");
                 imageView.setImageBitmap(imageBitmap);*/
             }
-            Toast.makeText(this, "Image captured", Toast.LENGTH_SHORT).show();
+
         }
 
         String currentPhotoPath = "";
@@ -67,11 +81,12 @@ public class MainActivity extends AppCompatActivity {
         private void dispatchTakePictureIntent() {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             // Ensure that there's a camera activity to handle the intent
+            File photoFile = null;
             if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
                 // Create the File where the photo should go
-                File photoFile = null;
                 try {
                     photoFile = createImageFile();
+
                 } catch (IOException ex) {
                     // Error occurred while creating the File
                 }
