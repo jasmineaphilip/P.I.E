@@ -35,15 +35,22 @@ while (sent < int(size)):
     #print(data)
     f.write(data)
     sent += len(data)
-    
+
     print("sent %d of %d",sent,size)
-    
     if (sent >= size): 
         break
 
+print(connection)
 
 f.close()
+#run decode.py
+#os.system('python decode.py')
+
+
+#send openface result TODO
+connection.send("y this shit aint working \0")
+
+
+
 connection.close()
 
-#run decode.py
-os.system('python decode.py')
