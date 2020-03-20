@@ -1,11 +1,18 @@
 import socket
 import threading	
 import datetime
+import time
+import psutil
+import argparse
+import cv2
+import itertools
+import numpy as np
+import openface
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 try:
-	s.bind(("10.8.0.1", 25595))
+	s.bind(("127.0.0.1", 25595))
 except socket.error as err:
 	print('Bind failed. Error Code : ' .format(err))
 	
@@ -20,8 +27,6 @@ def client_handler(client):
 		f.write(data)
 		data = client.recv(1024)
 	
-# TODO terminate thread via exception route  (s.accept() is currently making the thread hang until we get a connection)
-# OR consider nonblocking sockets (but that seems like more of a headache, e.g. dealing with empty accepts)
 def client_accept():
 	s.listen(10)
 	while (1):
@@ -42,6 +47,7 @@ stopping = False
 while (not(com=="quit")):
 	com = input("Command:  ")
 	t = threading.Thread(target=client_accept)
+	t.daemon = True
 	if (com == "start"):
 		t.start()
 	if (com == "quit"):
