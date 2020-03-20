@@ -104,7 +104,7 @@ def readFeatures (file):
     f = open(file)
     data = []
     for line in f:
-        data.append(int(line))
+        data.append(float(line))
 
     return data
     

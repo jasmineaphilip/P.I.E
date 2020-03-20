@@ -51,7 +51,7 @@ f.close()
 os.system('python decode.py')
 
 #run openface
-os.system('python compare.py some_image.jpg priya3.jpg > result.txt')
+os.system('python compare.py some_image.jpg > result.txt')
 
 f1 = open("result.txt")
 print("result.txt contents:")
