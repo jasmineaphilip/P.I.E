@@ -36,7 +36,6 @@ def client_accept():
 		t.start()
 		global stopping
 		if (stopping):
-			s.close()
 			print ("Stopping")
 			break
 
@@ -51,3 +50,4 @@ while (not(com=="quit")):
 		t.start()
 	if (com == "quit"):
 		stopping = True
+		s.close()
