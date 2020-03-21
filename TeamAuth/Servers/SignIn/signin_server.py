@@ -2,7 +2,6 @@ import socket
 import threading	
 import datetime
 import time
-import psutil
 import argparse
 import cv2
 import itertools
@@ -12,7 +11,7 @@ import openface
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 try:
-	s.bind(("127.0.0.1", 25595))
+	s.bind(("172.17.0.2", 25595))
 except socket.error as err:
 	print('Bind failed. Error Code : ' .format(err))
 	
@@ -45,7 +44,7 @@ clients = []
 com = ""
 stopping = False
 while (not(com=="quit")):
-	com = input("Command:  ")
+	com = raw_input("Command:  ")
 	t = threading.Thread(target=client_accept)
 	t.daemon = True
 	if (com == "start"):
