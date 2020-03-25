@@ -17,6 +17,18 @@ except socket.error as err:
 	
 	
 def client_handler(client):
+	data = client.recv(1024)
+	uid = None
+	while (data):
+		command = data.strip()
+		if (command == "sending image yo"):
+			response = client_recv_image(client, uid)
+		elif (command == "uid"):
+			data = client.recv(1024)
+			uid = data.strip();
+		data = client.recv(1024)
+		
+def client_recv_image(client, uid):
 	current_time = datetime.datetime.now().strftime("%H:%M:%S")
 	stamp = current_time.replace(":","-")
 	data = client.recv(1024)
@@ -25,6 +37,12 @@ def client_handler(client):
 		f = open(stamp+".jpg", 'ab+')
 		f.write(data)
 		data = client.recv(1024)
+	
+	# look up feature data for user
+	# run compare on recevd image
+	# response = success or nuccess
+	
+	return response
 	
 def client_accept():
 	s.listen(10)

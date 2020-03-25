@@ -41,41 +41,56 @@ def getRep(imgPath):
 
     start = time.time()
     rep = net.forward(alignedFace)
-    print("  + OpenFace forward pass took {} seconds.".format(time.time() - start))
-    print("Representation:")
-    print(rep)
-    print("-----\n")
-    return rep
+    #print("  + OpenFace forward pass took {} seconds.".format(time.time() - start))
+    #print("Representation:")
+    #print(rep)
+    #print("-----\n")
+    #return rep
 
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 try:
-	s.bind(("127.0.0.1", 25595))
+	s.bind(("172.17.0.2", 25596))
 except socket.error as err:
 	print('Bind failed. Error Code : ' .format(err))
 	
 	
 def client_handler(client):
-	current_time = datetime.datetime.now().strftime("%H:%M:%S")
-	stamp = "temp/"+current_time.replace(":","-")
+	data = client.recv(1024)
+	uid = None
+	while (data):
+		command = data.strip()
+		if (command == "sending image yo"):
+			client_recv_image(client, uid)
+		elif (command == "uid"):
+			data = client.recv(1024)
+			uid = data.strip();
+		data = client.recv(1024)
+
+	
+		
+def client_recv_image(client, uid):
+	
+	image_stamp = "/home/ubuntu/userdata/temp/"+uid
 	data = client.recv(1024)
 	print ("Receiving image. Saving to " + stamp+".jpg")
-	f = None
 	while (data):
 		f = open(stamp+".jpg", 'ab+')
 		f.write(data)
 		data = client.recv(1024)
-	f.close()
 	
+	
+	feat_stamp = "/home/ubuntu/userdata/"+uid
 	print ("Extracting feature data.")
-	feats = np.asarray(getRep(stamp+".jpg"))
-	f = open(stamp+".txt", "w+")
+	feats = np.asarray(getRep(image_stamp+".jpg"))
+	f = open(feat_stamp+".txt", "w+")
 	for fe in feats:
 		f.write(str(fe)+"\n");
 	f.close()
-		
+	
+	remove(image_stamp+".jpg")
 	
 def client_accept():
 	s.listen(10)
