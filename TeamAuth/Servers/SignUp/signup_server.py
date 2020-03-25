@@ -10,7 +10,7 @@ import openface
 import os
 
 #fileDir = os.path.dirname(os.path.realpath(__file__))
-modelDir = "/home/rgd51/openface/models/"
+modelDir = "/root/openface/models/"
 dlibModelDir = os.path.join(modelDir, 'dlib')
 openfaceModelDir = os.path.join(modelDir, 'openface')
 
@@ -52,7 +52,7 @@ def getRep(imgPath):
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 try:
-	s.bind(("172.17.0.2", 25596))
+	s.bind(("172.17.0.3", 25596))
 except socket.error as err:
 	print('Bind failed. Error Code : ' .format(err))
 	
@@ -73,7 +73,7 @@ def client_handler(client):
 		
 def client_recv_image(client, uid):
 	
-	image_stamp = "/home/ubuntu/userdata/temp/"+uid
+	image_stamp = "/root/userdata/temp/"+uid
 	data = client.recv(1024)
 	print ("Receiving image. Saving to " + stamp+".jpg")
 	while (data):
@@ -82,7 +82,7 @@ def client_recv_image(client, uid):
 		data = client.recv(1024)
 	
 	
-	feat_stamp = "/home/ubuntu/userdata/"+uid
+	feat_stamp = "/root/userdata/"+uid
 	print ("Extracting feature data.")
 	feats = np.asarray(getRep(image_stamp+".jpg"))
 	f = open(feat_stamp+".txt", "w+")
