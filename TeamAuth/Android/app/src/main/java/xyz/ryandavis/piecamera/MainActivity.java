@@ -62,15 +62,6 @@ public class MainActivity extends AppCompatActivity {
 
             signIn();
 
-            try
-            {
-                client = new Client(InetAddress.getByName("18.220.57.115"), 25596, mAuth.getCurrentUser().getUid());
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-
 
             final Button button = findViewById(R.id.button);
             button.setOnClickListener(new View.OnClickListener() {
@@ -108,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
                     // Google Sign In was successful, authenticate with Firebase
                     GoogleSignInAccount account = task.getResult(ApiException.class);
                     firebaseAuthWithGoogle(account);
+
                 } catch (ApiException e) {
                     // Google Sign In failed, update UI appropriately
                     Log.w(TAG, "Google sign in failed", e);
@@ -120,8 +112,14 @@ public class MainActivity extends AppCompatActivity {
 
                 try
                 {
-                    Thread si = new SendImage(client.getSocket(), currentPhotoPath);
+                    // tell client to send image
+                    //mAuth.getCurrentUser().getUid();
+
+
+
+                    Thread si = new SendImage(ip, port, uid, currentPhotoPath);
                     si.start();
+
                 }
                 catch (Exception e)
                 {
@@ -194,6 +192,19 @@ public class MainActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
 
                             //Toast.makeText(ctx, user.getUid(), Toast.LENGTH_LONG).show();
+
+
+                            /*try
+                            {
+                                client = new Client(InetAddress.getByName("18.220.57.115"), 25596, mAuth.getCurrentUser().getUid());
+                                client.start();
+                            }
+                            catch (Exception e)
+                            {
+                                e.printStackTrace();
+                            }*/
+
+
 
                             //updateUI(user);
                         } else {
