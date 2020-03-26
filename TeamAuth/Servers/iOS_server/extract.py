@@ -69,7 +69,7 @@ def insert_DB(feature_data):
     conn.commit()
     conn.close()
 
-image = "some_image.jpg" #TODO set image name as parameter
+image = "priya3.jpg" #TODO set image name as parameter
 f = None
 features = np.asarray(getRep(image))
 f = open("feature_data.txt", "w+")
