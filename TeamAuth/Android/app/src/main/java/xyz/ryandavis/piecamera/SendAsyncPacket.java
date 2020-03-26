@@ -10,21 +10,16 @@ public class SendAsyncPacket extends Thread {
     private int port;
     private int packetID;
     private String data;
-    private String sessionID;
+    private String id_token;
 
-    public SendAsyncPacket(InetAddress ip, int port, int packetID, String sessionID, String data)
+    public SendAsyncPacket(InetAddress ip, int port, int packetID, String id_token, String data)
     {
         this.ip=ip;
         this.port=port;
         this.packetID = packetID;
+        this.id_token=id_token;
         this.data = data;
     }
-
-
-    /**
-     * We need to share the same socket across threads, otherwise the server will not know
-     * where to send the responses to
-     */
 
     public void run()
     {
@@ -45,6 +40,6 @@ public class SendAsyncPacket extends Thread {
 
     private String formatData()
     {
-        return String.format("%d,%s,%s", packetID, sessionID, data);
+        return String.format("%d,%s,%s", packetID, id_token, data);
     }
 }

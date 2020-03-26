@@ -8,6 +8,16 @@ import itertools
 import numpy as np
 import openface
 import os
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import auth
+
+### Init Our Firebase Admin SDK ###
+
+cred = credentials.Certificate("/root/pie-auth-firebase-adminsdk-4rbmo-2d6c76da9f.json")
+firebase_admin.initialize_app(cred)
+
+###################################
 
 
 ### Packet IDS ###
@@ -17,15 +27,18 @@ JOIN = 0				# Client is joining the server and the address from which this packe
 IMAGE = 1				# Client wants to send us an image
 IMAGE_RESPONSE = 2		# Our response to clients image (passed or failed face rec for signin server &  N/A for signup server)
 IMAGE_PORT = 3			# Which port we want the image sent to
-SESSIONID = 4			# The session id we send to a client (response to JOIN)
+INVALID_TOKEN = 4		# Sent in response to join if the provide token is invalid
+JOIN_SUCCESS = 5		# successful join
 
 ###################
 
+PACKET_SIZE = 1024
 
 class Client:
-	def __init__(self, addr, sessionID):
+	def __init__(self, addr, id_token, uid):
 		self.addr=addr						# This is going to be the address that the client will receive at (the client can send from different addrs, but will always receive at this one)
-		self.sessionID=sessionID
+		self.uid=uid
+		self.id_token=id_token
 
 clients = []
 		
@@ -34,7 +47,7 @@ public_ip = "172.17.0.3"
 # Port for receiving commands from clients
 command_port = 25595
 
-# These are the ports available for receiving images and their availability (i.e. if they are currently in use)
+# These are the ports available for receiving images and their availability (i.e. if they are not currently in use)
 image_ports = {25585:True, 25586:True, 25587:True, 25588:True, 25589:True}
 
 command_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -114,7 +127,7 @@ def client_recv_image(addr, image_port, uid):
 def getPacketID(data):
 	return int(data.split(",")[0])
 	
-def getSessionID(data):
+def getIDToken(data):
 	return data.split(",")[1]
 	
 def getData():
@@ -134,27 +147,33 @@ def getOpenImagePort():
 def formatPacket(packetID, data):
 	return "{},{}".format(str(packetID), data)
 	
-def getClientFromSessionID(sessionID):
+def getClientFromIDToken(id_token):
 	for c in clients:
-		if c.sessionID == sessionID:
+		if c.id_token == id_token:
 			return c
 	return None
 	
+def getUIDFromToken(id_token):
+	decoded_token = auth.verify_id_token(id_token)
+	#determine if decoding failed and send INVALID_TOKEN back (make sure to set uid to something so that we know to *continue* the while loop)
+	uid = decoded_token['uid']
+	return uid
+	
 def client_accept():
-	s.listen(10)
 	while (1):
-		(data, addr) = command_sock.recvfrom(1024)
+		(data, addr) = command_sock.recvfrom(PACKET_SIZE)
 		packetID = getPacketID(data)
-		sessionID = getSessionID(data)
+		id_token = getIDToken(data)
+		uid = getUIDFromToken(id_token)
 		
 		if (packetID == JOIN):
-			clients.append(Client(addr, sessionID))
-			print ("Client at {} joined with sessionID:  {}".format(addr, sessionID))
+			clients.append(Client(addr, id_token, uid))
+			print ("Client at {} joined with uid:  {}".format(addr, uid))
 		elif (packetID == IMAGE):
 			image_port = getOpenImagePort()
-			client_recv_addr = getClientFromSessionID(sessionID).addr
+			client_recv_addr = getClientFromIDToken(id_token).addr
 			command_sock.sendto(formatPacket(IMAGE_PORT,image_port), client_recv_addr);
-			t = threading.Thread(target=client_recv_image, args=(client_recv_addr, image_port, lookUpUID(sessionID)))
+			t = threading.Thread(target=client_recv_image, args=(client_recv_addr, image_port, uid))
 			t.start();
 		
 		
