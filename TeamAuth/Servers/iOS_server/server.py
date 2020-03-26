@@ -59,7 +59,7 @@ encoded_img = open('encoded.txt','rb').read()
 encoded_img = open('encoded.txt','rb').read()
 #print(encoded_img)
 
-imgdata = b64decode(encoded_img.strip() + "======")
+imgdata = b64decode(encoded_img.strip() + "==")
 filename = 'some_image.jpg'  # I assume you have a way of picking unique filenames
 with open(filename, 'wb') as f:
         f.write(imgdata)

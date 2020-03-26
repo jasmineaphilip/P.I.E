@@ -50,6 +50,7 @@ def getRep(imgPath):
     print("-----\n")
     return rep
 
+
 def readFeatures (file):
     f = open(file)
     data = []
@@ -57,13 +58,18 @@ def readFeatures (file):
         data.append(float(line))
 
     return data
+
 def insert_DB(feature_data):
     conn = sqlite3.connect('PIE_DB')
     c = conn.cursor()
-    command = "INSERT INTO images(UID,feature_data) values (pp649, " + feature_data + ");"
+    feature_data = "'" + feature_data + "'"
+    command = "INSERT INTO Images(UID,feature_data) values (\"pp649\", " + feature_data + ");"
     c.execute(command)
+    print("executed")
+    conn.commit()
+    conn.close()
 
-image = "priya3.jpg" #TODO set image name as parameter
+image = "some_image.jpg" #TODO set image name as parameter
 f = None
 features = np.asarray(getRep(image))
 f = open("feature_data.txt", "w+")
