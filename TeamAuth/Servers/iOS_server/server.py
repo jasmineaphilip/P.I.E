@@ -54,8 +54,15 @@ f.close()
 #decode
 encoded_img = open('encoded.txt','rb').read()
 #print(encoded_img)
-#run decode.py
-os.system('python decode.py')
+#decode
+
+encoded_img = open('encoded.txt','rb').read()
+#print(encoded_img)
+
+imgdata = b64decode(encoded_img.strip() + "======")
+filename = 'some_image.jpg'  # I assume you have a way of picking unique filenames
+with open(filename, 'wb') as f:
+        f.write(imgdata)
 
 #run openface
 os.system('python compare.py some_image.jpg > result.txt')
@@ -92,5 +99,5 @@ print("total server time:")
 print(end-start)
 
 #clean everything
-os.system('python clean.py')
+os.system("rm encoded.txt some_image.jpg result.txt")
 

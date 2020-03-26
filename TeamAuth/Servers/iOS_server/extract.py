@@ -8,11 +8,14 @@ import itertools
 import numpy as np
 import openface
 import os
+import sqlite3
 
-fileDir = os.path.dirname(os.path.realpath(__file__))
-modelDir = os.path.join(fileDir, '..', 'models')
+modelDir = "/root/openface/models/"
 dlibModelDir = os.path.join(modelDir, 'dlib')
 openfaceModelDir = os.path.join(modelDir, 'openface')
+imgDim = 96
+align = openface.AlignDlib(os.path.join(dlibModelDir, "shape_predictor_68_face_landmarks.dat"))
+net = openface.TorchNeuralNet(os.path.join(openfaceModelDir, 'nn4.small2.v1.t7'), imgDim)
 
 imgDim = 96
 
@@ -47,7 +50,18 @@ def getRep(imgPath):
     print("-----\n")
     return rep
 
+def readFeatures (file):
+    f = open(file)
+    data = []
+    for line in f:
+        data.append(float(line))
 
+    return data
+def insert_DB(feature_data):
+    conn = sqlite3.connect('PIE_DB')
+    c = conn.cursor()
+    command = "INSERT INTO images(UID,feature_data) values (pp649, " + feature_data + ");"
+    c.execute(command)
 
 image = "priya3.jpg" #TODO set image name as parameter
 f = None
@@ -55,4 +69,10 @@ features = np.asarray(getRep(image))
 f = open("feature_data.txt", "w+")
 for curr in features:
     f.write(str(curr)+"\n")
+
+
+#insert into DB
+data = str(features)
+insert_DB(data)
+
 f.close()
