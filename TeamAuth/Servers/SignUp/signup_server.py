@@ -32,7 +32,7 @@ JOIN_SUCCESS = 5		# successful join
 
 ###################
 
-PACKET_SIZE = 1024
+PACKET_SIZE = 2048
 
 class Client:
 	def __init__(self, addr, id_token, uid):
@@ -42,7 +42,7 @@ class Client:
 
 clients = []
 		
-public_ip = "172.17.0.3"
+public_ip = "172.17.0.2"
 
 # Port for receiving commands from clients
 command_port = 25595
@@ -94,9 +94,10 @@ except socket.error as err:
 	print('Bind failed. Error Code : ' .format(err))
 	
 		
-def client_recv_image(addr, image_port, uid):
+def client_recv_image(image_port, uid):
 	
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	(client, addr) = s.accept()
 	try:
 		s.bind((public_ip, image_port))
 	except socket.error as err:
@@ -139,9 +140,9 @@ def lookUpUID(sessionID):
 	
 def getOpenImagePort():
 	while (1):
-		for port in imagePorts:
-			if port.get() == True:
-				imagePorts[port] = False
+		for port in image_ports:
+			if image_ports[port] == True:
+				image_ports[port] = False
 				return port
 				
 def formatPacket(packetID, data):
@@ -161,7 +162,7 @@ def getUIDFromToken(id_token):
 	
 def client_accept():
 	while (1):
-		(data, addr) = command_sock.recvfrom(PACKET_SIZE)
+		(data, addr) = command_socket.recvfrom(PACKET_SIZE)
 		packetID = getPacketID(data)
 		id_token = getIDToken(data)
 		uid = getUIDFromToken(id_token)
@@ -172,8 +173,8 @@ def client_accept():
 		elif (packetID == IMAGE):
 			image_port = getOpenImagePort()
 			client_recv_addr = getClientFromIDToken(id_token).addr
-			command_sock.sendto(formatPacket(IMAGE_PORT,image_port), client_recv_addr);
-			t = threading.Thread(target=client_recv_image, args=(client_recv_addr, image_port, uid))
+			command_socket.sendto(formatPacket(IMAGE_PORT,image_port), client_recv_addr);
+			t = threading.Thread(target=client_recv_image, args=(image_port, uid))
 			t.start();
 		
 		

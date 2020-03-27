@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
         private GoogleSignInClient mGoogleSignInClient;
 
         private Client client;
-        public static volatile String image_path = "";
 
     @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
                 try
                 {
-                    image_path = currentPhotoPath;
+                    Client.image_path = currentPhotoPath;
 
                     Thread announceImg = new SendAsyncPacket(client.getIP(), client.getPort(), Client.IMAGE, client.getId_token(), "");
                     announceImg.start();
@@ -199,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<GetTokenResult> task) {
                                             if (task.isSuccessful()) {
                                                 String idToken = task.getResult().getToken();
+                                               Log.d("PIE:::", idToken);
                                                 try
                                                 {
                                                     client = new Client(InetAddress.getByName("18.220.57.115"), 25595, idToken);

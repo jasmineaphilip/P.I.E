@@ -7,6 +7,8 @@ public class Client extends Thread{
 
     public static final int JOIN = 0, IMAGE = 1, IMAGE_RESPONSE = 2, IMAGE_PORT = 3, INVALID_TOKEN = 4, JOIN_SUCCESS = 5;
 
+    public static volatile String image_path;
+
     private final int PACKET_SIZE = 1024;
 
     private volatile DatagramSocket socket = null;
@@ -30,7 +32,7 @@ public class Client extends Thread{
             socket = new DatagramSocket();
             socket.connect(ip, port);
 
-            byte joinMessage[] = (JOIN+",").getBytes();
+            byte joinMessage[] = (JOIN+","+id_token+",").getBytes();
             DatagramPacket joinPacket = new DatagramPacket(joinMessage, joinMessage.length);
             socket.send(joinPacket);
 
@@ -65,7 +67,7 @@ public class Client extends Thread{
                     case IMAGE_PORT:
                         // parse the tcp port from the raw_data and start send image thread
                         int image_port = Integer.parseInt(getData(raw_data));
-                        Thread sendImage = new SendImage(ip, image_port, MainActivity.image_path);
+                        Thread sendImage = new SendImage(ip, image_port, image_path);
                         sendImage.start();
                         break;
                     case IMAGE_RESPONSE:
