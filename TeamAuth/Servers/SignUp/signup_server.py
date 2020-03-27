@@ -11,6 +11,9 @@ import os
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import auth
+import PIL
+from PIL import Image
+from PIL import ExifTags
 
 ### Init Our Firebase Admin SDK ###
 
@@ -93,6 +96,14 @@ try:
 except socket.error as err:
 	print('Bind failed. Error Code : ' .format(err))
 	
+	
+# NOTE!!!!! We 100% should be doing this client side, just doing this here for sake of demo
+def scale_image(path):
+	size = 512, 512
+	image = Image.open(path)
+	image=image.rotate(270, expand=True)
+	image.thumbnail(size)
+	image.save(path)
 		
 def client_recv_image(image_port, uid):
 	
