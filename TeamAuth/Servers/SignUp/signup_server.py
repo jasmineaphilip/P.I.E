@@ -13,7 +13,6 @@ from firebase_admin import credentials
 from firebase_admin import auth
 import PIL
 from PIL import Image
-from PIL import ExifTags
 
 ### Init Our Firebase Admin SDK ###
 
@@ -124,7 +123,7 @@ def client_recv_image(image_port, uid):
 		f.write(data)
 		data = client.recv(1024)
 	
-	
+	scale_image(image_stamp+".jpg")
 	feat_stamp = "/root/userdata/"+uid
 	print ("Extracting feature data.")
 	feats = np.asarray(getRep(image_stamp+".jpg"))
