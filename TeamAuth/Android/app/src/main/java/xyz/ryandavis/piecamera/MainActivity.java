@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         static final int REQUEST_IMAGE_CAPTURE = 1, RC_SIGN_IN = 2;
         static final String TAG = "PIE";
 
-        private static Context ctx;
+        public static Context ctx;
         private FirebaseAuth mAuth;
         private GoogleSignInClient mGoogleSignInClient;
 
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     Client.image_path = currentPhotoPath;
 
-                    Thread announceImg = new SendAsyncPacket(client.getIP(), client.getPort(), Client.IMAGE, client.getId_token(), "");
+                    Thread announceImg = new SendAsyncPacket(client.getSocket(), Client.IMAGE, client.getId_token(), "");
                     announceImg.start();
                 }
                 catch (Exception e)

@@ -1,5 +1,8 @@
 package xyz.ryandavis.piecamera;
 
+import android.util.Log;
+import android.widget.Toast;
+
 import java.net.*;
 import java.io.*;
 
@@ -67,6 +70,7 @@ public class Client extends Thread{
                     case IMAGE_PORT:
                         // parse the tcp port from the raw_data and start send image thread
                         int image_port = Integer.parseInt(getData(raw_data));
+
                         Thread sendImage = new SendImage(ip, image_port, image_path);
                         sendImage.start();
                         break;
@@ -87,11 +91,6 @@ public class Client extends Thread{
         catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public DatagramSocket getSocket()
-    {
-        return socket;
     }
 
     public void close()
@@ -117,6 +116,10 @@ public class Client extends Thread{
     public String getId_token()
     {
         return id_token;
+    }
+    public DatagramSocket getSocket()
+    {
+        return socket;
     }
 
     private int getPacketID(String raw_data)

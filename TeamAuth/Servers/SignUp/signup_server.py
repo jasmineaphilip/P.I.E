@@ -97,11 +97,13 @@ except socket.error as err:
 def client_recv_image(image_port, uid):
 	
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	(client, addr) = s.accept()
 	try:
 		s.bind((public_ip, image_port))
 	except socket.error as err:
 		print('Bind failed. Error Code : ' .format(err))
+	
+	s.listen(10)
+	(client, addr) = s.accept()
 	
 	image_stamp = "/root/userdata/temp/"+uid
 	data = client.recv(1024)
@@ -170,10 +172,10 @@ def client_accept():
 		if (packetID == JOIN):
 			clients.append(Client(addr, id_token, uid))
 			print ("Client at {} joined with uid:  {}".format(addr, uid))
+			command_socket.sendto(formatPacket(JOIN_SUCCESS,""), addr);
 		elif (packetID == IMAGE):
 			image_port = getOpenImagePort()
-			client_recv_addr = getClientFromIDToken(id_token).addr
-			command_socket.sendto(formatPacket(IMAGE_PORT,image_port), client_recv_addr);
+			command_socket.sendto(formatPacket(IMAGE_PORT,image_port), addr);
 			t = threading.Thread(target=client_recv_image, args=(image_port, uid))
 			t.start();
 		
