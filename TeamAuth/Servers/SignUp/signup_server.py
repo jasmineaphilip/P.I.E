@@ -100,9 +100,9 @@ except socket.error as err:
 def scale_image(path):
 	size = 512, 512
 	image = Image.open(path)
-	image=image.rotate(270, expand=True)
+	exif = image.info['exif']
 	image.thumbnail(size)
-	image.save(path)
+	image.save(path, exif=exif)
 		
 def client_recv_image(image_port, uid):
 	

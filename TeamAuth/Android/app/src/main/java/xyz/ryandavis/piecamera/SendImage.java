@@ -39,6 +39,7 @@ public class SendImage extends Thread {
         try
         {
             out.close();
+            sock.close();
         }
         catch (Exception e)
         {
@@ -51,13 +52,13 @@ public class SendImage extends Thread {
         try
         {
             fin = new FileInputStream(path);
-            int count = 0;
-            while (fin.available()>0)
-            {
-                byte data[] = new byte[BUFF_SIZE];
-                fin.read(data, count*BUFF_SIZE, BUFF_SIZE);
-                out.write(data);
+
+            byte data[] = new byte[BUFF_SIZE];
+            int length = 0;
+            while ((length = fin.read(data, 0, data.length)) > 0) {
+                out.write(data, 0, length);
             }
+            out.flush();
             fin.close();
         }
         catch (Exception e)
