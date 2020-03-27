@@ -55,10 +55,20 @@ public class SendImage extends Thread {
 
             byte data[] = new byte[BUFF_SIZE];
             int length = 0;
-            while ((length = fin.read(data, 0, data.length)) > 0) {
+            while ((length = fin.read(data, 0, data.length)) > 0 ) {
                 out.write(data, 0, length);
             }
-            out.flush();
+            //out.flush();
+
+            /*
+            byte data[] = new byte[BUFF_SIZE];
+            while (fin.available()>0)
+            {
+                fin.read(data, 0, BUFF_SIZE);
+                out.write(data);
+            }
+            out.flush();*/
+
             fin.close();
         }
         catch (Exception e)

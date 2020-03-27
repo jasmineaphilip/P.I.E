@@ -13,6 +13,10 @@ from firebase_admin import credentials
 from firebase_admin import auth
 import PIL
 from PIL import Image
+from PIL import ImageFile
+import piexif
+
+#ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 ### Init Our Firebase Admin SDK ###
 
@@ -100,9 +104,18 @@ except socket.error as err:
 def scale_image(path):
 	size = 512, 512
 	image = Image.open(path)
-	exif = image.info['exif']
+	exif_dict = piexif.load(image.info["exif"])
+	orientation = exif_dict["0th"][piexif.ImageIFD.Orientation]
+	if   orientation == 3 :
+		image=image.rotate(180, expand=True)
+	elif orientation == 6 :
+		image=image.rotate(270, expand=True)
+	elif orientation == 8 :
+		image=image.rotate(90, expand=True)
 	image.thumbnail(size)
-	image.save(path, exif=exif)
+	image.save(path)
+
+
 		
 def client_recv_image(image_port, uid):
 	
@@ -124,6 +137,7 @@ def client_recv_image(image_port, uid):
 		data = client.recv(1024)
 	
 	scale_image(image_stamp+".jpg")
+	
 	feat_stamp = "/root/userdata/"+uid
 	print ("Extracting feature data.")
 	feats = np.asarray(getRep(image_stamp+".jpg"))
