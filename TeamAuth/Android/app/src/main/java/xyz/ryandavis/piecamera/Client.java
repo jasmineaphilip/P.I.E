@@ -16,7 +16,6 @@ public class Client extends Thread{
     private volatile boolean running = true;
 
 
-
     public Client(InetAddress ip, int port, String id_token)
     {
        this.ip=ip;
@@ -64,7 +63,10 @@ public class Client extends Thread{
 
                 switch (packetID) {
                     case IMAGE_PORT:
-                        // parse the tcp port from the raw_data
+                        // parse the tcp port from the raw_data and start send image thread
+                        int image_port = Integer.parseInt(getData(raw_data));
+                        Thread sendImage = new SendImage(ip, image_port, MainActivity.image_path);
+                        sendImage.start();
                         break;
                     case IMAGE_RESPONSE:
                         // if failed to face rec, retry sending face (or quit)
@@ -102,9 +104,26 @@ public class Client extends Thread{
         }
     }
 
-    public int getPacketID(String data)
+    public int getPort()
     {
-        return Integer.parseInt(data.split(",")[0]);
+        return port;
+    }
+    public InetAddress getIP()
+    {
+        return ip;
+    }
+    public String getId_token()
+    {
+        return id_token;
+    }
+
+    private int getPacketID(String raw_data)
+    {
+        return Integer.parseInt(raw_data.split(",")[0]);
+    }
+    private String getData(String raw_data)
+    {
+        return raw_data.split(",")[1];
     }
 
 }

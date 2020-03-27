@@ -44,11 +44,14 @@ public class MainActivity extends AppCompatActivity {
         private static Context ctx;
         private FirebaseAuth mAuth;
         private GoogleSignInClient mGoogleSignInClient;
+
         private Client client;
+        public static volatile String image_path = "";
 
     @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+
             ctx = this;
             mAuth = FirebaseAuth.getInstance();
 
@@ -62,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
             mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
             signIn();
-
 
             final Button button = findViewById(R.id.button);
             button.setOnClickListener(new View.OnClickListener() {
@@ -81,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
            super.onStart();
            // Check if user is signed in (non-null) and update UI accordingly.
            FirebaseUser currentUser = mAuth.getCurrentUser();
-           //updateUI(currentUser);
         }
 
         public void onStop()
@@ -113,14 +114,10 @@ public class MainActivity extends AppCompatActivity {
 
                 try
                 {
-                    // tell client to send image
-                    //mAuth.getCurrentUser().getUid();
+                    image_path = currentPhotoPath;
 
-
-
-                    Thread si = new SendImage(ip, port, uid, currentPhotoPath);
-                    si.start();
-
+                    Thread announceImg = new SendAsyncPacket(client.getIP(), client.getPort(), Client.IMAGE, client.getId_token(), "");
+                    announceImg.start();
                 }
                 catch (Exception e)
                 {
@@ -182,19 +179,7 @@ public class MainActivity extends AppCompatActivity {
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
-        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
-        mUser.getIdToken(true)
-                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                    public void onComplete(@NonNull Task<GetTokenResult> task) {
-                        if (task.isSuccessful()) {
-                            String idToken = task.getResult().getToken();
-                            // Send token to your backend via HTTPS
-                            // ...
-                        } else {
-                            // Handle error -> task.getException();
-                        }
-                    }
-                });
+
 
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -207,24 +192,37 @@ public class MainActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
-                            /*try
-                            {
-                                client = new Client(InetAddress.getByName("18.220.57.115"), 25596, mAuth.getCurrentUser().getUid());
-                                client.start();
-                            }
-                            catch (Exception e)
-                            {
-                                e.printStackTrace();
-                            }*/
+
+                            FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+                            mUser.getIdToken(true)
+                                    .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                                        public void onComplete(@NonNull Task<GetTokenResult> task) {
+                                            if (task.isSuccessful()) {
+                                                String idToken = task.getResult().getToken();
+                                                try
+                                                {
+                                                    client = new Client(InetAddress.getByName("18.220.57.115"), 25595, idToken);
+                                                    client.start();
+                                                }
+                                                catch (Exception e)
+                                                {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                            else {
+                                                // Handle error -> task.getException();
+                                                Toast.makeText(ctx, "error getting id token", Toast.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    });
 
 
 
-                            //updateUI(user);
+
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                           // Snackbar.make(findViewById(R.id.main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-                            //updateUI(null);
                         }
 
                         // ...
