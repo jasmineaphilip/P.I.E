@@ -14,7 +14,7 @@ public class Client extends Thread{
 
     private final int PACKET_SIZE = 1024;
 
-    private volatile DatagramSocket socket = null;
+    public static volatile DatagramSocket socket = null;
     private InetAddress ip = null;
     private int port = -1;
     private String id_token;

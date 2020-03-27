@@ -107,9 +107,9 @@ def client_recv_image(image_port, uid):
 	
 	image_stamp = "/root/userdata/temp/"+uid
 	data = client.recv(1024)
-	print ("Receiving image. Saving to " + stamp+".jpg")
+	print ("Receiving image. Saving to " + image_stamp+".jpg")
 	while (data):
-		f = open(stamp+".jpg", 'ab+')
+		f = open(image_stamp+".jpg", 'ab+')
 		f.write(data)
 		data = client.recv(1024)
 	
@@ -148,7 +148,7 @@ def getOpenImagePort():
 				return port
 				
 def formatPacket(packetID, data):
-	return "{},{}".format(str(packetID), data)
+	return "{},{},".format(str(packetID), data)
 	
 def getClientFromIDToken(id_token):
 	for c in clients:
@@ -172,10 +172,10 @@ def client_accept():
 		if (packetID == JOIN):
 			clients.append(Client(addr, id_token, uid))
 			print ("Client at {} joined with uid:  {}".format(addr, uid))
-			command_socket.sendto(formatPacket(JOIN_SUCCESS,""), addr);
+			command_socket.sendto(formatPacket(JOIN_SUCCESS,""), addr)
 		elif (packetID == IMAGE):
 			image_port = getOpenImagePort()
-			command_socket.sendto(formatPacket(IMAGE_PORT,image_port), addr);
+			command_socket.sendto(formatPacket(IMAGE_PORT,image_port), addr)
 			t = threading.Thread(target=client_recv_image, args=(image_port, uid))
 			t.start();
 		

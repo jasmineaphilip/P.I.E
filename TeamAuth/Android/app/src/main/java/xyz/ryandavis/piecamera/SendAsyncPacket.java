@@ -11,11 +11,9 @@ public class SendAsyncPacket extends Thread {
     private int packetID;
     private String data;
     private String id_token;
-    private volatile DatagramSocket socket;
 
-    public SendAsyncPacket(DatagramSocket socket, int packetID, String id_token, String data)
+    public SendAsyncPacket(int packetID, String id_token, String data)
     {
-        this.socket = socket;
         this.packetID = packetID;
         this.id_token=id_token;
         this.data = data;
@@ -29,7 +27,7 @@ public class SendAsyncPacket extends Thread {
             byte message[] = formatData().getBytes();
             DatagramPacket dp = new DatagramPacket(message, message.length);
             //socket.connect(ip, port);
-            socket.send(dp);
+            Client.socket.send(dp);
         }
         catch (Exception e)
         {

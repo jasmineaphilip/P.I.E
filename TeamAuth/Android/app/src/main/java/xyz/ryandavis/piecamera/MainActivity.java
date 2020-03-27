@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     Client.image_path = currentPhotoPath;
 
-                    Thread announceImg = new SendAsyncPacket(client.getSocket(), Client.IMAGE, client.getId_token(), "");
+                    Thread announceImg = new SendAsyncPacket(Client.IMAGE, client.getId_token(), "");
                     announceImg.start();
                 }
                 catch (Exception e)
