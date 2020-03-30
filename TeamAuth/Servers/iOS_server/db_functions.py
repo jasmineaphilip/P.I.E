@@ -34,7 +34,7 @@ def getClasses(UID):
 
 def getName(UID):
     UID = "\'" + UID + "\'"
-    command = 'select (first_name, last_name) from PROFILES where UID = ' + UID + ';'
+    command = 'select first_name, last_name from PROFILES where UID = ' + UID + ';'
     c.execute(command)
     row = c.fetchone()
     print(row)
@@ -100,7 +100,7 @@ def joinSession(session_id, UID, openface,nfc):
 
 def getIntructors(class_id):
     instructors = []
-    command = 'select (instructor, other) from CLASSES where class_ID = ' + class_id + ';'
+    command = 'select instructor, other from CLASSES where class_ID = ' + class_id + ';'
     c.execute(command)
     row  = c.fetchone()
     instructors.append(row[0]) #appends the instructor
@@ -125,7 +125,7 @@ def addFeedback(UID, session_id, feedback_type, description):
 
 def getFeedback(session_id):
     #TODO for keyword extraction, the data needs to be inputted into textfile
-    command = 'select (type, description) from FEEDBACK where session_ID = ' + str(session_id) + ';'
+    command = 'select type, description from FEEDBACK where session_ID = ' + str(session_id) + ';'
     c.execute(command)
     rows = c.fetchall()
     for row in rows:
