@@ -186,6 +186,9 @@ def showStudyGroups():
     conn.commit()
 
 
+
+
+
 #BUGS
 def addIssue(UID, issue_type, description):
     currTime = datetime.datetime.now()
