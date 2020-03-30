@@ -235,7 +235,7 @@ def client_accept():
 			# check if user is an instructor for this specific class
 			# check if a session already exists
 			# createSession(class_id)
-			class_id = data_entries[0]
+			class_id = data
 			print (auth.get_user(uid).display_name + " created a new session for " + class_id+".")
 			command_socket.sendto(returnPacket.formatData("Created a new session!"), addr)
 		elif (packetID == JOIN_SESSION):
