@@ -16,7 +16,7 @@ from PIL import Image
 from PIL import ImageFile
 import piexif
 from packet import *
-import db_function
+#import db_function
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -125,6 +125,7 @@ def compare(uid, path):
 	f.close()
 	a2 = getRep(path)
 	sq_dist = np.dot((a1-a2),(a1-a2))
+	os.remove(path)
 	if (sq_dist <= 1):
 		return 1
 	else:
