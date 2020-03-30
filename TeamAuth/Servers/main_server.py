@@ -163,7 +163,7 @@ def client_recv_image(image_port, uid):
 	
 def image_signup(image_port, uid, addr):
 	path = client_recv_image(image_port, uid)
-	extract(path)
+	extract_features(path)
 	returnPacket = Packet(IMAGE_RESPONSE)
 	command_socket.sendto(returnPacket.formatData("Image Received"), addr)
 
