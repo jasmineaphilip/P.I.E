@@ -213,7 +213,7 @@ def client_accept():
 		
 		if (packetID == JOIN):
 			clients.append(Client(addr, id_token, uid))
-			print ("Client at {} joined with uid: {}".format(addr, uid))
+			print ("Client at {} joined with uid: {}".format("(**.***.***.***, *****)", uid))
 			command_socket.sendto(returnPacket.formatData("Join Success"), addr)
 		elif (packetID == IMAGE_SIGNUP):
 			image_port = getOpenImagePort()
