@@ -183,7 +183,7 @@ def client_accept():
 		elif (packetID == ADD_CLASS):
 			# check if user is an instructor
 			# if getRole(UID) != instructor then send returnPacket back with failure and continue;
-			class_id = getPacketDataEntries()[0]
+			class_id = getPacketDataEntries(data)[0]
 			# addClass(class_id, uid)
 			command_socket.sendto(returnPacket.formatData("Added class " + class_id + " to database."), addr)
 		elif (packetID == CREATE_SESSION):
@@ -202,7 +202,7 @@ def client_accept():
 			# createGroupSession(uid, date/time, duration, location, other_uids)
 			command_socket.sendto(returnPacket.formatData("Created a group session on {} at {}.".format(time, location), addr))
 		elif (packetID == REPORT_ISSUE):
-			entries = getPacketDataEntries()
+			entries = getPacketDataEntries(data)
 			type = entries[0]
 			description = entries[1]
 			# addIssueReport(uid, type, desc)

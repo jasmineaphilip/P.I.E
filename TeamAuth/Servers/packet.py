@@ -27,14 +27,14 @@ class Packet:
 	def __init__(self, packet_id):
 		self.packet_id=packet_id
 		
-	def formatData(*arg):
+	def formatData(self, *arg):
 		#right now, ALL packets will follow this basic structure of one data entry
-		return insertDelim(DELIMITER, packet_id, arg[0])
+		return insertDelim(DELIMITER, self.packet_id, arg[0])
 			
 def insertDelim(delim, *arg):
 	ret = ""
 	for s in arg:
-		ret += s+delim
+		ret += str(s)+delim
 	return ret
 	
 def getPacketDataEntries(data):
