@@ -3,7 +3,7 @@ import datetime
 import time
 
 conn = sqlite3.connect('PIE_DB')
-c = conn.curser()
+c = conn.cursor()
 
 #TODO ERROR CHECKING: CHECKING IF RESULT OF SELECT == EMPTY
 #TODO CHANGE PRINT STATEMENTS TO RETURNS
@@ -107,7 +107,7 @@ def getIntructors(class_id):
     print(instructors)
 
 def getAttendanceResult(session_id, UID):
-    command = 'select result from Attendance where session_ID = ' + session_id + ';'    
+    command = 'select result from Attendance where session_ID = ' + str(session_id) + ';'    
     c.execute(command)
     row = c.fetchone()
     print (row[0])
