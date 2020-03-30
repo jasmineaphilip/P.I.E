@@ -265,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     netids = input.getText().toString();
                                                     String time = String.format("%s,%s,%s,", fyear, fmonthOfYear, fdayOfMonth);
-                                                    SendAsyncPacket p = new SendAsyncPacket(Client.ADD_FEEDBACK, client.getId_token(), "");
+                                                    SendAsyncPacket p = new SendAsyncPacket(Client.CREATE_GROUP, client.getId_token(), "");
                                                     p.formatData(time, location, String.valueOf(duration), netids);
                                                     p.start();
                                                 }

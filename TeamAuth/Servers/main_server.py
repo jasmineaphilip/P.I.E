@@ -255,13 +255,12 @@ def client_accept():
 			duration = data_entries[2]
 			other_netids = data_entries[3]
 			
-			print (auth.get_user(uid).display_name + "created a group session on {} at {}".format(time, location))
+			print (auth.get_user(uid).display_name + " created a group session on {} at {}.".format(time, location))
 			command_socket.sendto(returnPacket.formatData("Created a group session on {} at {}.".format(time, location)), addr)
 		elif (packetID == REPORT_ISSUE):
-			
 			type = data_entries[0]
 			description = data_entries[1]
-			db.addIssue(uid, type, desc)
+			#db.addIssue(uid, type, desc)
 			print ("Received issue report from " + auth.get_user(uid).display_name + ".")
 			command_socket.sendto(returnPacket.formatData("The issue has been reported, thank you!"), addr)
 		

@@ -134,7 +134,7 @@ public class Client extends Thread{
                             {
                                 AlertDialog dialog = new AlertDialog.Builder(MainActivity.ctx).create();
                                 dialog.setTitle("Create Session Response");
-                                dialog.setMessage(getData(response));
+                                dialog.setMessage(response);
                                 dialog.show();
                             }
                         });
@@ -146,7 +146,7 @@ public class Client extends Thread{
                             {
                                 AlertDialog dialog = new AlertDialog.Builder(MainActivity.ctx).create();
                                 dialog.setTitle("Join Session Response");
-                                dialog.setMessage(getData(response));
+                                dialog.setMessage(response);
                                 dialog.show();
                             }
                         });
@@ -158,7 +158,7 @@ public class Client extends Thread{
                             {
                                 AlertDialog dialog = new AlertDialog.Builder(MainActivity.ctx).create();
                                 dialog.setTitle("Add Feedback Response");
-                                dialog.setMessage(getData(response));
+                                dialog.setMessage(response);
                                 dialog.show();
                             }
                         });
@@ -170,7 +170,7 @@ public class Client extends Thread{
                             {
                                 AlertDialog dialog = new AlertDialog.Builder(MainActivity.ctx).create();
                                 dialog.setTitle("Create Group Response");
-                                dialog.setMessage(getData(response));
+                                dialog.setMessage(response);
                                 dialog.show();
                             }
                         });
@@ -182,7 +182,7 @@ public class Client extends Thread{
                             {
                                 AlertDialog dialog = new AlertDialog.Builder(MainActivity.ctx).create();
                                 dialog.setTitle("Report Issue Response");
-                                dialog.setMessage(getData(response));
+                                dialog.setMessage(response);
                                 dialog.show();
                             }
                         });
