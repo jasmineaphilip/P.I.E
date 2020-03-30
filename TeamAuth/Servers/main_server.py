@@ -200,7 +200,7 @@ def client_accept():
 			command_socket.sendto(returnPacket.formatData("Added feedback for this session!"), addr)
 		elif (packetID == CREATE_GROUPSESSION):
 			# createGroupSession(uid, date/time, duration, location, other_uids)
-			command_socket.sendto(returnPacket.formatData("Created a group session on {} at {}.".format(time, location), addr)
+			command_socket.sendto(returnPacket.formatData("Created a group session on {} at {}.".format(time, location), addr))
 		elif (packetID == REPORT_ISSUE):
 			entries = getPacketDataEntries()
 			type = entries[0]
