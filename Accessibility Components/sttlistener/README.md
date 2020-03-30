@@ -1,6 +1,6 @@
 # sttlistener
 
-A app for STT
+A app for STT and TTS
 
 ## Getting Started
 
