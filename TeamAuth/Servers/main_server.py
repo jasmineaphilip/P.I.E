@@ -270,7 +270,7 @@ com = ""
 stopping = False
 print("\n")
 while (not(com=="quit")):
-	com = raw_input("Command:  ")
+	com = raw_input("")
 	print("\n")
 	t = threading.Thread(target=client_accept)
 	t.daemon = True
