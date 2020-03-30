@@ -227,7 +227,7 @@ def client_accept():
 			#if db.getType(uid) == "instructor":
 			class_id = getPacketDataEntries(data)[0]
 				# addClass(class_id, uid)
-			print (auth.get_user(uid).display_name + "Added class " + class_id + " to database.")
+			print (auth.get_user(uid).display_name + " added class " + class_id + " to database.")
 			command_socket.sendto(returnPacket.formatData("Added class " + class_id + " to database."), addr)
 			#else:
 			#	command_socket.sendto(returnPacket.formatData("Improper user role!"), addr)
@@ -241,7 +241,8 @@ def client_accept():
 		elif (packetID == JOIN_SESSION):
 			# check if user is fully authenticated (face rec + nfc)
 			# joinSession(session_id, uid)
-			print (auth.get_user(uid).display_name + " joined session " + session_id)
+			session_id = 2394
+			print (auth.get_user(uid).display_name + " joined session " + str(session_id))
 			command_socket.sendto(returnPacket.formatData("Successfully joined session!"), addr)
 		elif (packetID == ADD_FEEDBACK):
 			# addFeedback(uid, session_id, desc)
@@ -267,8 +268,11 @@ def client_accept():
 
 com = ""
 stopping = False
+com = raw_input("Command:  ")
+print("\n")
 while (not(com=="quit")):
-	com = raw_input("Command:  ")
+	com = raw_input("")
+	print("\n")
 	t = threading.Thread(target=client_accept)
 	t.daemon = True
 	if (com == "start"):
