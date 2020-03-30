@@ -15,39 +15,16 @@ import PIL
 from PIL import Image
 from PIL import ImageFile
 import piexif
+from packet import *
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 ### Init Our Firebase Admin SDK ###
-
 cred = credentials.Certificate("/root/pie-auth-firebase-adminsdk-4rbmo-2d6c76da9f.json")
 firebase_admin.initialize_app(cred)
-
 ###################################
 
-
-### Packet IDS ###
-# Packet format:  packet_id,id_token,data 
-
-JOIN = 0				# Client is joining the server and the address from which this packet was sent will be their receiving address
-IMAGE = 1				# Client wants to send us an image
-IMAGE_RESPONSE = 2		# Our response to clients image (passed or failed face rec for signin server &  N/A for signup server)
-IMAGE_PORT = 3			# Which port we want the image sent to
-INVALID_TOKEN = 4		# Sent in response to join if the provide token is invalid
-JOIN_SUCCESS = 5		# successful join
-
-ADD_CLASS = 6
-CREATE_SESSION = 7
-JOIN_SESSION = 8
-ADD_FEEDBACK = 9
-CREATE_GROUP = 10
-REPORT_ISSUE = 11
-
-###################
-
 PACKET_SIZE = 2048
-DELIMITER = "|"
-DATA_DELIMITER = "`"
 
 class Client:
 	def __init__(self, addr, id_token, uid):
@@ -125,7 +102,6 @@ def scale_image(path):
 	image.save(path)
 
 
-		
 def client_recv_image(image_port, uid):
 	
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -160,16 +136,7 @@ def client_recv_image(image_port, uid):
 	image_ports[image_port] = True
 	
 	os.remove(image_stamp+".jpg")
-	
-def getPacketID(data):
-	return int(data.split(",")[0])
-	
-def getIDToken(data):
-	return data.split(",")[1]
-	
-def getData():
-	return data.split(",")[2]
-	
+		
 def lookUpUID(sessionID):
 	# TODO look up UID in database given the sessionID
 	return sessionID
@@ -180,9 +147,6 @@ def getOpenImagePort():
 			if image_ports[port] == True:
 				image_ports[port] = False
 				return port
-				
-def formatPacket(packetID, data):
-	return "{},{},".format(str(packetID), data)
 	
 def getClientFromIDToken(id_token):
 	for c in clients:
@@ -198,28 +162,51 @@ def getUIDFromToken(id_token):
 	
 def client_accept():
 	while (1):
-		(data, addr) = command_socket.recvfrom(PACKET_SIZE)
-		packetID = getPacketID(data)
-		id_token = getIDToken(data)
+		(raw_data, addr) = command_socket.recvfrom(PACKET_SIZE)
+		packetID = getPacketID(raw_data)
+		id_token = getIDToken(raw_data)
+		data = getData(raw_data)
+		
 		uid = getUIDFromToken(id_token)
+				
+		returnPacket = Packet(packetID)
 		
 		if (packetID == JOIN):
 			clients.append(Client(addr, id_token, uid))
 			print ("Client at {} joined with uid: {}".format(addr, uid))
-			command_socket.sendto(formatPacket(JOIN_SUCCESS,""), addr)
-		elif (packetID == IMAGE):
+			command_socket.sendto(returnPacket.formatData("Join Success"), addr)
+		elif (packetID == IMAGE_SIGNUP):
 			image_port = getOpenImagePort()
-			command_socket.sendto(formatPacket(IMAGE_PORT,image_port), addr)
+			command_socket.sendto(returnPacket.formatData(image_port), addr)
 			t = threading.Thread(target=client_recv_image, args=(image_port, uid))
 			t.start();
 		elif (packetID == ADD_CLASS):
+			# check if user is an instructor
+			# if getRole(UID) != instructor then send returnPacket back with failure and continue;
+			class_id = getPacketDataEntries()[0]
+			# addClass(class_id, uid)
+			command_socket.sendto(returnPacket.formatData("Added class " + class_id + " to database."), addr)
 		elif (packetID == CREATE_SESSION):
+			# check if user is an instructor for this specific class
+			# check if a session already exists
+			# createSession(class_id)
+			command_socket.sendto(returnPacket.formatData("Created a new session!"), addr)
 		elif (packetID == JOIN_SESSION):
+			# check if user is fully authenticated (face rec + nfc)
+			# joinSession(session_id, uid)
+			command_socket.sendto(returnPacket.formatData("Successfully joined session!"), addr)
 		elif (packetID == ADD_FEEDBACK):
-		elif (packetID == CREATE_GROUP):
+			# addFeedback(uid, session_id, desc)
+			command_socket.sendto(returnPacket.formatData("Added feedback for this session!"), addr)
+		elif (packetID == CREATE_GROUPSESSION):
+			# createGroupSession(uid, date/time, duration, location, other_uids)
+			command_socket.sendto(returnPacket.formatData("Created a group session on {} at {}.".format(time, location), addr)
 		elif (packetID == REPORT_ISSUE):
-			# addIssueReport(uid, 
-		
+			entries = getPacketDataEntries()
+			type = entries[0]
+			description = entries[1]
+			# addIssueReport(uid, type, desc)
+			command_socket.sendto(returnPacket.formatData("Issue has been reported, thank you!"), addr)
 		
 
 com = ""

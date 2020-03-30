@@ -6,12 +6,68 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/IMAGE_SIGNUP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:rotation="50"
-        android:text="Another one!"
+        android:text="IMAGE_SIGNUP"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_centerVertical="false"
         android:gravity="center" />
+
+    <Button
+        android:id="@+id/IMAGE_SIGNIN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/IMAGE_SIGNUP"
+        android:text="IMAGE_SIGNIN" />
+
+    <Button
+        android:id="@+id/ADD_CLASS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/IMAGE_SIGNIN"
+        android:text="ADD_CLASS" />
+
+    <Button
+        android:id="@+id/CREATE_SESSION"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/ADD_CLASS"
+        android:text="CREATE_SESSION" />
+
+    <Button
+        android:id="@+id/JOIN_SESSION"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/CREATE_SESSION"
+        android:text="JOIN_SESSION" />
+
+    <Button
+        android:id="@+id/ADD_FEEDBACK"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/JOIN_SESSION"
+        android:text="ADD_FEEDBACK" />
+
+    <Button
+        android:id="@+id/CREATE_GROUPSESSION"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/ADD_FEEDBACK"
+        android:text="CREATE_GROUPSESSION" />
+
+    <Button
+        android:id="@+id/REPORT_ISSUE"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/CREATE_GROUPSESSION"
+        android:text="REPORT_ISSUE" />
+
 </RelativeLayout>
