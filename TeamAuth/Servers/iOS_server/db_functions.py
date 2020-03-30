@@ -9,54 +9,56 @@ c = conn.cursor()
 #TODO CHANGE PRINT STATEMENTS TO RETURNS
 
 #PROFILE & IMAGE FUNCTIONS
-def insertProfile(UID, first, last, user_type, accessibility, classes):
+def insertProfile(UID, first, last, user_type, accessibility, classes): #accessibility = 0 (none); 1 (TTS); 2(STT)
     #TODO we need to insert all the classes at once (otherwise its annoying to change) --> just make list of class_ids and convert to string
     UID = "\'" + UID + "\'"
     first = "\'" + first + "\'"
     last = "\'" + last + "\'"
     user_type = "\'" + user_type + "\'"
-    accessibility = "\'" + accessibility + "\'"
     classes = "\'" + classes + "\'"
-    command = 'insert into PROFILES values (' + UID + ',' + last + ',' + first + ',' + classes + ',' + accessibility + ',' + user_type +');'
+    command = 'insert into PROFILES values (' + UID + ',' + last + ',' + first + ',' + classes + ',' + str(accessibility) + ',' + user_type +');'
     c.execute(command)
     
 def insertImage(UID, image):
-    #TODO run openface to extract feature data 
+    UID = "\'" + UID + "\'"
+    image = "\'" + image + "\'"
+    #TODO run openface to extract feature data; image = path to image file
     return 
 
 def getClasses(UID):
+    UID = "\'" + UID + "\'"
     command = 'select classes from PROFILES where UID = ' + UID + ';'
     c.execute(command)
     row = c.fetchone()
     print(row)
 
 def getName(UID):
-    command = 'select first_name from PROFILES where UID = ' + UID + ';'
+    UID = "\'" + UID + "\'"
+    command = 'select (first_name, last_name) from PROFILES where UID = ' + UID + ';'
     c.execute(command)
     row = c.fetchone()
     print(row)
-    firstName = row[0] #idk if its an array or not
-    command = 'select last_name from PROFILES where UID = ' + UID + ';'
-    c.execute(command)
-    row = c.fetchone()
-    print(row)
-    lastName = row[0]
+    firstName = row[0]
+    lastName = row[1] #idk if its an array or not   
     name = firstName + ' ' + lastName
     return name
 
 def getType(UID):
+    UID = "\'" + UID + "\'"
     command = 'select type from PROFILES where UID = ' + UID + ';'
     c.execute(command)
     row = c.fetchone()
     print(row)
 
 def getAccessibility(UID):
+    UID = "\'" + UID + "\'"
     command = 'select accessibility from PROFILES where UID = ' + UID + ';'
     c.execute(command)
     row = c.fetchone()
     print(row)
 
 def getFeatureData(UID):
+    UID = "\'" + UID + "\'"
     #TODO
     return
 
@@ -79,14 +81,13 @@ def createSession(class_id):
     row = c.fetchone()
     last_session = int(row[0])
     session_id = last_session + 1
-    command = 'insert into SESSION values (' + session_id + ',' + class_id + ',' + currTime + ');'
+    command = 'insert into SESSION values (' + str(session_id) + ',' + class_id + ',' + currTime + ');'
     c.execute(command)
     print(session_id)
 
 def joinSession(session_id, UID, openface,nfc):
     #TODO run openface and nfc, let result = && of that; also in server, result should be returned to user
     UID = "\'" + UID + "\'"
-    session_id = "\'" + session_id + "\'"    
     result = -1 #haven't started yet
     time.sleep(3) #just waiting for testing
     if (openface == 1): #since technically can't do nfc without passing openface, no need to check if nfc = 0/1
@@ -94,7 +95,7 @@ def joinSession(session_id, UID, openface,nfc):
         if (nfc == 1):
             result = 1
     
-    command = 'insert into ATTENDANCE values (' + session_id + ',' + UID + ',' + result + ');'
+    command = 'insert into ATTENDANCE values (' + str(session_id) + ',' + UID + ',' + str(result) + ');'
     c.execute(command)
 
 def getIntructors(class_id):
@@ -117,14 +118,14 @@ def getAttendanceResult(session_id, UID):
 #TODO do we need feedback_type?
 def addFeedback(UID, session_id, feedback_type, description):
     UID = "\'" + UID + "\'"
-    session_id = "\'" + session_id + "\'"    
     feedback_type = "\'" + feedback_type + "\'"
     description = "\'" + description + "\'"    
-    command = 'insert into FEEDBACK values (' + session_id + ',' + UID + ',' + feedback_type +',' + description + ');'
+    command = 'insert into FEEDBACK values (' + str(session_id) + ',' + UID + ',' + feedback_type +',' + description + ');'
     c.execute(command)
 
 def getFeedback(session_id):
-    command = 'select (type, description) from FEEDBACK where session_ID = ' + session_id + ';'
+    #TODO for keyword extraction, the data needs to be inputted into textfile
+    command = 'select (type, description) from FEEDBACK where session_ID = ' + str(session_id) + ';'
     c.execute(command)
     rows = c.fetchall()
     for row in rows:
@@ -142,7 +143,7 @@ def createStudyGroup(UID, datetime, duration, location, participants,name):
     row = c.fetchone()
     last_session = int(row[0])
     group_id = last_session + 1
-    command = 'insert into STUDYGROUP values (' + group_id + ',' + datetime + ',' + duration + ',' + UID + ',' + location + ',' + participants + ',' + name + ');'
+    command = 'insert into STUDYGROUP values (' + str(group_id) + ',' + datetime + ',' + str(duration) + ',' + UID + ',' + location + ',' + participants + ',' + name + ');'
     c.execute(command)
     print(group_id)
 
@@ -166,7 +167,7 @@ def addIssue(UID, issue_type, description):
     row = c.fetchone()
     last_issue = int(row[0])
     issue_id = last_issue + 1
-    command = 'insert into ISSUES values(' + issue_id + ',' + currTime + ',' + UID + ',' + issue_type + ',' + description + ');'
+    command = 'insert into ISSUES values(' + str(issue_id) + ',' + currTime + ',' + UID + ',' + issue_type + ',' + description + ');'
     c.execute(command)
     print(issue_id)
 
@@ -176,6 +177,9 @@ def addIssue(UID, issue_type, description):
 class_id = '198:211'
 instructor = 'pp649'
 addClass(class_id, instructor)
+
+insertProfile('pp649','priya','parikh','student',0,'198:211')
+getName('pp649')
 conn.commit()
 
 showStudyGroups()
