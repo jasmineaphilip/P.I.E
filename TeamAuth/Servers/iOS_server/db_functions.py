@@ -59,17 +59,20 @@ def getAccessibility(UID):
 
 def getFeatureData(UID):
     UID = "\'" + UID + "\'"
-    #TODO
-    return
+    command = 'select feature_data from IMAGES where UID = ' + UID + ';'
+    c.execute(command)
+    row = c.fetchone()
+    print(row)
 
 #CLASS & SESSION FUNCTIONS
 #TODO WILL EVENTUALLY NEED TO IMPLEMENT INSERTING NFC TAGS WHEN AN INSTRUCTOR ADDS A CLASS
-
-def addClass(class_id, UID):
+def addClass(class_id, UID): #TODO add tags, student list, other instructors
     UID = "\'" + UID + "\'"
     class_id = "\'" + class_id + "\'"
     command = 'insert into CLASSES (class_id, instructor) values (' + class_id + ',' + UID + ');'
     c.execute (command)
+
+#TODO def joinClass for students when the time comes
 
 def createSession(class_id):
     currTime = datetime.datetime.now()
@@ -85,18 +88,15 @@ def createSession(class_id):
     c.execute(command)
     print(session_id)
 
-def joinSession(session_id, UID, openface,nfc):
+def joinSession(session_id, UID,result):
     #TODO run openface and nfc, let result = && of that; also in server, result should be returned to user
     UID = "\'" + UID + "\'"
-    result = -1 #haven't started yet
-    time.sleep(3) #just waiting for testing
-    if (openface == 1): #since technically can't do nfc without passing openface, no need to check if nfc = 0/1
-        result = 0 #only facial completed
-        if (nfc == 1):
-            result = 1
-    
     command = 'insert into ATTENDANCE values (' + str(session_id) + ',' + UID + ',' + str(result) + ');'
     c.execute(command)
+    print(result)
+
+
+#TODO check current tag key for attendance; 
 
 def getIntructors(class_id):
     instructors = []
@@ -171,10 +171,10 @@ def addIssue(UID, issue_type, description):
     c.execute(command)
     print(issue_id)
 
-
+#TODO UID != netid (maybe add attribute to profiles) and add getNetid method
 
 #TEST ONE OF THE FUNCTIONS HERE
-class_id = '198:211'
+class_id = '01:198:211:04'
 instructor = 'pp649'
 addClass(class_id, instructor)
 
@@ -187,5 +187,7 @@ showStudyGroups()
 session_id = 0
 netid = 'pp649'
 getAttendanceResult(session_id,netid)
+
+createStudyGroup('pp649', 'today', 1, 'rutgers', 'just me and ryan','the best study group ever')
 
 conn.close()
