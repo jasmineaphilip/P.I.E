@@ -18,11 +18,15 @@ def insertProfile(UID, first, last, user_type, accessibility, classes): #accessi
     classes = "\'" + classes + "\'"
     command = 'insert into PROFILES values (' + UID + ',' + last + ',' + first + ',' + classes + ',' + str(accessibility) + ',' + user_type +');'
     c.execute(command)
+    conn.commit()
+
     
 def insertImage(UID, image):
     UID = "\'" + UID + "\'"
     image = "\'" + image + "\'"
     #TODO run openface to extract feature data; image = path to image file
+    conn.commit()
+
     return 
 
 def getClasses(UID):
@@ -30,6 +34,8 @@ def getClasses(UID):
     command = 'select classes from PROFILES where UID = ' + UID + ';'
     c.execute(command)
     row = c.fetchone()
+    conn.commit()
+
     print(row)
 
 def getName(UID):
@@ -41,6 +47,8 @@ def getName(UID):
     firstName = row[0]
     lastName = row[1] #idk if its an array or not   
     name = firstName + ' ' + lastName
+    conn.commit()
+
     return name
 
 def getType(UID):
@@ -48,6 +56,8 @@ def getType(UID):
     command = 'select type from PROFILES where UID = ' + UID + ';'
     c.execute(command)
     row = c.fetchone()
+    conn.commit()
+
     print(row)
 
 def getAccessibility(UID):
@@ -55,6 +65,8 @@ def getAccessibility(UID):
     command = 'select accessibility from PROFILES where UID = ' + UID + ';'
     c.execute(command)
     row = c.fetchone()
+    conn.commit()
+
     print(row)
 
 def getFeatureData(UID):
@@ -62,6 +74,8 @@ def getFeatureData(UID):
     command = 'select feature_data from IMAGES where UID = ' + UID + ';'
     c.execute(command)
     row = c.fetchone()
+    conn.commit()
+
     print(row)
 
 #CLASS & SESSION FUNCTIONS
@@ -71,6 +85,8 @@ def addClass(class_id, UID): #TODO add tags, student list, other instructors
     class_id = "\'" + class_id + "\'"
     command = 'insert into CLASSES (class_id, instructor) values (' + class_id + ',' + UID + ');'
     c.execute (command)
+    conn.commit()
+
 
 #TODO def joinClass for students when the time comes
 
@@ -86,6 +102,8 @@ def createSession(class_id):
     session_id = last_session + 1
     command = 'insert into SESSION values (' + str(session_id) + ',' + class_id + ',' + currTime + ');'
     c.execute(command)
+    conn.commit()
+
     print(session_id)
 
 def joinSession(session_id, UID,result):
@@ -93,6 +111,8 @@ def joinSession(session_id, UID,result):
     UID = "\'" + UID + "\'"
     command = 'insert into ATTENDANCE values (' + str(session_id) + ',' + UID + ',' + str(result) + ');'
     c.execute(command)
+    conn.commit()
+
     print(result)
 
 
@@ -105,12 +125,16 @@ def getIntructors(class_id):
     row  = c.fetchone()
     instructors.append(row[0]) #appends the instructor
     instructors.append(row[1]) #appends the TAs
+    conn.commit()
+
     print(instructors)
 
 def getAttendanceResult(session_id, UID):
     command = 'select result from Attendance where session_ID = ' + str(session_id) + ';'    
     c.execute(command)
     row = c.fetchone()
+    conn.commit()
+
     print (row[0])
 
 
@@ -122,6 +146,8 @@ def addFeedback(UID, session_id, feedback_type, description):
     description = "\'" + description + "\'"    
     command = 'insert into FEEDBACK values (' + str(session_id) + ',' + UID + ',' + feedback_type +',' + description + ');'
     c.execute(command)
+    conn.commit()
+
 
 def getFeedback(session_id):
     #TODO for keyword extraction, the data needs to be inputted into textfile
@@ -130,6 +156,8 @@ def getFeedback(session_id):
     rows = c.fetchall()
     for row in rows:
         print(row)
+    conn.commit()
+
 
 def createStudyGroup(UID, datetime, duration, location, participants,name):
     UID = "\'" + UID + "\'"
@@ -145,6 +173,8 @@ def createStudyGroup(UID, datetime, duration, location, participants,name):
     group_id = last_session + 1
     command = 'insert into STUDYGROUP values (' + str(group_id) + ',' + datetime + ',' + str(duration) + ',' + UID + ',' + location + ',' + participants + ',' + name + ');'
     c.execute(command)
+    conn.commit()
+
     print(group_id)
 
 def showStudyGroups():
@@ -153,6 +183,8 @@ def showStudyGroups():
     rows = c.fetchall()
     for row in rows:
         print(row)
+    conn.commit()
+
 
 #BUGS
 def addIssue(UID, issue_type, description):
@@ -169,6 +201,8 @@ def addIssue(UID, issue_type, description):
     issue_id = last_issue + 1
     command = 'insert into ISSUES values(' + str(issue_id) + ',' + currTime + ',' + UID + ',' + issue_type + ',' + description + ');'
     c.execute(command)
+    conn.commit()
+
     print(issue_id)
 
 #TODO UID != netid (maybe add attribute to profiles) and add getNetid method
