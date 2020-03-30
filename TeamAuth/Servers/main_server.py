@@ -246,7 +246,7 @@ def client_accept():
 		elif (packetID == ADD_FEEDBACK):
 			# addFeedback(uid, session_id, desc)
 			session_id = 2394 # getCurrentSession(uid)
-			print (auth.get_user(uid).display_name + " sent feedback for session " + session_id+".")
+			print (auth.get_user(uid).display_name + " sent feedback for session " + str(session_id) +".")
 			command_socket.sendto(returnPacket.formatData("Added feedback for this session!"), addr)
 		elif (packetID == CREATE_GROUPSESSION):
 			#createGroupSession(uid, date/time, duration, location, other_netids)

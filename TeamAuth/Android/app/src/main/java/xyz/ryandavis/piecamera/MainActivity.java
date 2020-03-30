@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                            builder.setMessage("Select a duration.");
+                            builder.setMessage("Select a duration (in hours).");
                             NumberPicker numberPicker = new NumberPicker(MainActivity.this);
                             numberPicker.setMaxValue(24);
                             numberPicker.setMinValue(1);
