@@ -9,7 +9,7 @@ from base64 import b64decode, b64encode, decodestring
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Bind the socket to the port
-server_address = ('172.17.0.2', 1111)
+server_address = ('172.17.0.3', 1111)
 print ("starting up on %s port %s", server_address[0], server_address[1])
 sock.bind(server_address)
 # Listen for incoming connections
@@ -59,9 +59,9 @@ encoded_img = open('encoded.txt','rb').read()
 encoded_img = open('encoded.txt','rb').read()
 #print(encoded_img)
 check_chars = encoded_img[-2:]
-if check_chars != b'\xff\xd9':
-    print('Not complete image')
-    encoded_img = encoded_img + "\xff\xd6"
+#if check_chars != b'\xff\xd9':
+#   print('Not complete image')
+encoded_img = encoded_img + b"\xff\xd6"
 imgdata = b64decode(encoded_img.strip() + "==")
 filename = 'some_image.jpg'  # I assume you have a way of picking unique filenames
 with open(filename, 'wb') as f:
@@ -71,8 +71,8 @@ with open(filename, 'wb') as f:
 os.system('python compare.py some_image.jpg > result.txt')
 
 f1 = open("result.txt")
-print("result.txt contents:")
-os.system('cat result.txt')
+#print("result.txt contents:")
+#os.system('cat result.txt')
 
 results = [line.strip().split() for line in f1]
 print(results[0][0])
