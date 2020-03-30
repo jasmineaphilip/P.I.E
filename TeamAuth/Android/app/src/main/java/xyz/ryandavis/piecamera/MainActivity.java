@@ -5,10 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.icu.util.Calendar;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,8 +21,10 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -117,35 +122,209 @@ public class MainActivity extends AppCompatActivity {
             final Button button_CREATE_SESSION = findViewById(R.id.CREATE_SESSION);
             button_CREATE_SESSION.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    dispatchTakePictureIntent();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle("Class Name");
+
+                    final EditText input = new EditText(MainActivity.this);
+                    input.setInputType(InputType.TYPE_CLASS_TEXT);
+                    builder.setView(input);
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String className = input.getText().toString();
+                            SendAsyncPacket p = new SendAsyncPacket(Client.CREATE_SESSION, client.getId_token(), className);
+                            p.start();
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    builder.show();
                 }
             });
 
             final Button button_JOIN_SESSION = findViewById(R.id.JOIN_SESSION);
             button_JOIN_SESSION.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    dispatchTakePictureIntent();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle("Class Name");
+
+                    final EditText input = new EditText(MainActivity.this);
+                    input.setInputType(InputType.TYPE_CLASS_TEXT);
+                    builder.setView(input);
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String className = input.getText().toString();
+                            SendAsyncPacket p = new SendAsyncPacket(Client.JOIN_SESSION, client.getId_token(), className);
+                            p.start();
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    builder.show();
                 }
             });
 
             final Button button_ADD_FEEDBACK = findViewById(R.id.ADD_FEEDBACK);
             button_ADD_FEEDBACK.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    dispatchTakePictureIntent();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle("Description");
+
+                    final EditText input = new EditText(MainActivity.this);
+                    input.setInputType(InputType.TYPE_CLASS_TEXT);
+                    builder.setView(input);
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String description = input.getText().toString();
+                            SendAsyncPacket p = new SendAsyncPacket(Client.ADD_FEEDBACK, client.getId_token(), description);
+                            p.start();
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    builder.show();
                 }
             });
 
             final Button button_CREATE_GROUPSESSION = findViewById(R.id.CREATE_GROUPSESSION);
             button_CREATE_GROUPSESSION.setOnClickListener(new View.OnClickListener() {
+                int fyear, fmonthOfYear, fdayOfMonth, duration;
+                String location, netids;
                 public void onClick(View v) {
-                    dispatchTakePictureIntent();
+
+                    DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                              int dayOfMonth) {
+
+                            fyear = year;
+                            fmonthOfYear=monthOfYear;
+                            fdayOfMonth=dayOfMonth;
+                        }
+                    };
+
+                    DatePickerDialog dpd = new DatePickerDialog(MainActivity.this, date, fyear, fmonthOfYear, fdayOfMonth);
+                    dpd.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                            builder.setMessage("Select a duration.");
+                            NumberPicker numberPicker = new NumberPicker(MainActivity.this);
+                            numberPicker.setMaxValue(24);
+                            numberPicker.setMinValue(1);
+                            numberPicker.setWrapSelectorWheel(false);
+                            numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                                @Override
+                                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                    duration = newVal;
+                                }
+                            });
+                            builder.setView(numberPicker);
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                                    builder.setTitle("Meeting Location");
+
+                                    final EditText input = new EditText(MainActivity.this);
+                                    input.setInputType(InputType.TYPE_CLASS_TEXT);
+                                    builder.setView(input);
+
+                                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            location = input.getText().toString();
+
+                                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                                            builder.setTitle("Invite");
+                                            builder.setMessage("List netids you would like to invite.");
+
+                                            final EditText input = new EditText(MainActivity.this);
+                                            input.setInputType(InputType.TYPE_CLASS_TEXT);
+                                            builder.setView(input);
+
+                                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    netids = input.getText().toString();
+                                                    String time = String.format("%s,%s,%s,", fyear, fmonthOfYear, fdayOfMonth);
+                                                    SendAsyncPacket p = new SendAsyncPacket(Client.ADD_FEEDBACK, client.getId_token(), "");
+                                                    p.formatData(time, location, String.valueOf(duration), netids);
+                                                    p.start();
+                                                }
+                                            });
+                                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.cancel();
+                                                }
+                                            });
+                                            builder.show();
+                                        }
+                                    });
+                                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.cancel();
+                                        }
+                                    });
+                                    builder.show();
+                                }
+                            });
+                            builder.show();
+
+                        }
+                    });
+                    dpd.show();
+
+
                 }
             });
 
             final Button button_REPORT_ISSUE = findViewById(R.id.REPORT_ISSUE);
             button_REPORT_ISSUE.setOnClickListener(new View.OnClickListener() {
+                String type = "";
                 public void onClick(View v) {
-                    dispatchTakePictureIntent();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle("Description");
+
+                    final EditText input = new EditText(MainActivity.this);
+                    input.setInputType(InputType.TYPE_CLASS_TEXT);
+                    builder.setView(input);
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String descripion = input.getText().toString();
+                            SendAsyncPacket p = new SendAsyncPacket(Client.REPORT_ISSUE, client.getId_token(), "");
+                            p.formatData(type, descripion);
+                            p.start();
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    builder.show();
                 }
             });
         }

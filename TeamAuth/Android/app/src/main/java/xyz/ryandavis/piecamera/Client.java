@@ -53,7 +53,7 @@ public class Client extends Thread{
             socket = new DatagramSocket();
             socket.connect(ip, port);
 
-            byte joinMessage[] = (JOIN+","+id_token+",").getBytes();
+            byte joinMessage[] = (insertDelim(DELIMITER, String.valueOf(JOIN), id_token)).getBytes();
             DatagramPacket joinPacket = new DatagramPacket(joinMessage, joinMessage.length);
             socket.send(joinPacket);
 
@@ -108,7 +108,7 @@ public class Client extends Thread{
                             {
                                 AlertDialog dialog = new AlertDialog.Builder(MainActivity.ctx).create();
                                 dialog.setTitle("Image Response");
-                                dialog.setMessage(getData(response));
+                                dialog.setMessage(response);
                                 dialog.show();
                             }
                         });
@@ -122,7 +122,7 @@ public class Client extends Thread{
                             {
                                 AlertDialog dialog = new AlertDialog.Builder(MainActivity.ctx).create();
                                 dialog.setTitle("Add Class Response");
-                                dialog.setMessage(getData(response));
+                                dialog.setMessage(response);
                                 dialog.show();
                             }
                         });
@@ -232,11 +232,22 @@ public class Client extends Thread{
 
     private int getPacketID(String raw_data)
     {
-        return Integer.parseInt(raw_data.split(",")[0]);
+        String id = raw_data.split("\\"+DELIMITER)[0];
+        return Integer.parseInt(id);
     }
     private String getData(String raw_data)
     {
-        return raw_data.split(",")[1];
+        return raw_data.split("\\"+DELIMITER)[1];
+    }
+
+    private String insertDelim(String delim, String ... args)
+    {
+        String ret = "";
+        for (String s : args)
+        {
+            ret += s+delim;
+        }
+        return ret;
     }
 
 }

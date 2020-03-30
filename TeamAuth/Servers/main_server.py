@@ -16,6 +16,7 @@ from PIL import Image
 from PIL import ImageFile
 import piexif
 from packet import *
+import db_function
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -136,6 +137,10 @@ def client_recv_image(image_port, uid):
 	image_ports[image_port] = True
 	
 	os.remove(image_stamp+".jpg")
+	
+	#first = auth.get_user(uid).display_name.split(" ")[0]
+	#last = auth.get_user(uid).display_name.split(" ")[1]
+	#db.insertProfile(uid, first, last, "instructor", "yes", "")
 		
 def lookUpUID(sessionID):
 	# TODO look up UID in database given the sessionID
@@ -166,47 +171,69 @@ def client_accept():
 		packetID = getPacketID(raw_data)
 		id_token = getIDToken(raw_data)
 		data = getData(raw_data)
-		
 		uid = getUIDFromToken(id_token)
-				
+			
+		if (DATA_DELIMITER in data):
+			data_entries = getPacketDataEntries(data)
+		
 		returnPacket = Packet(packetID)
 		
 		if (packetID == JOIN):
 			clients.append(Client(addr, id_token, uid))
 			print ("Client at {} joined with uid: {}".format(addr, uid))
+			
 			command_socket.sendto(returnPacket.formatData("Join Success"), addr)
 		elif (packetID == IMAGE_SIGNUP):
 			image_port = getOpenImagePort()
 			command_socket.sendto(returnPacket.formatData(image_port), addr)
 			t = threading.Thread(target=client_recv_image, args=(image_port, uid))
 			t.start();
+		elif (packetID == IMAGE_SIGNIN):
+			image_port = getOpenImagePort()
+			command_socket.sendto(returnPacket.formatData(image_port), addr)
+			t = threading.Thread(target=client_recv_image, args=(image_port, uid))
+			t.start();
 		elif (packetID == ADD_CLASS):
-			# check if user is an instructor
-			# if getRole(UID) != instructor then send returnPacket back with failure and continue;
+			#if db.getType(uid) == "instructor":
 			class_id = getPacketDataEntries(data)[0]
-			# addClass(class_id, uid)
+				# addClass(class_id, uid)
+			print (auth.get_user(uid).display_name + "Added class " + class_id + " to database.")
 			command_socket.sendto(returnPacket.formatData("Added class " + class_id + " to database."), addr)
+			#else:
+			#	command_socket.sendto(returnPacket.formatData("Improper user role!"), addr)
 		elif (packetID == CREATE_SESSION):
 			# check if user is an instructor for this specific class
 			# check if a session already exists
 			# createSession(class_id)
+			class_id = data_entries[0]
+			print (auth.get_user(uid).display_name + " created a new session for " + class_id+".")
 			command_socket.sendto(returnPacket.formatData("Created a new session!"), addr)
 		elif (packetID == JOIN_SESSION):
 			# check if user is fully authenticated (face rec + nfc)
 			# joinSession(session_id, uid)
+			print (auth.get_user(uid).display_name + " joined session " + session_id
 			command_socket.sendto(returnPacket.formatData("Successfully joined session!"), addr)
 		elif (packetID == ADD_FEEDBACK):
 			# addFeedback(uid, session_id, desc)
+			session_id = 2394 # getCurrentSession(uid)
+			print (auth.get_user(uid).display_name + " sent feedback for session " + session_id+".")
 			command_socket.sendto(returnPacket.formatData("Added feedback for this session!"), addr)
 		elif (packetID == CREATE_GROUPSESSION):
-			# createGroupSession(uid, date/time, duration, location, other_uids)
+			#createGroupSession(uid, date/time, duration, location, other_netids)
+			time = data_entries[0]
+			location = data_entries[1]
+			duration = data_entries[2]
+			other_netids = data_entries[3]
+			
+			print (auth.get_user(uid).display_name + "created a group session on {} at {}".format(time, location))
 			command_socket.sendto(returnPacket.formatData("Created a group session on {} at {}.".format(time, location), addr))
 		elif (packetID == REPORT_ISSUE):
-			entries = getPacketDataEntries(data)
-			type = entries[0]
-			description = entries[1]
-			# addIssueReport(uid, type, desc)
-			command_socket.sendto(returnPacket.formatData("Issue has been reported, thank you!"), addr)
+			
+			type = data_entries[0]
+			description = data_entries[1]
+			db.addIssue(uid, type, desc)
+			print ("Received issue report from " + auth.get_user(uid).display_name + ".")
+			command_socket.sendto(returnPacket.formatData("The issue has been reported, thank you!"), addr)
 		
 
 com = ""

@@ -38,9 +38,9 @@ public class SendAsyncPacket extends Thread {
     {
         return insertDelim(Client.DELIMITER, String.valueOf(packetID), id_token, data);
     }
-    public String formatData(String... args)
+    public void formatData(String... args)
     {
-        return insertDelim(Client.DATA_DELIMITER, args);
+        this.data = insertDelim(Client.DATA_DELIMITER, args);
     }
 
     private String insertDelim(String delim, String ... args)
