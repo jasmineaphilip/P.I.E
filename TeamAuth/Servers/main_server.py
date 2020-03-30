@@ -215,12 +215,12 @@ def client_accept():
 		elif (packetID == IMAGE_SIGNUP):
 			image_port = getOpenImagePort()
 			command_socket.sendto(returnPacket.formatData(image_port), addr)
-			t = threading.Thread(target=image_signup, args=(image_port, uid, returnPacket, addr))
+			t = threading.Thread(target=image_signup, args=(image_port, uid, addr))
 			t.start();
 		elif (packetID == IMAGE_SIGNIN):
 			image_port = getOpenImagePort()
 			command_socket.sendto(returnPacket.formatData(image_port), addr)
-			t = threading.Thread(target=image_signin, args=(image_port, uid, returnPacket, addr))
+			t = threading.Thread(target=image_signin, args=(image_port, uid, addr))
 			t.start();
 			
 		elif (packetID == ADD_CLASS):

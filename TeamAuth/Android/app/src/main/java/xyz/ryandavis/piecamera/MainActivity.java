@@ -221,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
                     };
 
                     DatePickerDialog dpd = new DatePickerDialog(MainActivity.this, date, fyear, fmonthOfYear, fdayOfMonth);
+                    dpd.updateDate(2020, 3 - 1, 30);
                     dpd.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -264,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     netids = input.getText().toString();
-                                                    String time = String.format("%s,%s,%s,", fyear, fmonthOfYear, fdayOfMonth);
+                                                    String time = String.format("%d,%d,%d,", 2020, 03, 30);
                                                     SendAsyncPacket p = new SendAsyncPacket(Client.CREATE_GROUP, client.getId_token(), "");
                                                     p.formatData(time, location, String.valueOf(duration), netids);
                                                     p.start();
