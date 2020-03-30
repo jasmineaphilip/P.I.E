@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         private GoogleSignInClient mGoogleSignInClient;
 
         private Client client;
+        private boolean signUp = true;
 
     @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
             final Button button_IMAGE_SIGNIN = findViewById(R.id.IMAGE_SIGNIN);
             button_IMAGE_SIGNIN.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
+                    signUp = false;
                     dispatchTakePictureIntent();
                 }
             });
@@ -86,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
             final Button button_IMAGE_SIGNUP = findViewById(R.id.IMAGE_SIGNUP);
             button_IMAGE_SIGNUP.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
+                    signUp = true;
                     dispatchTakePictureIntent();
                 }
             });
@@ -370,8 +373,15 @@ public class MainActivity extends AppCompatActivity {
                 {
                     Client.image_path = currentPhotoPath;
 
-                    Thread announceImg = new SendAsyncPacket(Client.IMAGE_SIGNUP, client.getId_token(), "");
-                    announceImg.start();
+                    if (signUp)
+                    {
+                        SendAsyncPacket imgSignup = new SendAsyncPacket(Client.IMAGE_SIGNUP, client.getId_token(), "");
+                        imgSignup.start();
+                    }
+                    else {
+                        SendAsyncPacket imgSignin = new SendAsyncPacket(Client.IMAGE_SIGNIN, client.getId_token(), "");
+                        imgSignin.start();
+                    }
                 }
                 catch (Exception e)
                 {

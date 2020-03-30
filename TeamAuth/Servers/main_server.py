@@ -93,7 +93,7 @@ def scale_image(path):
 	image = Image.open(path)
 	exif_dict = piexif.load(image.info["exif"])
 	orientation = exif_dict["0th"][piexif.ImageIFD.Orientation]
-	if   orientation == 3 :
+	if orientation == 3 :
 		image=image.rotate(180, expand=True)
 	elif orientation == 6 :
 		image=image.rotate(270, expand=True)
@@ -103,7 +103,7 @@ def scale_image(path):
 	image.save(path)
 
 
-def extract_features(path):
+def extract_features(path, uid):
 
 	feat_stamp = "/root/userdata/"+uid
 	print ("Extracting feature data.")
@@ -163,8 +163,9 @@ def client_recv_image(image_port, uid):
 	
 def image_signup(image_port, uid, addr):
 	path = client_recv_image(image_port, uid)
-	extract_features(path)
+	extract_features(path, uid)
 	returnPacket = Packet(IMAGE_RESPONSE)
+	print (auth.get_user(uid).display_name + " added an image to their profile.")
 	command_socket.sendto(returnPacket.formatData("Image Received"), addr)
 
 def image_signin(image_port, uid, addr):
@@ -172,8 +173,10 @@ def image_signin(image_port, uid, addr):
 	passed = compare(uid, path)
 	returnPacket = Packet(IMAGE_RESPONSE)
 	if passed:
+		print (auth.get_user(uid).display_name + " successfully signed in.")
 		command_socket.sendto(returnPacket.formatData("Success"), addr)
 	else:
+		print (auth.get_user(uid).display_name + " failed to signed in.")
 		command_socket.sendto(returnPacket.formatData("Failed"), addr)
 
 def getOpenImagePort():
