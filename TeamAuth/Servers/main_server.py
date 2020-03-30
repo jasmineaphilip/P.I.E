@@ -89,7 +89,7 @@ except socket.error as err:
 	
 # NOTE!!!!! We 100% should be doing this client side, just doing this here for sake of demo
 def scale_image(path):
-	max_size = 512, 512
+	max_size = 1024, 1024
 	image = Image.open(path)
 	exif_dict = piexif.load(image.info["exif"])
 	orientation = exif_dict["0th"][piexif.ImageIFD.Orientation]
@@ -103,6 +103,33 @@ def scale_image(path):
 	image.save(path)
 
 
+def extract_features(path):
+
+	feat_stamp = "/root/userdata/"+uid
+	print ("Extracting feature data.")
+	feats = np.asarray(getRep(path))
+	f = open(feat_stamp+".txt", "w+")
+	for fe in feats:
+		f.write(str(fe)+"\n");
+	f.close()
+	os.remove(path)
+
+def compare(uid, path):
+	feat_stamp = "/root/userdata/"+uid
+	a1 = np.zeros(128)
+	f = open(feat_stamp+".txt", "r")
+	i = 0
+	for x in f:
+		a1[i]=float(x)
+		i+=1
+	f.close()
+	a2 = getRep(path)
+	sq_dist = np.dot((a1-a2),(a1-a2))
+	if (sq_dist <= 1):
+		return 1
+	else:
+		return 0
+	
 def client_recv_image(image_port, uid):
 	
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -115,37 +142,39 @@ def client_recv_image(image_port, uid):
 	(client, addr) = s.accept()
 	
 	image_stamp = "/root/userdata/temp/"+uid
+	path = image_stamp+".jpg"
 	data = client.recv(1024)
-	print ("Receiving image. Saving to " + image_stamp+".jpg")
+	print ("Receiving image. Saving to " + path)
 	while (data):
-		f = open(image_stamp+".jpg", 'ab+')
+		f = open(path, 'ab+')
 		f.write(data)
 		data = client.recv(1024)
 	
-	scale_image(image_stamp+".jpg")
-	
-	feat_stamp = "/root/userdata/"+uid
-	print ("Extracting feature data.")
-	feats = np.asarray(getRep(image_stamp+".jpg"))
-	f = open(feat_stamp+".txt", "w+")
-	for fe in feats:
-		f.write(str(fe)+"\n");
-	f.close()
-	
+	scale_image(path)
 	s.close()
-	
 	image_ports[image_port] = True
 	
-	os.remove(image_stamp+".jpg")
+	return path
 	
 	#first = auth.get_user(uid).display_name.split(" ")[0]
 	#last = auth.get_user(uid).display_name.split(" ")[1]
 	#db.insertProfile(uid, first, last, "instructor", "yes", "")
-		
-def lookUpUID(sessionID):
-	# TODO look up UID in database given the sessionID
-	return sessionID
 	
+def image_signup(image_port, uid, addr):
+	path = client_recv_image(image_port, uid)
+	extract(path)
+	returnPacket = Packet(IMAGE_RESPONSE)
+	command_socket.sendto(returnPacket.formatData("Image Received"), addr)
+
+def image_signin(image_port, uid, addr):
+	path = client_recv_image(image_port, uid)
+	passed = compare(uid, path)
+	returnPacket = Packet(IMAGE_RESPONSE)
+	if passed:
+		command_socket.sendto(returnPacket.formatData("Success"), addr)
+	else:
+		command_socket.sendto(returnPacket.formatData("Failed"), addr)
+
 def getOpenImagePort():
 	while (1):
 		for port in image_ports:
@@ -181,18 +210,18 @@ def client_accept():
 		if (packetID == JOIN):
 			clients.append(Client(addr, id_token, uid))
 			print ("Client at {} joined with uid: {}".format(addr, uid))
-			
 			command_socket.sendto(returnPacket.formatData("Join Success"), addr)
 		elif (packetID == IMAGE_SIGNUP):
 			image_port = getOpenImagePort()
 			command_socket.sendto(returnPacket.formatData(image_port), addr)
-			t = threading.Thread(target=client_recv_image, args=(image_port, uid))
+			t = threading.Thread(target=image_signup, args=(image_port, uid, returnPacket, addr))
 			t.start();
 		elif (packetID == IMAGE_SIGNIN):
 			image_port = getOpenImagePort()
 			command_socket.sendto(returnPacket.formatData(image_port), addr)
-			t = threading.Thread(target=client_recv_image, args=(image_port, uid))
+			t = threading.Thread(target=image_signin, args=(image_port, uid, returnPacket, addr))
 			t.start();
+			
 		elif (packetID == ADD_CLASS):
 			#if db.getType(uid) == "instructor":
 			class_id = getPacketDataEntries(data)[0]
@@ -211,7 +240,7 @@ def client_accept():
 		elif (packetID == JOIN_SESSION):
 			# check if user is fully authenticated (face rec + nfc)
 			# joinSession(session_id, uid)
-			print (auth.get_user(uid).display_name + " joined session " + session_id
+			print (auth.get_user(uid).display_name + " joined session " + session_id)
 			command_socket.sendto(returnPacket.formatData("Successfully joined session!"), addr)
 		elif (packetID == ADD_FEEDBACK):
 			# addFeedback(uid, session_id, desc)
