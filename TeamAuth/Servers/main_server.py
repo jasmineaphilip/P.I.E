@@ -248,7 +248,7 @@ def client_accept():
 			session_id = 2394 # getCurrentSession(uid)
 			print (auth.get_user(uid).display_name + " sent feedback for session " + str(session_id) +".")
 			command_socket.sendto(returnPacket.formatData("Added feedback for this session!"), addr)
-		elif (packetID == CREATE_GROUPSESSION):
+		elif (packetID == CREATE_GROUP):
 			#createGroupSession(uid, date/time, duration, location, other_netids)
 			time = data_entries[0]
 			location = data_entries[1]
@@ -256,7 +256,7 @@ def client_accept():
 			other_netids = data_entries[3]
 			
 			print (auth.get_user(uid).display_name + "created a group session on {} at {}".format(time, location))
-			command_socket.sendto(returnPacket.formatData("Created a group session on {} at {}.".format(time, location), addr))
+			command_socket.sendto(returnPacket.formatData("Created a group session on {} at {}.".format(time, location)), addr)
 		elif (packetID == REPORT_ISSUE):
 			
 			type = data_entries[0]
