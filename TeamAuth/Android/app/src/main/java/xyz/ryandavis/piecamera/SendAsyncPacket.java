@@ -23,10 +23,8 @@ public class SendAsyncPacket extends Thread {
     {
         try
         {
-            //DatagramSocket socket = new DatagramSocket();
-            byte message[] = formatData().getBytes();
+            byte message[] = formatRawData().getBytes();
             DatagramPacket dp = new DatagramPacket(message, message.length);
-            //socket.connect(ip, port);
             Client.socket.send(dp);
         }
         catch (Exception e)
@@ -36,8 +34,22 @@ public class SendAsyncPacket extends Thread {
     }
 
 
-    private String formatData()
+    private String formatRawData()
     {
-        return String.format("%d,%s,%s", packetID, id_token, data);
+        return insertDelim(Client.DELIMITER, String.valueOf(packetID), id_token, data);
+    }
+    public String formatData(String... args)
+    {
+        return insertDelim(Client.DATA_DELIMITER, args);
+    }
+
+    private String insertDelim(String delim, String ... args)
+    {
+        String ret = "";
+        for (String s : args)
+        {
+            ret += s+delim;
+        }
+        return ret;
     }
 }

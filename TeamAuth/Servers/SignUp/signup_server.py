@@ -16,7 +16,7 @@ from PIL import Image
 from PIL import ImageFile
 import piexif
 
-#ImageFile.LOAD_TRUNCATED_IMAGES = True
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 ### Init Our Firebase Admin SDK ###
 
@@ -27,7 +27,7 @@ firebase_admin.initialize_app(cred)
 
 
 ### Packet IDS ###
-# Packet format:  packet_id,session_id,data 
+# Packet format:  packet_id,id_token,data 
 
 JOIN = 0				# Client is joining the server and the address from which this packet was sent will be their receiving address
 IMAGE = 1				# Client wants to send us an image
@@ -36,13 +36,22 @@ IMAGE_PORT = 3			# Which port we want the image sent to
 INVALID_TOKEN = 4		# Sent in response to join if the provide token is invalid
 JOIN_SUCCESS = 5		# successful join
 
+ADD_CLASS = 6
+CREATE_SESSION = 7
+JOIN_SESSION = 8
+ADD_FEEDBACK = 9
+CREATE_GROUP = 10
+REPORT_ISSUE = 11
+
 ###################
 
 PACKET_SIZE = 2048
+DELIMITER = "|"
+DATA_DELIMITER = "`"
 
 class Client:
 	def __init__(self, addr, id_token, uid):
-		self.addr=addr						# This is going to be the address that the client will receive at (the client can send from different addrs, but will always receive at this one)
+		self.addr=addr
 		self.uid=uid
 		self.id_token=id_token
 
@@ -102,7 +111,7 @@ except socket.error as err:
 	
 # NOTE!!!!! We 100% should be doing this client side, just doing this here for sake of demo
 def scale_image(path):
-	size = 512, 512
+	max_size = 512, 512
 	image = Image.open(path)
 	exif_dict = piexif.load(image.info["exif"])
 	orientation = exif_dict["0th"][piexif.ImageIFD.Orientation]
@@ -112,7 +121,7 @@ def scale_image(path):
 		image=image.rotate(270, expand=True)
 	elif orientation == 8 :
 		image=image.rotate(90, expand=True)
-	image.thumbnail(size)
+	image.thumbnail(max_size)
 	image.save(path)
 
 
@@ -147,9 +156,10 @@ def client_recv_image(image_port, uid):
 	f.close()
 	
 	s.close()
+	
 	image_ports[image_port] = True
 	
-	remove(image_stamp+".jpg")
+	os.remove(image_stamp+".jpg")
 	
 def getPacketID(data):
 	return int(data.split(",")[0])
@@ -195,13 +205,20 @@ def client_accept():
 		
 		if (packetID == JOIN):
 			clients.append(Client(addr, id_token, uid))
-			print ("Client at {} joined with uid:  {}".format(addr, uid))
+			print ("Client at {} joined with uid: {}".format(addr, uid))
 			command_socket.sendto(formatPacket(JOIN_SUCCESS,""), addr)
 		elif (packetID == IMAGE):
 			image_port = getOpenImagePort()
 			command_socket.sendto(formatPacket(IMAGE_PORT,image_port), addr)
 			t = threading.Thread(target=client_recv_image, args=(image_port, uid))
 			t.start();
+		elif (packetID == ADD_CLASS):
+		elif (packetID == CREATE_SESSION):
+		elif (packetID == JOIN_SESSION):
+		elif (packetID == ADD_FEEDBACK):
+		elif (packetID == CREATE_GROUP):
+		elif (packetID == REPORT_ISSUE):
+			# addIssueReport(uid, 
 		
 		
 

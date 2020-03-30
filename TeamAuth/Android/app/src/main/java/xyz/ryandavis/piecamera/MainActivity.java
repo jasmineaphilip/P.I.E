@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.ExifInterface;
@@ -12,9 +14,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -53,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
             super.onCreate(savedInstanceState);
 
             ctx = this;
+
             mAuth = FirebaseAuth.getInstance();
 
             setContentView(R.layout.activity_main);
@@ -66,8 +71,79 @@ public class MainActivity extends AppCompatActivity {
 
             signIn();
 
-            final Button button = findViewById(R.id.button);
-            button.setOnClickListener(new View.OnClickListener() {
+            final Button button_IMAGE_SIGNIN = findViewById(R.id.IMAGE_SIGNIN);
+            button_IMAGE_SIGNIN.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    dispatchTakePictureIntent();
+                }
+            });
+
+            final Button button_IMAGE_SIGNUP = findViewById(R.id.IMAGE_SIGNUP);
+            button_IMAGE_SIGNUP.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    dispatchTakePictureIntent();
+                }
+            });
+
+            final Button button_ADD_CLASS = findViewById(R.id.ADD_CLASS);
+            button_ADD_CLASS.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle("Class Name");
+
+                    final EditText input = new EditText(MainActivity.this);
+                    input.setInputType(InputType.TYPE_CLASS_TEXT);
+                    builder.setView(input);
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String className = input.getText().toString();
+                            SendAsyncPacket p = new SendAsyncPacket(Client.ADD_CLASS, client.getId_token(), className);
+                            p.start();
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    builder.show();
+                }
+            });
+
+            final Button button_CREATE_SESSION = findViewById(R.id.CREATE_SESSION);
+            button_CREATE_SESSION.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    dispatchTakePictureIntent();
+                }
+            });
+
+            final Button button_JOIN_SESSION = findViewById(R.id.JOIN_SESSION);
+            button_JOIN_SESSION.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    dispatchTakePictureIntent();
+                }
+            });
+
+            final Button button_ADD_FEEDBACK = findViewById(R.id.ADD_FEEDBACK);
+            button_ADD_FEEDBACK.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    dispatchTakePictureIntent();
+                }
+            });
+
+            final Button button_CREATE_GROUPSESSION = findViewById(R.id.CREATE_GROUPSESSION);
+            button_CREATE_GROUPSESSION.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    dispatchTakePictureIntent();
+                }
+            });
+
+            final Button button_REPORT_ISSUE = findViewById(R.id.REPORT_ISSUE);
+            button_REPORT_ISSUE.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     dispatchTakePictureIntent();
                 }
@@ -109,14 +185,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-
             if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-
                 try
                 {
                     Client.image_path = currentPhotoPath;
 
-                    Thread announceImg = new SendAsyncPacket(Client.IMAGE, client.getId_token(), "");
+                    Thread announceImg = new SendAsyncPacket(Client.IMAGE_SIGNUP, client.getId_token(), "");
                     announceImg.start();
                 }
                 catch (Exception e)
@@ -125,11 +199,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 Toast.makeText(this, "Image Sent", Toast.LENGTH_SHORT).show();
-
-                /*ImageView imageView = findViewById(R.id.imageView);
-                Bundle extras = data.getExtras();
-                Bitmap imageBitmap = (Bitmap) extras.get("data");
-                imageView.setImageBitmap(imageBitmap);*/
             }
 
         }
@@ -154,17 +223,15 @@ public class MainActivity extends AppCompatActivity {
 
         private void dispatchTakePictureIntent() {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            // Ensure that there's a camera activity to handle the intent
             File photoFile = null;
             if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                // Create the File where the photo should go
                 try {
                     photoFile = createImageFile();
 
                 } catch (IOException ex) {
-                    // Error occurred while creating the File
+                    ex.printStackTrace();
                 }
-                // Continue only if the File was successfully created
+
                 if (photoFile != null) {
                     Uri photoURI = FileProvider.getUriForFile(this,
                             "xyz.ryandavis.fileprovider",
@@ -178,8 +245,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-
-
 
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -199,10 +264,10 @@ public class MainActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<GetTokenResult> task) {
                                             if (task.isSuccessful()) {
                                                 String idToken = task.getResult().getToken();
-                                               Log.d("PIE:::", idToken);
+                                                Log.d("PIE:::", idToken);
                                                 try
                                                 {
-                                                    client = new Client(InetAddress.getByName("18.220.57.115"), 25595, idToken);
+                                                    client = new Client(InetAddress.getByName("18.220.57.115"), 25595, idToken, MainActivity.this);
                                                     client.start();
                                                 }
                                                 catch (Exception e)
@@ -216,17 +281,10 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                         }
                                     });
-
-
-
-
-
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                         }
-
-                        // ...
                     }
                 });
     }
