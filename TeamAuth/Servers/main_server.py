@@ -229,7 +229,7 @@ def client_accept():
 				command_socket.sendto(returnPacket.formatData("Join Success"), addr)
 			else:
 				signupPacket = Packet(SIGNUP)
-				names = getFirstLastNameFromUID()
+				names = getFirstLastNameFromUID(uid)
 				command_socket.sendto(signupPacket.formatData("You have not registered with our service yet, please follow the sign up process.", names[0], names[1]), addr)
 		elif (packetID == SIGNUP):
 			# data entries: first_name, last_name, role, accessability_access

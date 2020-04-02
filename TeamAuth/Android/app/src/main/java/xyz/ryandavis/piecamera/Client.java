@@ -67,7 +67,7 @@ public class Client extends Thread{
             int joinRespID = -1;
             while (joinRespID!= JOIN)
             {
-                byte joinResp[] = new byte[32];
+                byte joinResp[] = new byte[128];
                 DatagramPacket joinRespPacket = new DatagramPacket(joinResp, joinResp.length);
                 socket.receive(joinRespPacket);
 
