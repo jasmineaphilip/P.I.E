@@ -29,7 +29,7 @@ def profileExists(UID):
 	c.execute(command)
 	data = c.fetchall()
 	conn.commit()
-	if data:
+	if "1" in data:
 		return True
 	else:
 		return False
