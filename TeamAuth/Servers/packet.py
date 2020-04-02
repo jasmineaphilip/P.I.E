@@ -30,8 +30,7 @@ class Packet:
 		self.packet_id=packet_id
 		
 	def formatData(self, *arg):
-		#right now, ALL packets will follow this basic structure of one data entry
-		return insertDelim(DELIMITER, self.packet_id, arg[0])
+		return insertDelim(DELIMITER, self.packet_id, insertDelim(DATA_DELIMITER, arg))
 			
 def insertDelim(delim, *arg):
 	ret = ""

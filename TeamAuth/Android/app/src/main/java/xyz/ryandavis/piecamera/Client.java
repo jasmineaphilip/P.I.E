@@ -115,7 +115,7 @@ public class Client extends Thread{
                                 });
                                 AlertDialog dialog = builder.create();
                                 dialog.setTitle("SignUp Process");
-                                dialog.setMessage(data_entries[0]+"\n\nComma separate your data entries: first_name,last_name,role,accessibility,");
+                                dialog.setMessage(data_entries[0]+"\n\nComma separate your data entries:  first_name,last_name,role,accessibility,\n\nYour current name is: " + data_entries[1] +" " +data_entries[2]);
                                 dialog.show();
                             }
                         });
