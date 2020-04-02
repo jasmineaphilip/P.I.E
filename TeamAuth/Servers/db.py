@@ -20,6 +20,7 @@ def insertProfile(UID, first, last, user_type, accessibility, classes): #accessi
     last = "\'" + last + "\'"
     user_type = "\'" + user_type + "\'"
     classes = "\'" + classes + "\'"
+    c.execute('PRAGMA journal_mode=wal')
     command = 'insert into PROFILES values (' + UID + ',' + last + ',' + first + ',' + classes + ',' + str(accessibility) + ',' + user_type +');'
     c.execute(command)
     conn.commit()
@@ -96,6 +97,7 @@ def getFeatureData(UID):
 def addClass(class_id, UID): #TODO add tags, student list, other instructors
     UID = "\'" + UID + "\'"
     class_id = "\'" + class_id + "\'"
+    c.execute('PRAGMA journal_mode=wal')
     command = 'insert into CLASSES (class_id, instructor) values (' + class_id + ',' + UID + ');'
     c.execute (command)
     conn.commit()
@@ -113,6 +115,7 @@ def createSession(class_id):
     row = c.fetchone()
     last_session = int(row[0])
     session_id = last_session + 1
+    c.execute('PRAGMA journal_mode=wal')
     command = 'insert into SESSION values (' + str(session_id) + ',' + class_id + ',' + currTime + ');'
     c.execute(command)
     conn.commit()
@@ -122,6 +125,7 @@ def createSession(class_id):
 def joinSession(session_id, UID,result):
     #TODO run openface and nfc, let result = && of that; also in server, result should be returned to user
     UID = "\'" + UID + "\'"
+    c.execute('PRAGMA journal_mode=wal')
     command = 'insert into ATTENDANCE values (' + str(session_id) + ',' + UID + ',' + str(result) + ');'
     c.execute(command)
     conn.commit()
@@ -157,6 +161,7 @@ def addFeedback(UID, session_id, feedback_type, description):
     UID = "\'" + UID + "\'"
     feedback_type = "\'" + feedback_type + "\'"
     description = "\'" + description + "\'"    
+    c.execute('PRAGMA journal_mode=wal')
     command = 'insert into FEEDBACK values (' + str(session_id) + ',' + UID + ',' + feedback_type +',' + description + ');'
     c.execute(command)
     conn.commit()
@@ -184,6 +189,7 @@ def createStudyGroup(UID, datetime, duration, location, participants,name):
     row = c.fetchone()
     last_session = int(row[0])
     group_id = last_session + 1
+    c.execute('PRAGMA journal_mode=wal')
     command = 'insert into STUDYGROUP values (' + str(group_id) + ',' + datetime + ',' + str(duration) + ',' + UID + ',' + location + ',' + participants + ',' + name + ');'
     c.execute(command)
     conn.commit()
