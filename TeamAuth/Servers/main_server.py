@@ -223,7 +223,7 @@ def client_accept():
 		if (packetID == JOIN):
 			print ("Client at {} connected with uid: {}".format(addr, uid))
 			if (db.profileExists(uid)):
-			clients.append(Client(addr, id_token, uid))
+				clients.append(Client(addr, id_token, uid))
 				command_socket.sendto(returnPacket.formatData("Join Success"), addr)
 			else:
 				signupPacket = Packet(SIGNUP)

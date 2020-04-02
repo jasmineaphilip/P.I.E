@@ -2,8 +2,8 @@ import sqlite3
 import datetime 
 import time
 
-conn = None
-c = None
+conn = sqlite3.connect('PIE_DB')
+c = conn.cursor()
 
 def init():
 	global conn
