@@ -108,7 +108,7 @@ def extract_features(path, uid):
 	if (not os.path.exists(profile_path)):
 		os.mkdir(profile_path)
 		
-	full_path = str(len(os.listdir(profile_path)))+".txt"
+	full_path = profile_path+str(len(os.listdir(profile_path)))+".txt"
 	
 	print ("Extracting feature data.")
 	feats = np.asarray(getRep(path))
@@ -120,7 +120,7 @@ def extract_features(path, uid):
 
 def compare(uid, path):
 	profile_path = "/root/userdata/"+uid+"/"
-	for j in len(os.listdir(profile_path)):
+	for j in range(len(os.listdir(profile_path))):
 		full_path = profile_path+str(j)+".txt"
 		a1 = np.zeros(128)
 		f = open(full_path, "r")
@@ -131,11 +131,13 @@ def compare(uid, path):
 		f.close()
 		a2 = getRep(path)
 		sq_dist = np.dot((a1-a2),(a1-a2))
-		os.remove(path)
+		
 		if (sq_dist <= 1):
+			os.remove(path)
 			return 1
 		else:
 			continue
+	os.remove(path)
 	return 0
 	
 def client_recv_image(image_port, uid):
