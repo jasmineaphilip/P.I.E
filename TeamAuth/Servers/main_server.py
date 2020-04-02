@@ -299,7 +299,6 @@ while (not(com=="quit")):
 	t.daemon = True
 	if (com == "start"):
 		t.start()
-		db.init()
 	if (com == "quit"):
 		command_socket.close()
 		db.conn.close()
