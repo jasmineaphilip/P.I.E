@@ -65,7 +65,7 @@ public class Client extends Thread{
 
 
             int joinRespID = -1;
-            while (joinRespID!= JOIN)
+            while (joinRespID != JOIN)
             {
                 byte joinResp[] = new byte[128];
                 DatagramPacket joinRespPacket = new DatagramPacket(joinResp, joinResp.length);
@@ -73,6 +73,7 @@ public class Client extends Thread{
 
                 final String joinRespStr = new String(joinResp);
                 joinRespID = getPacketID(joinRespStr);
+                final String data_entries[] = getDataEntries(getData(joinRespStr));
 
                 switch (joinRespID) {
                     case JOIN:
@@ -82,7 +83,7 @@ public class Client extends Thread{
                             {
                                 AlertDialog dialog = new AlertDialog.Builder(activity).create();
                                 dialog.setTitle("Join Response");
-                                dialog.setMessage(getData(joinRespStr));
+                                dialog.setMessage(data_entries[0]);
                                 dialog.show();
                             }
                         });
@@ -97,7 +98,7 @@ public class Client extends Thread{
                                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                                 AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                                 builder.setView(input);
-                                String data_entries[] = getDataEntries(getData(joinRespStr));
+
 
                                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
@@ -150,7 +151,7 @@ public class Client extends Thread{
                         {
                             public void run()
                             {
-                                AlertDialog dialog = new AlertDialog.Builder(MainActivity.ctx).create();
+                                AlertDialog dialog = new AlertDialog.Builder(activity).create();
                                 dialog.setTitle("Server Response");
                                 dialog.setMessage(response);
                                 dialog.show();
