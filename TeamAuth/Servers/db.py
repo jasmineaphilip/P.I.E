@@ -2,8 +2,12 @@ import sqlite3
 import datetime 
 import time
 
-conn = sqlite3.connect('PIE_DB')
-c = conn.cursor()
+
+
+def init():
+	global conn, c
+	conn = sqlite3.connect('PIE_DB')
+	c = conn.cursor()
 
 #TODO ERROR CHECKING: CHECKING IF RESULT OF SELECT == EMPTY
 #TODO CHANGE PRINT STATEMENTS TO RETURNS

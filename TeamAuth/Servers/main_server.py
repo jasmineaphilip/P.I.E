@@ -208,7 +208,9 @@ def getFirstLastNameFromUID(uid):
 	return auth.get_user(uid).display_name.split(" ")
 	
 def client_accept():
-	while (1):
+	db.init()
+	global running
+	while (running):
 		(raw_data, addr) = command_socket.recvfrom(PACKET_SIZE)
 		packetID = getPacketID(raw_data)
 		id_token = getIDToken(raw_data)
@@ -287,6 +289,7 @@ def client_accept():
 			#db.addIssue(uid, type, desc)
 			print ("Received issue report from " + auth.get_user(uid).display_name + ".")
 			command_socket.sendto(returnPacket.formatData("The issue has been reported, thank you!"), addr)
+	db.conn.close()
 		
 
 com = ""
@@ -301,4 +304,5 @@ while (not(com=="quit")):
 		t.start()
 	if (com == "quit"):
 		command_socket.close()
-		db.conn.close()
+		running = False
+		
