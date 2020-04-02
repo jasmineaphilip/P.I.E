@@ -25,14 +25,14 @@ def insertProfile(UID, first, last, user_type, accessibility, classes): #accessi
     conn.commit()
 
 def profileExists(UID):
-	command = "select UID from PROFILES where UID = {};".format(UID)
+	command = "select EXISTS(SELECT 1 FROM PROFILES WHERE UID='{}');".format(UID)
 	c.execute(command)
 	data = c.fetchall()
 	conn.commit()
-	if len(data) == 0:
-		return False
-	else:
+	if data:
 		return True
+	else:
+		return False
     
 def insertImage(UID, image):
     UID = "\'" + UID + "\'"

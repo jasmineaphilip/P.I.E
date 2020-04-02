@@ -207,9 +207,9 @@ def getUIDFromToken(id_token):
 def getFirstLastNameFromUID(uid):
 	return auth.get_user(uid).display_name.split(" ")
 	
+running = True
 def client_accept():
 	db.init()
-	global running
 	while (running):
 		(raw_data, addr) = command_socket.recvfrom(PACKET_SIZE)
 		packetID = getPacketID(raw_data)
