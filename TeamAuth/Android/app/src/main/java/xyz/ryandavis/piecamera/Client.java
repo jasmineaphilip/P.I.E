@@ -137,12 +137,12 @@ public class Client extends Thread{
                 socket.receive(recvP);
                 String raw_data = new String(recv);
                 int packetID = getPacketID(raw_data);
-                final String response = getData(raw_data);
+                final String data_entries[] = getDataEntries(getData(raw_data));
 
                 switch (packetID) {
                     case IMAGE_SIGNUP:
                     case IMAGE_SIGNIN:
-                        int image_port = Integer.parseInt(getData(raw_data));
+                        int image_port = Integer.parseInt(data_entries[0]);
                         Thread sendImage = new SendImage(ip, image_port, image_path);
                         sendImage.start();
                         break;
@@ -153,7 +153,7 @@ public class Client extends Thread{
                             {
                                 AlertDialog dialog = new AlertDialog.Builder(activity).create();
                                 dialog.setTitle("Server Response");
-                                dialog.setMessage(response);
+                                dialog.setMessage(data_entries[0]);
                                 dialog.show();
                             }
                         });
@@ -167,7 +167,7 @@ public class Client extends Thread{
                             {
                                 AlertDialog dialog = new AlertDialog.Builder(MainActivity.ctx).create();
                                 dialog.setTitle("Server Response");
-                                dialog.setMessage(response);
+                                dialog.setMessage(data_entries[0]);
                                 dialog.show();
                             }
                         });
@@ -179,7 +179,7 @@ public class Client extends Thread{
                             {
                                 AlertDialog dialog = new AlertDialog.Builder(MainActivity.ctx).create();
                                 dialog.setTitle("Server Response");
-                                dialog.setMessage(response);
+                                dialog.setMessage(data_entries[0]);
                                 dialog.show();
                             }
                         });
@@ -191,7 +191,7 @@ public class Client extends Thread{
                             {
                                 AlertDialog dialog = new AlertDialog.Builder(MainActivity.ctx).create();
                                 dialog.setTitle("Server Response");
-                                dialog.setMessage(response);
+                                dialog.setMessage(data_entries[0]);
                                 dialog.show();
                             }
                         });
@@ -203,7 +203,7 @@ public class Client extends Thread{
                             {
                                 AlertDialog dialog = new AlertDialog.Builder(MainActivity.ctx).create();
                                 dialog.setTitle("Server Response");
-                                dialog.setMessage(response);
+                                dialog.setMessage(data_entries[0]);
                                 dialog.show();
                             }
                         });
@@ -215,7 +215,7 @@ public class Client extends Thread{
                             {
                                 AlertDialog dialog = new AlertDialog.Builder(MainActivity.ctx).create();
                                 dialog.setTitle("Server Response");
-                                dialog.setMessage(response);
+                                dialog.setMessage(data_entries[0]);
                                 dialog.show();
                             }
                         });
@@ -227,7 +227,7 @@ public class Client extends Thread{
                             {
                                 AlertDialog dialog = new AlertDialog.Builder(MainActivity.ctx).create();
                                 dialog.setTitle("Server Response");
-                                dialog.setMessage(response);
+                                dialog.setMessage(data_entries[0]);
                                 dialog.show();
                             }
                         });
