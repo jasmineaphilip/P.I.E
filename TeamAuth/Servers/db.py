@@ -5,14 +5,6 @@ import time
 conn = sqlite3.connect('PIE_DB')
 c = conn.cursor()
 
-def init():
-	global conn
-	if conn is None:
-		conn = sqlite3.connect('PIE_DB')
-		c = conn.cursor()
-	else:
-		print("Database already set.")
-
 #TODO ERROR CHECKING: CHECKING IF RESULT OF SELECT == EMPTY
 #TODO CHANGE PRINT STATEMENTS TO RETURNS
 
@@ -228,6 +220,7 @@ def addIssue(UID, issue_type, description):
 #TODO UID != netid (maybe add attribute to profiles) and add getNetid method
 
 #TEST ONE OF THE FUNCTIONS HERE
+'''
 class_id = '01:198:211:04'
 instructor = 'pp649'
 addClass(class_id, instructor)
@@ -245,3 +238,4 @@ getAttendanceResult(session_id,netid)
 createStudyGroup('pp649', 'today', 1, 'rutgers', 'just me and ryan','the best study group ever')
 
 conn.close()
+'''

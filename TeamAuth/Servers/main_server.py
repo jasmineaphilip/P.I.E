@@ -302,3 +302,4 @@ while (not(com=="quit")):
 		db.init()
 	if (com == "quit"):
 		command_socket.close()
+		db.conn.close()
