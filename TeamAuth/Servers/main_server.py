@@ -104,32 +104,36 @@ def scale_image(path):
 
 
 def extract_features(path, uid):
-
-	feat_stamp = "/root/userdata/"+uid
+	profile_path = "/root/userdata/"+uid+"/"
+	full_path = str(len(os.listdir(profile_path)))+".txt"
+	
 	print ("Extracting feature data.")
 	feats = np.asarray(getRep(path))
-	f = open(feat_stamp+".txt", "w+")
+	f = open(full_path, "w+")
 	for fe in feats:
 		f.write(str(fe)+"\n");
 	f.close()
 	os.remove(path)
 
 def compare(uid, path):
-	feat_stamp = "/root/userdata/"+uid
-	a1 = np.zeros(128)
-	f = open(feat_stamp+".txt", "r")
-	i = 0
-	for x in f:
-		a1[i]=float(x)
-		i+=1
-	f.close()
-	a2 = getRep(path)
-	sq_dist = np.dot((a1-a2),(a1-a2))
-	os.remove(path)
-	if (sq_dist <= 1):
-		return 1
-	else:
-		return 0
+	profile_path = "/root/userdata/"+uid+"/"
+	for j in len(os.listdir(profile_path)):
+		full_path = profile_path+str(j)+".txt"
+		a1 = np.zeros(128)
+		f = open(full_path, "r")
+		i = 0
+		for x in f:
+			a1[i]=float(x)
+			i+=1
+		f.close()
+		a2 = getRep(path)
+		sq_dist = np.dot((a1-a2),(a1-a2))
+		os.remove(path)
+		if (sq_dist <= 1):
+			return 1
+		else:
+			continue
+	return 0
 	
 def client_recv_image(image_port, uid):
 	
@@ -142,8 +146,7 @@ def client_recv_image(image_port, uid):
 	s.listen(10)
 	(client, addr) = s.accept()
 	
-	image_stamp = "/root/userdata/temp/"+uid
-	path = image_stamp+".jpg"
+	path = "/root/userdata/temp/"+uid+".jpg"
 	data = client.recv(1024)
 	print ("Receiving image. Saving to " + path)
 	while (data):
@@ -162,14 +165,15 @@ def client_recv_image(image_port, uid):
 	#db.insertProfile(uid, first, last, "instructor", "yes", "")
 	
 def image_signup(image_port, uid, addr):
-	# TODO check if a directory for the uid exists, if not make one
 	path = client_recv_image(image_port, uid)
 	extract_features(path, uid)
+	
 	returnPacket = Packet(IMAGE_RESPONSE)
 	print (auth.get_user(uid).display_name + " added an image to their profile.")
 	command_socket.sendto(returnPacket.formatData("Image Received"), addr)
 
 def image_signin(image_port, uid, addr):
+	
 	path = client_recv_image(image_port, uid)
 	passed = compare(uid, path)
 	returnPacket = Packet(IMAGE_RESPONSE)
