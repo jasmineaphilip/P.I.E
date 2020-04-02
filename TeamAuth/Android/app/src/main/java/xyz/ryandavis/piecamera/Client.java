@@ -286,7 +286,7 @@ public class Client extends Thread{
 
     private String[] getDataEntries(String data)
     {
-        return data.split("\\"+Client.DELIMITER);
+        return data.split(Client.DATA_DELIMITER);
     }
 
     private String insertDelim(String delim, String ... args)
