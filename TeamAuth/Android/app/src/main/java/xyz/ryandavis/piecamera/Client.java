@@ -96,6 +96,7 @@ public class Client extends Thread{
                                 final EditText input = new EditText(activity);
                                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                                 AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                                builder.setView(input);
                                 String data_entries[] = getDataEntries(getData(joinRespStr));
 
                                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -114,7 +115,7 @@ public class Client extends Thread{
                                 });
                                 AlertDialog dialog = builder.create();
                                 dialog.setTitle("SignUp Process");
-                                dialog.setMessage(data_entries[0]+"\nComma separate your data entries: first_name,last_name,role,accessibility,");
+                                dialog.setMessage(data_entries[0]+"\n\nComma separate your data entries: first_name,last_name,role,accessibility,");
                                 dialog.show();
                             }
                         });
