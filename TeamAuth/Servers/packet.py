@@ -5,9 +5,11 @@
 # NOTE: we will send back the same packet with our response (in most cases)
 
 JOIN = 0				# Client is joining the server, we add them to a client list with their id token
+LEAVE = 1				# Client is leaving the server, remove them from client list
 IMAGE_SIGNIN = 2		# Client wants to send us an image for face rec verification, respond with port to send file
 IMAGE_SIGNUP = 3		# Client wants to send us an image to add to their profile, respond with port to send file
-IMAGE_RESPONSE = 4		# Our response to clients image (passed or failed face rec for signin server)
+IMAGE_RESPONSE = 4		# Our response to clients image (passed or failed face rec for signin, received image for signup)
+SIGNUP = 5				# Tell our client that this is the first time they are joining and they need to follow sign up process, send over some default data
 INVALID_TOKEN = 6		# Sent in response to join if the provide token is invalid
 
 

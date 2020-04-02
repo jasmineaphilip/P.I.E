@@ -2,7 +2,10 @@ package xyz.ryandavis.piecamera;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.text.InputType;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.net.*;
@@ -12,9 +15,11 @@ import java.io.*;
 public class Client extends Thread{
 
     public static final int JOIN = 0,
+            LEAVE = 1,
             IMAGE_SIGNIN = 2,
             IMAGE_SIGNUP = 3,
             IMAGE_RESPONSE = 4,
+            SIGNUP = 5,
             INVALID_TOKEN = 6,
             ADD_CLASS = 7,
             CREATE_SESSION = 8,
@@ -57,32 +62,70 @@ public class Client extends Thread{
             DatagramPacket joinPacket = new DatagramPacket(joinMessage, joinMessage.length);
             socket.send(joinPacket);
 
-            byte joinResp[] = new byte[32];
-            DatagramPacket joinRespPacket = new DatagramPacket(joinResp, joinResp.length);
-            socket.receive(joinRespPacket);
 
-            final String joinRespStr = new String(joinResp);
-            int joinRespID = getPacketID(joinRespStr);
 
-            switch (joinRespID) {
-                case JOIN:
-                    activity.runOnUiThread(new Runnable()
-                    {
-                        public void run()
+            int joinRespID = -1;
+            while (joinRespID!= JOIN)
+            {
+                byte joinResp[] = new byte[32];
+                DatagramPacket joinRespPacket = new DatagramPacket(joinResp, joinResp.length);
+                socket.receive(joinRespPacket);
+
+                final String joinRespStr = new String(joinResp);
+                joinRespID = getPacketID(joinRespStr);
+
+                switch (joinRespID) {
+                    case JOIN:
+                        activity.runOnUiThread(new Runnable()
                         {
-                            AlertDialog dialog = new AlertDialog.Builder(MainActivity.ctx).create();
-                            dialog.setTitle("Join Response");
-                            dialog.setMessage(getData(joinRespStr));
-                            dialog.show();
-                        }
-                    });
-                    break;
-                case INVALID_TOKEN:
-                    // maybe have the user sign in again?
-                    break;
-                default:
-                    break;
+                            public void run()
+                            {
+                                AlertDialog dialog = new AlertDialog.Builder(activity).create();
+                                dialog.setTitle("Join Response");
+                                dialog.setMessage(getData(joinRespStr));
+                                dialog.show();
+                            }
+                        });
+                        break;
+                    case SIGNUP:
+
+                        activity.runOnUiThread(new Runnable()
+                        {
+                            public void run()
+                            {
+                                final EditText input = new EditText(activity);
+                                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                                String data_entries[] = getDataEntries(getData(joinRespStr));
+
+                                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String signUpData = input.getText().toString();
+                                        SendAsyncPacket resp = new SendAsyncPacket(SIGNUP, id_token, signUpData.replace(',', DATA_DELIMITER.charAt(0)));
+                                        resp.start();
+                                    }
+                                });
+                                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
+                                AlertDialog dialog = builder.create();
+                                dialog.setTitle("SignUp Process");
+                                dialog.setMessage(data_entries[0]+"\nComma separate your data entries: first_name,last_name,role,accessibility,");
+                                dialog.show();
+                            }
+                        });
+                    case INVALID_TOKEN:
+                        // maybe have the user sign in again?
+                        break;
+                    default:
+                        break;
+                }
             }
+
 
 
             while (running)
@@ -240,6 +283,11 @@ public class Client extends Thread{
         return raw_data.split("\\"+DELIMITER)[1];
     }
 
+    private String[] getDataEntries(String data)
+    {
+        return data.split("\\"+Client.DELIMITER);
+    }
+
     private String insertDelim(String delim, String ... args)
     {
         String ret = "";
@@ -248,6 +296,19 @@ public class Client extends Thread{
             ret += s+delim;
         }
         return ret;
+    }
+
+    private void ssend(Packet p)
+    {
+        try
+        {
+            byte raw_data[] = (p.getRawData()).getBytes();
+            DatagramPacket dp = new DatagramPacket(raw_data, raw_data.length);
+            socket.send(dp);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

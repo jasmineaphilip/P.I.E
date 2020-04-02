@@ -16,7 +16,7 @@ from PIL import Image
 from PIL import ImageFile
 import piexif
 from packet import *
-#import db_function
+import db
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -162,6 +162,7 @@ def client_recv_image(image_port, uid):
 	#db.insertProfile(uid, first, last, "instructor", "yes", "")
 	
 def image_signup(image_port, uid, addr):
+	# TODO check if a directory for the uid exists, if not make one
 	path = client_recv_image(image_port, uid)
 	extract_features(path, uid)
 	returnPacket = Packet(IMAGE_RESPONSE)
@@ -195,8 +196,12 @@ def getClientFromIDToken(id_token):
 def getUIDFromToken(id_token):
 	decoded_token = auth.verify_id_token(id_token)
 	#determine if decoding failed and send INVALID_TOKEN back (make sure to set uid to something so that we know to *continue* the while loop)
+	#might have to catch an exception
 	uid = decoded_token['uid']
 	return uid
+
+def getFirstLastNameFromUID(uid):
+	return auth.get_user(uid).display_name.split(" ")
 	
 def client_accept():
 	while (1):
@@ -212,14 +217,25 @@ def client_accept():
 		returnPacket = Packet(packetID)
 		
 		if (packetID == JOIN):
+			print ("Client at {} connected with uid: {}".format(addr, uid))
+			if (db.profileExists(uid)):
 			clients.append(Client(addr, id_token, uid))
-			print ("Client at {} joined with uid: {}".format("(**.***.***.***, *****)", uid))
-			command_socket.sendto(returnPacket.formatData("Join Success"), addr)
+				command_socket.sendto(returnPacket.formatData("Join Success"), addr)
+			else:
+				signupPacket = Packet(SIGNUP)
+				names = getFirstLastNameFromUID()
+				command_socket.sendto(signupPacket.formatData("You have not registered with our service yet, please follow the sign up process.", names[0], names[1]), addr)
+		elif (packetID == SIGNUP):
+			# data entries: first_name, last_name, role, accessability_access
+			db.insertProfile(uid, data_entries[0], data_entries[1], data_entries[2], data_entries[3], "")
+			joinSuccessPacket = Packet(JOIN)
+			command_socket.sendto(joinSuccessPacket.formatData("Join Success"), addr)
 		elif (packetID == IMAGE_SIGNUP):
 			image_port = getOpenImagePort()
 			command_socket.sendto(returnPacket.formatData(image_port), addr)
 			t = threading.Thread(target=image_signup, args=(image_port, uid, addr))
 			t.start();
+			
 		elif (packetID == IMAGE_SIGNIN):
 			image_port = getOpenImagePort()
 			command_socket.sendto(returnPacket.formatData(image_port), addr)
@@ -279,5 +295,6 @@ while (not(com=="quit")):
 	t.daemon = True
 	if (com == "start"):
 		t.start()
+		db.init()
 	if (com == "quit"):
 		command_socket.close()

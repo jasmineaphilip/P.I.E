@@ -224,6 +224,7 @@ public class MainActivity extends AppCompatActivity {
                     };
 
                     DatePickerDialog dpd = new DatePickerDialog(MainActivity.this, date, fyear, fmonthOfYear, fdayOfMonth);
+                    dpd.getDatePicker().init(2020, 3-1, 30, null);
                     dpd.updateDate(2020, 3 - 1, 30);
                     dpd.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
                         @Override
