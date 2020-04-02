@@ -105,8 +105,9 @@ def scale_image(path):
 
 def extract_features(path, uid):
 	profile_path = "/root/userdata/"+uid+"/"
-	if (os.path.exists(profile_path)):
+	if (not os.path.exists(profile_path)):
 		os.mkdir(profile_path)
+		
 	full_path = str(len(os.listdir(profile_path)))+".txt"
 	
 	print ("Extracting feature data.")
