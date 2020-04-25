@@ -154,6 +154,13 @@ def getAttendanceResult(session_id, UID):
 
     print (row[0])
 
+def getSessions(class_id):
+    command = 'select session_ID from Session where class_ID = 'str(class_id) + ';'
+    c.execute(command)
+    rows = c.fetchall()
+    for row in rows:
+        print(row)
+    
 
 #FEEDBACK FUNCTIONS *subset of SESSION
 #TODO do we need feedback_type?
@@ -207,10 +214,6 @@ def showStudyGroups():
     for row in rows:
         print(row)
     conn.commit()
-
-
-
-
 
 #BUGS
 def addIssue(UID, issue_type, description):
