@@ -17,6 +17,7 @@ from PIL import ImageFile
 import piexif
 from packet import *
 import db
+import Queue
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -25,16 +26,16 @@ cred = credentials.Certificate("/root/pie-auth-firebase-adminsdk-4rbmo-2d6c76da9
 firebase_admin.initialize_app(cred)
 ###################################
 
-PACKET_SIZE = 2048
-
 class Client:
 	def __init__(self, addr, id_token, uid):
 		self.addr=addr
 		self.uid=uid
 		self.id_token=id_token
 
-clients = []
-		
+
+PACKET_SIZE = 2048
+DB_QUEUE_DELIMITER = "|"
+clients = []	
 public_ip = "172.17.0.2"
 
 # Port for receiving commands from clients
@@ -44,7 +45,9 @@ command_port = 25595
 image_ports = {25585:True, 25586:True, 25587:True, 25588:True, 25589:True}
 
 command_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
+running = True
+db_write_queue = Queue.Queue()
+db_command_avail = threading.Event()
 
 modelDir = "/root/openface/models/"
 dlibModelDir = os.path.join(modelDir, 'dlib')
@@ -102,6 +105,9 @@ def scale_image(path):
 	image.thumbnail(max_size)
 	image.save(path)
 
+def writeDB(*args):
+	db_write_queue.put((*args))
+	db_command_avail.set()
 
 def extract_features(path, uid):
 	profile_path = "/root/userdata/"+uid+"/"
@@ -212,9 +218,18 @@ def getUIDFromToken(id_token):
 def getFirstLastNameFromUID(uid):
 	return auth.get_user(uid).display_name.split(" ")
 	
-running = True
-def client_accept():
+def db_write_operations():
 	db.init()
+	while (running):
+		db_command_avail.wait()
+		while (not db_queue.isEmpty()):
+			command = db_write_queue.get()
+			func = command[0]
+			args = command[1:]
+			func(*args)
+		db_command_avail.clear()
+
+def client_accept():
 	while (running):
 		(raw_data, addr) = command_socket.recvfrom(PACKET_SIZE)
 		packetID = getPacketID(raw_data)
@@ -238,7 +253,9 @@ def client_accept():
 				command_socket.sendto(signupPacket.formatData("You have not registered with our service yet, please follow the sign up process.", names[0], names[1]), addr)
 		elif (packetID == SIGNUP):
 			# data entries: first_name, last_name, role, accessability_access
-			db.insertProfile(uid, data_entries[0], data_entries[1], data_entries[2], data_entries[3], "")
+			# maybe check again if the profile exists (just in case we read an outdated entry and the table was updated before this client responded)
+			# e.g. if two clients for the same account try to signup at the same time
+			writeDB(db.insertProfile, uid, data_entries[0], data_entries[1], data_entries[2], data_entries[3], "")
 			joinSuccessPacket = Packet(JOIN)
 			command_socket.sendto(joinSuccessPacket.formatData("Join Success"), addr)
 		elif (packetID == IMAGE_SIGNUP):
@@ -294,6 +311,9 @@ def client_accept():
 			#db.addIssue(uid, type, desc)
 			print ("Received issue report from " + auth.get_user(uid).display_name + ".")
 			command_socket.sendto(returnPacket.formatData("The issue has been reported, thank you!"), addr)
+		
+		elif (
+		
 	db.conn.close()
 		
 
