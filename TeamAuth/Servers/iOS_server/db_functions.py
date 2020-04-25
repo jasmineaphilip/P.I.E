@@ -31,7 +31,7 @@ def insertImage(UID, image):
 
 def getClasses(UID):
     UID = "\'" + UID + "\'"
-    command = 'select classes from PROFILES where UID = ' + UID + ';'
+    command = 'select classes from PROFILES where UID = ' + UID + "';"
     c.execute(command)
     row = c.fetchone()
     conn.commit()
@@ -48,16 +48,19 @@ def getName(UID):
     lastName = row[1] #idk if its an array or not   
     name = firstName + ' ' + lastName
     conn.commit()
-
+    print(name)
     return name
 
 def getType(UID):
     UID = "\'" + UID + "\'"
+    print(UID)
     command = 'select type from PROFILES where UID = ' + UID + ';'
     c.execute(command)
     row = c.fetchone()
     conn.commit()
-
+    print("row = ")
+    print( row)
+    print("row[0] = " + row[0])
     print(row)
 
 def getAccessibility(UID):
@@ -181,10 +184,11 @@ def showStudyGroups():
     command = 'select * from STUDYGROUP;'
     c.execute(command)
     rows = c.fetchall()
+    groups = []
     for row in rows:
-        print(row)
+        groups.append(row[0])
     conn.commit()
-
+    print(groups)
 
 
 
@@ -209,22 +213,7 @@ def addIssue(UID, issue_type, description):
     print(issue_id)
 
 #TODO UID != netid (maybe add attribute to profiles) and add getNetid method
-
-#TEST ONE OF THE FUNCTIONS HERE
-class_id = '01:198:211:04'
-instructor = 'pp649'
-addClass(class_id, instructor)
-
-insertProfile('pp649','priya','parikh','student',0,'198:211')
-getName('pp649')
-conn.commit()
-
+getType("pp649")
+getName("pp649")
 showStudyGroups()
-
-session_id = 0
-netid = 'pp649'
-getAttendanceResult(session_id,netid)
-
-createStudyGroup('pp649', 'today', 1, 'rutgers', 'just me and ryan','the best study group ever')
-
 conn.close()
