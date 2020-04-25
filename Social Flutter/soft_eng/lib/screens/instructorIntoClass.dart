@@ -5,6 +5,9 @@ import 'package:soft_eng/screens/InstructorPastSessions.dart';
 import 'package:soft_eng/screens/InstructorClassView.dart';
 
 class InstructorIntoClass extends StatefulWidget {
+  final String classTitle;
+  InstructorIntoClass({this.classTitle, Key key}) : super(key: key);
+
   @override
   _InstructorIntoClassState createState() => _InstructorIntoClassState();
 }
@@ -15,15 +18,11 @@ class _InstructorIntoClassState extends State<InstructorIntoClass> {
     InstructorClassView(),
     InstructorStartSession(),
     InstructorPastSessions(),
-    //Login(),
+    //Login(),t
   ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('CLASS NAME'),
-      //   centerTitle: true,
-      // ),
       body: Center(
         child: _pageOptions.elementAt(_selectedPage),
       ),

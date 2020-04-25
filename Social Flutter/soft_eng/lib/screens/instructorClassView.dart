@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:soft_eng/screens/login.dart';
 
 class InstructorClassView extends StatefulWidget {
+  final String classTitle;
+  //InstructorIntoClass({this.classTitle, Key key}) : super(key: key);
+  InstructorClassView({String classTitle}) : this.classTitle = classTitle;
   @override
   _InstructorClassViewState createState() => _InstructorClassViewState();
 }
