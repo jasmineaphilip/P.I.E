@@ -106,7 +106,7 @@ def scale_image(path):
 	image.save(path)
 
 def writeDB(*args):
-	db_write_queue.put((*args))
+	db_write_queue.put(args)
 	db_command_avail.set()
 
 def extract_features(path, uid):
@@ -219,7 +219,7 @@ def getFirstLastNameFromUID(uid):
 	return auth.get_user(uid).display_name.split(" ")
 	
 def db_write_operations():
-	db.init()
+	#db.init()
 	while (running):
 		db_command_avail.wait()
 		while (not db_queue.isEmpty()):
@@ -312,7 +312,7 @@ def client_accept():
 			print ("Received issue report from " + auth.get_user(uid).display_name + ".")
 			command_socket.sendto(returnPacket.formatData("The issue has been reported, thank you!"), addr)
 		
-		elif (
+		
 		
 	db.conn.close()
 		
@@ -323,10 +323,17 @@ print("\n")
 while (not(com=="quit")):
 	com = raw_input("")
 	print("\n")
-	t = threading.Thread(target=client_accept)
-	t.daemon = True
+	
+	client_accept_thread = threading.Thread(target=client_accept)
+	client_accept_thread.daemon = True
+	db_write_operations_thread = threading.Thread(target=db_write_operations)
+	db_write_operations_thread.daemon = True
+	
 	if (com == "start"):
-		t.start()
+		db.init()
+		client_accept_thread.start()
+		db_write_operations_thread.start()
+		
 	if (com == "quit"):
 		command_socket.close()
 		running = False
