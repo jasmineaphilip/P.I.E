@@ -168,12 +168,16 @@ def addFeedback(UID, session_id, feedback_type, description):
 
 
 def getFeedback(session_id):
-    #TODO for keyword extraction, the data needs to be inputted into textfile
+    #data needs to be inputted into textfile, will be named by session_id
+    filename = session_id + ".txt"
+    f = open(filename,"w")
+    
     command = 'select type, description from FEEDBACK where session_ID = ' + str(session_id) + ';'
     c.execute(command)
     rows = c.fetchall()
     for row in rows:
-        print(row)
+        f.write(row)
+    f.close()
     conn.commit()
 
 
