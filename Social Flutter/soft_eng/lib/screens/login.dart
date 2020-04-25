@@ -1,4 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
+final GoogleSignIn googleSignIn = GoogleSignIn();
+final FirebaseAuth auth = FirebaseAuth.instance;
+
+Future<FirebaseUser> handleSignIn() async {
+  final GoogleSignInAccount googleUser = await googleSignIn.signIn();
+  final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+  final AuthCredential credential = GoogleAuthProvider.getCredential(
+    accessToken: googleAuth.accessToken,
+    idToken: googleAuth.idToken,
+  );
+
+  final FirebaseUser user = (await auth.signInWithCredential(credential)).user;
+  print("signed in " + user.displayName);
+  return user;
+}
+
+void signOutGoogle() async{
+  await googleSignIn.signOut();
+  print("User Sign Out");
+}
 
 Map<int, Color> customGreen = {
   900: Color.fromRGBO(88, 186, 159, 1),
@@ -91,6 +115,11 @@ class _LoginState extends State<Login> {
               onPressed: () {
                 Navigator.pushNamed(context,
                     '/instructorHome'); //CHANGE TO REDIRECT TO GOOGLE AUTH
+
+                handleSignIn()
+                    .then((FirebaseUser user) => print(user))
+                    .catchError((e) => print(e));
+
               },
               child: Text(
                 'Sign in',
