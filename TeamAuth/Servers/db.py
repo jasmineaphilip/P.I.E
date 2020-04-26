@@ -11,10 +11,9 @@ import time
 STUDENT = 0
 INSTRUCTOR = 1
 
-def init():
-	global conn, c
-	conn = sqlite3.connect('PIE_DB',check_same_thread=False)
-	c = conn.cursor()
+
+conn = sqlite3.connect('PIE_DB',check_same_thread=False)
+c = conn.cursor()
 
 
 
