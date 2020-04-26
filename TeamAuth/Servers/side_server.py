@@ -14,10 +14,10 @@ import hashlib
 def getAllFeedback(filename):
     f = open(filename, "r")
     lines = f.readlines()
+    feedbackArray = []
     for line in lines:
-        print(line) #TODO send each line back to client
+        feedbackArray.append(line) 
     f.close()
-
 
 def getKeywords(filename,session_id):
     #define filename for simplicity
@@ -31,7 +31,7 @@ def getKeywords(filename,session_id):
     keywords = line.replace("\n","").split(',')
     return keywords #return array of key phrases
 
-def getWordcloud(filename):
+def getWordcloud(filename,session_id):
     wordcloud_image = session_id + ".jpg"
     #make cloud
     text = open(path.join(filename)).read()
