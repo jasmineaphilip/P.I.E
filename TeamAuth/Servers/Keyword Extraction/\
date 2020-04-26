@@ -8,8 +8,9 @@ r = Rake()
 r.extract_keywords_from_text(open(path.join(sys.argv[1])).read())
 
 #To get keyword phrases ranked highest to lowest
-string = str(r.get_ranked_phrases()).replace("[","").replace("]","").replace("'","")
-print(string)
+print(str(r.get_ranked_phrases()).replace("[","").replace("]",""))
+
+
 # for phrase in r.get_ranked_phrases():
 #     print(phrase)
 #     phrases

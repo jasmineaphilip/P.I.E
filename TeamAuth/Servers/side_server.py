@@ -20,14 +20,14 @@ def getAllFeedback(filename):
 
 def getKeywords(filename,session_id):
     #define filename for simplicity
-    phrases_filename = session_id + "_phrases.txt"
+    phrases_filename = str(session_id) + "_phrases.txt"
 
     #first run phrases.py and store result in [session_id]_phrases.txt
     os.system("python3 phrases.py " + filename + " > " + phrases_filename) 
     #result is an array converted to string
     f = open(phrases_filename, "r")
     line = f.readline()
-    keywords = line.replace("[","").replace("]","").split(',')
+    keywords = line.replace("\n","").split(',')
     return keywords #return array of key phrases
 
 def getWordcloud(filename):
