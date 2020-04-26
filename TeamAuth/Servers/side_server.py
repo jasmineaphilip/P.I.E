@@ -18,6 +18,7 @@ def getAllFeedback(filename):
     for line in lines:
         feedbackArray.append(line) 
     f.close()
+    return feedbackArray
 
 def getKeywords(filename,session_id):
     #define filename for simplicity
