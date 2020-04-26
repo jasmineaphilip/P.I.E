@@ -21,10 +21,22 @@ import Queue
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
+
+### Hazardous things we are intentionally not addressing ###
+#
+# 1. not checking if our writeDB operations are actually going through
+# 		a. We are just sending them off to the writeDB thread
+#		b. can potentially cause serious errors if a write operation fails or stalls for too long
+# 2. 
+
+
 ### Init Our Firebase Admin SDK ###
 cred = credentials.Certificate("/root/pie-auth-firebase-adminsdk-4rbmo-2d6c76da9f.json")
 firebase_admin.initialize_app(cred)
 ###################################
+
+# Currently active sessions {class_id: session_id}
+active_sessions = {}
 
 class Client:
 	def __init__(self, addr, id_token, uid):
@@ -185,14 +197,16 @@ def image_signup(image_port, uid, addr):
 
 def image_signin(image_port, uid, addr):
 	
+	#path = client_recv_image(image_port, uid)
 	path = client_recv_image(image_port, uid)
 	passed = compare(uid, path)
+	
 	returnPacket = Packet(IMAGE_RESPONSE)
 	if passed:
-		print (auth.get_user(uid).display_name + " successfully signed in.")
+		print (auth.get_user(uid).display_name + " successfully signed in with an image.")
 		command_socket.sendto(returnPacket.formatData("Success"), addr)
 	else:
-		print (auth.get_user(uid).display_name + " failed to signed in.")
+		print (auth.get_user(uid).display_name + " failed to signed in. with an image.")
 		command_socket.sendto(returnPacket.formatData("Failed"), addr)
 
 def getOpenImagePort():
@@ -222,7 +236,7 @@ def db_write_operations():
 	#db.init()
 	while (running):
 		db_command_avail.wait()
-		while (not db_queue.isEmpty()):
+		while (not db_write_queue.empty()):
 			command = db_write_queue.get()
 			func = command[0]
 			args = command[1:]
@@ -253,8 +267,6 @@ def client_accept():
 				command_socket.sendto(signupPacket.formatData("You have not registered with our service yet, please follow the sign up process.", names[0], names[1]), addr)
 		elif (packetID == SIGNUP):
 			# data entries: first_name, last_name, role, accessability_access
-			# maybe check again if the profile exists (just in case we read an outdated entry and the table was updated before this client responded)
-			# e.g. if two clients for the same account try to signup at the same time
 			writeDB(db.insertProfile, uid, data_entries[0], data_entries[1], data_entries[2], data_entries[3], "")
 			joinSuccessPacket = Packet(JOIN)
 			command_socket.sendto(joinSuccessPacket.formatData("Join Success"), addr)
@@ -271,20 +283,25 @@ def client_accept():
 			t.start();
 			
 		elif (packetID == ADD_CLASS):
-			#if db.getType(uid) == "instructor":
-			class_id = getPacketDataEntries(data)[0]
-				# addClass(class_id, uid)
-			print (auth.get_user(uid).display_name + " added class " + class_id + " to database.")
-			command_socket.sendto(returnPacket.formatData("Added class " + class_id + " to database."), addr)
-			#else:
-			#	command_socket.sendto(returnPacket.formatData("Improper user role!"), addr)
+			if db.getType(uid) == db.INSTRUCTOR:
+				class_id = data_entries[0]
+				writeDB(db.addClass(class_id, uid))
+				print (auth.get_user(uid).display_name + " added class " + class_id + " to database.")
+				command_socket.sendto(returnPacket.formatData("Added class " + class_id + " to database."), addr)
+			else:
+				command_socket.sendto(returnPacket.formatData("You are not an instructor!"), addr)
 		elif (packetID == CREATE_SESSION):
-			# check if user is an instructor for this specific class
-			# check if a session already exists
-			# createSession(class_id)
-			class_id = data
-			print (auth.get_user(uid).display_name + " created a new session for " + class_id+".")
-			command_socket.sendto(returnPacket.formatData("Created a new session!"), addr)
+			class_id = data_entries[0]
+			instructors = db.getInstructors(class_id)
+			if (uid in instructors):
+				if (class_id in active_sessions):
+					command_socket.sendto(returnPacket.formatData("A session for this class is already running!"), addr)
+				else:
+					
+			else:
+				command_socket.sendto(returnPacket.formatData("You are not an instructor for this class!"), addr)
+			
+			
 		elif (packetID == JOIN_SESSION):
 			# check if user is fully authenticated (face rec + nfc)
 			# joinSession(session_id, uid)
@@ -311,7 +328,6 @@ def client_accept():
 			#db.addIssue(uid, type, desc)
 			print ("Received issue report from " + auth.get_user(uid).display_name + ".")
 			command_socket.sendto(returnPacket.formatData("The issue has been reported, thank you!"), addr)
-		
 		
 		
 	db.conn.close()
