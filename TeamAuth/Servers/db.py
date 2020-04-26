@@ -8,14 +8,11 @@ import time
 # (0, None, 1, u'pp649', u'myHouse', None, u'testGroup') 
 # everything is returned as tuple
 
-#def init():
-#	global conn, c
-#	conn = sqlite3.connect('PIE_DB',check_same_thread=False)
-#	c = conn.cursor()
+def init():
+	global conn, c
+	conn = sqlite3.connect('PIE_DB',check_same_thread=False)
+	c = conn.cursor()
 
-global conn,c
-conn = sqlite3.connect('PIE_DB', check_same_thread=False)
-c = conn.cursor()
 
 
 #TODO ERROR CHECKING: CHECKING IF RESULT OF SELECT == EMPTY
@@ -285,6 +282,3 @@ def addIssue(UID, issue_type, description):
     c.execute(command)
     conn.commit()
     return issue_id
-
-#TODO UID != netid (maybe add attribute to profiles) and add getNetid method
-updateAttendanceResult(123,"pp649", 3)
