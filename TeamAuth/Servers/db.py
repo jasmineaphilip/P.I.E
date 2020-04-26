@@ -85,12 +85,12 @@ def getFeatureData(UID):
 #CLASS & SESSION FUNCTIONS
 #NOTE class_id is a STRING
 
-def addClass(class_id, UID, tag): #TODO student list, other instructors
+def addClass(class_id, UID): #TODO student list, other instructors
     UID = "\'" + UID + "\'"
     class_id = "\'" + class_id + "\'"
     tag = "\'" + tag + "\'"
     c.execute('PRAGMA journal_mode=wal')
-    command = 'insert into CLASSES (class_id, instructor,tags, students) values (' + class_id + ',' + UID  + ',' + tag + ',\'NONE\');'
+    command = 'insert into CLASSES (class_id, instructor,tags, students) values (' + class_id + ',' + UID  +  ',\'NONE\');'
     c.execute (command)
     conn.commit()
     return
