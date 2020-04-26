@@ -133,14 +133,14 @@ def getIntructors(class_id):
 
 def getNewSessionID(class_id):
 	currTime = datetime.datetime.now()
-    currTime = "\'" + currTime + "\'"
-    class_id = "\'" + class_id + "\'"
-    command = 'select session_id from SESSION where class_id = ' + class_id + ';'
-    #get last session id, increment
-    c.execute(command)
-    row = c.fetchone()
-    last_session = int(row[0])
-    session_id = last_session + 1
+	currTime = "\'" + currTime + "\'"
+	class_id = "\'" + class_id + "\'"
+	command = 'select session_id from SESSION where class_id = ' + class_id + ';'
+	#get last session id, increment
+	c.execute(command)
+	row = c.fetchone()
+	last_session = int(row[0])
+	session_id = last_session + 1
 	return session_id
 	
 def createSession(class_id, session_id):
