@@ -4,6 +4,7 @@ import sys
 from db import *
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+import hashlib
 
 
 #these are just temp functions, assuming a connection w client has already been made
@@ -40,9 +41,8 @@ def getWordcloud(filename):
 
 #ATTENDANCE STUFF
 def generate_key(): #TODO
-    return
-
-
+    newKey = hashlib.sha256().hexdigest()
+    return newKey
 
 
 def image_signin(image_port, uid, addr): #updated to check current states
@@ -92,7 +92,6 @@ elif (packetID == GET_CLASS_INFO): #returns instructor
 
 elif (packetID == JOIN_CLASS): #will update classes table to add more students
     classID = data_entries[0]
-    uid = data_entries[1]
     writeDB(db.joinClass, classID, uid) 
     command_socket.sendto(returnPacket.formatData("Successfully joined class!"), addr)
 
@@ -104,7 +103,6 @@ elif (packetID == GET_SESSION_PARTICIPANTS): #returns list of all participants i
 elif (packetID == JOIN_SESSION): 
     classID = data_entries[0]
     sessionID = data_entries[1]
-    uid = data_entries[2]
     #check if session still active
     if (classID in active_sessions):
         writeDB(db.joinSession, sessionID, uid)  #create session instance in db
@@ -114,8 +112,7 @@ elif (packetID == JOIN_SESSION):
 
 elif (packetID == NFC_SIGNIN): #return 0 or 1 for pass fail
     sessionID = data_entries[0]
-    uid = data_entries[1]
-    key = data_entries[2]
+    key = data_entries[1]
     currKey = db.getKey(sessionID)
     if (key == currKey): #current keys match, generate new key and see i
         newKey = generate_key()
@@ -135,7 +132,6 @@ elif (packetID == NFC_SIGNIN): #return 0 or 1 for pass fail
 
 elif (packetID == CONFIRM_SIGNIN):
     sessionID = data_entries[0]
-    uid = data_entries[1]
     currAttendance = db.getAttendanceResult(sessionID, uid)
     if (currAttendance == 0):
         command_socket.sendto(returnPacket.formatData("Please start the attendance process."), addr)

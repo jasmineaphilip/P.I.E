@@ -163,8 +163,9 @@ def getKey(session_id):
     return row[0] #int of current key value
 
 def updateKey(session_id, newKey):
+    newKey = "\'" + newKey + "\'"
     c.execute('PRAGMA journal_mode=wal')
-    command = 'update NFC SET key = ' + str(newKey) + 'where session_id = ' + str(session_id) + ';'
+    command = 'update NFC SET key = ' + newKey + 'where session_id = ' + str(session_id) + ';'
     c.execute(command)
     conn.commit()
     return
