@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:soft_eng/instructorComponents/joinClassSheet.dart';
+import 'package:soft_eng/screens/studentIntoClass.dart';
 import 'package:soft_eng/screens/login.dart';
 
 class StudentHome extends StatefulWidget {
@@ -46,7 +47,12 @@ class _StudentHomeState extends State<StudentHome> {
                 ),
                 FlatButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/studentIntoClass');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => StudentIntoClass(
+                                  classTitle: "Temp Class",
+                                )));
                   },
                   child: Text('Class View temp button'),
                 ),

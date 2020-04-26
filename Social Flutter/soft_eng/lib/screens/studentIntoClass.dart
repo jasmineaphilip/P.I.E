@@ -360,13 +360,13 @@ class _StudentIntoClassState extends State<StudentIntoClass> {
 
 
   int _selectedPage = 0;
-  final _pageOptions = [
-    StudentClassView(),
-    JoinSessionWidget(),
-    //Login(),
-  ];
   @override
   Widget build(BuildContext context) {
+    List<Widget> _pageOptions = [
+      StudentClassView(classTitle: widget.classTitle),
+      JoinSessionWidget(),
+      //Login(),
+    ];
     return Scaffold(
       body: Column(
         children: <Widget>[
