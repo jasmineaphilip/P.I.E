@@ -337,7 +337,7 @@ class _InstructorIntoClassState extends State<InstructorIntoClass> {
    //WE USE ... to induce a pause between sections
     if (headerTTS || allTTS) {
       if(_selectedPage == 0){//Class view
-        (widget.classTitle != null)
+        (widget.classTitle.toLowerCase() != "class view")
             ? spokenByTTS +=
             "You are on the Class View page of " + widget.classTitle + "..."
             : spokenByTTS += "You are on the Class View page...";

@@ -346,7 +346,7 @@ class _InstructorIntoAllFeedbackState extends State<InstructorIntoAllFeedback> {
         spokenByTTS += "You are on the Past Session Page...";
       } else if (_selectedPage == 2) {
         //Class View
-        (widget.classTitle != null)
+        (widget.classTitle.toLowerCase() != "class view")
             ? spokenByTTS +=
                 "You are on the Class View page of " + widget.classTitle + "..."
             : spokenByTTS += "You are on the Class View page...";
