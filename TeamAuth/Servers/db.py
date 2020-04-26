@@ -155,7 +155,6 @@ def joinSession(session_id, UID):
     conn.commit()
     return 
 
-#NOTE tag_id = future id
 def getKey(session_id):
     command = 'select key from NFC where session_id = ' + str(session_id) + ';'
     c.execute(command)
