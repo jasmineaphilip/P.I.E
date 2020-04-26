@@ -30,10 +30,14 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 ### Hazardous things we are intentionally not addressing ###
 #
-# 1. not checking if our writeDB operations are actually going through
+# 1. not checking if our writeDB operations are actually going throughs
 # 		a. We are just sending them off to the writeDB thread
 #		b. can potentially cause serious errors if a write operation fails or stalls for too long
-# 2. 
+# 2. checking against the clients list if a user is currently signed in each time we receive a packet
+#		a. this isnt too too bad, the firebase tokens atleast ensure they are who they say they are
+#		b. errors could arise if something fucks up on the client end where the user does not send a login packet and has never used our service before, thus never receiving the SIGNUP instructions
+# 3. JOIN_CLASS - checking if a student is already enrolled in a class before they join, checking user has student role
+
 
 
 ### Init Our Firebase Admin SDK ###
@@ -313,7 +317,7 @@ def client_accept():
 				command_socket.sendto(signupPacket.formatData("You have not registered with our service yet, please follow the sign up process.", names[0], names[1]), addr)
 		elif (packetID == SIGNUP):
 			# data entries: first_name, last_name, role, accessability_access
-			writeDB(db.insertProfile, uid, data_entries[0], data_entries[1], data_entries[2], data_entries[3], "")
+			writeDB(db.insertProfile, uid, data_entries[0], data_entries[1], data_entries[2], data_entries[3])
 			joinSuccessPacket = Packet(JOIN)
 			command_socket.sendto(joinSuccessPacket.formatData("Join Success"), addr)
 		
@@ -327,21 +331,20 @@ def client_accept():
 			t.start()
 			
 		elif (packetID == ADD_CLASS):
-			if db.getType(uid) == db.INSTRUCTOR:
+			if int(db.getType(uid)) == db.INSTRUCTOR:
 				class_id = data_entries[0]
-				writeDB(db.addClass(class_id, uid))
-				print (auth.get_user(uid).display_name + " added class " + class_id + " to database.")
+				writeDB(db.addClass, class_id, uid)
+				print ("Added class " + class_id + " to database.")
 				command_socket.sendto(returnPacket.formatData("Added class " + class_id + " to database."), addr)
 			else:
 				command_socket.sendto(returnPacket.formatData("You are not an instructor!"), addr)
 
-		elif (packetID == GET_CLASS_INFO): #returns instructor
+		elif (packetID == GET_CLASS_INFO):
 			classID = data_entries[0]
-			result = db.getIntructors(classID) 
-			instructor = result[0]
-			command_socket.sendto(returnPacket.formatData(instructor), addr)
+			instructors = db.getIntructors(classID) 
+			command_socket.sendto(returnPacket.formatData(tuple(instructors)), addr)
 
-		elif (packetID == JOIN_CLASS): #will update classes table to add more students
+		elif (packetID == JOIN_CLASS):
 			classID = data_entries[0]
 			writeDB(db.joinClass, classID, uid) 
 			command_socket.sendto(returnPacket.formatData("Successfully joined class!"), addr)
@@ -353,7 +356,9 @@ def client_accept():
 				if (class_id in active_sessions):
 					command_socket.sendto(returnPacket.formatData("A session for this class is already running!"), addr)
 				else:
-					writeDB(db.createSession, class_id)
+					session_id = db.getNewSessionID(class_id)
+					active_sessions.update({class_id:session_id})
+					writeDB(db.createSession, class_id, session_id)
 					command_socket.sendto(returnPacket.formatData("Created a new session for " + class_id + "!"), addr)
 			else:
 				command_socket.sendto(returnPacket.formatData("You are not an instructor for this class!"), addr)
@@ -463,8 +468,6 @@ def client_accept():
 			del active_sessions[classID]
 			command_socket.sendto(returnPacket.formatData("Session ended."), addr)
 
-		
-
 	db.conn.close()
 		
 
@@ -481,7 +484,6 @@ while (not(com=="quit")):
 	db_write_operations_thread.daemon = True
 	
 	if (com == "start"):
-		db.init()
 		client_accept_thread.start()
 		db_write_operations_thread.start()
 		

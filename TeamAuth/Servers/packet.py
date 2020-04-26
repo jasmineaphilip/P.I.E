@@ -9,7 +9,7 @@ LEAVE = 1				# Client is leaving the server, remove them from client list
 IMAGE_SIGNUP = 2		# Client wants to send us an image to add to their profile, respond with port to send file
 IMAGE_RESPONSE = 3		# Our response to clients image (passed or failed face rec for signin, received image for signup)
 SIGNUP = 4				# Tell our client that this is the first time they are joining and they need to follow sign up process, send over some default data
-INVALID_TOKEN = 5		# Sent in response to join if the provide token is invalid
+INVALID_TOKEN = 5		# Sent in response to join if the provided firebase auth token is invalid
 
 ADD_CLASS = 6
 GET_CLASS_INFO = 7
@@ -39,6 +39,9 @@ class Packet:
 		
 	def formatData(self, *arg):
 		return insertDelim(DELIMITER, self.packet_id, insertDelim(DATA_DELIMITER, *arg))
+		
+	def formatClientData(self, token, *arg):
+		return insertDelim(DELIMITER, self.packet_id, token, insertDelim(DATA_DELIMITER, *arg))
 			
 def insertDelim(delim, *arg):
 	ret = ""

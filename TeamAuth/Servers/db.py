@@ -8,6 +8,9 @@ import time
 # (0, None, 1, u'pp649', u'myHouse', None, u'testGroup') 
 # everything is returned as tuple
 
+STUDENT = 0
+INSTRUCTOR = 1
+
 def init():
 	global conn, c
 	conn = sqlite3.connect('PIE_DB',check_same_thread=False)
@@ -27,7 +30,7 @@ def insertProfile(UID, first, last, user_type, classes):
     user_type = "\'" + str(user_type) + "\'"
     classes = "\'" + classes + "\'"
     c.execute('PRAGMA journal_mode=wal')
-    command = 'insert into PROFILES values (' + UID + ',' + last + ',' + first + ',' + classes + ','  + user_type +');'
+    command = 'insert into PROFILES values (' + UID + ',' + last + ',' + first + ',' + classes + ',' + '-1' + ','  + user_type +');'
     c.execute(command)
     conn.commit()
 
@@ -128,8 +131,8 @@ def getIntructors(class_id):
     conn.commit()
     return instructors #array of instructors
 
-def createSession(class_id):
-    currTime = datetime.datetime.now()
+def getNewSessionID(class_id):
+	currTime = datetime.datetime.now()
     currTime = "\'" + currTime + "\'"
     class_id = "\'" + class_id + "\'"
     command = 'select session_id from SESSION where class_id = ' + class_id + ';'
@@ -138,11 +141,14 @@ def createSession(class_id):
     row = c.fetchone()
     last_session = int(row[0])
     session_id = last_session + 1
+	return session_id
+	
+def createSession(class_id, session_id):
     c.execute('PRAGMA journal_mode=wal')
     command = 'insert into SESSION values (' + str(session_id) + ',' + class_id + ',' + currTime + ');'
     c.execute(command)
     conn.commit()
-    return session_id 
+    return
 
 def joinSession(session_id, UID):
     UID = "\'" + UID + "\'"
