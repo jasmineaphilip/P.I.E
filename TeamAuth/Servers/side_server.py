@@ -69,38 +69,38 @@ def image_signin(image_port, uid, addr): #updated to check current states
 if (packetID == -1):
     print("oops this is bad")
 
-elif (packetID ==   GET_FEEDBACK): #returns keyword array
+elif (packetID ==   GET_FEEDBACK): #returns keyword array #TODO DONE
     sessionID = data_entries[0]
     rawFile = db.getFeedback(sessionID)
     keywords = getKeywords(rawFile,sessionID) 
     command_socket.sendto(returnPacket.formatData(tuple(keywords)), addr)
 
-elif (packetID == SHOW_STUDYGROUPS): #returns array of group ids
+elif (packetID == SHOW_STUDYGROUPS): #returns array of group ids #TODO DONE
     groups = db.showStudyGroups()
     command_socket.sendto(returnPacket.formatData(tuple(groups)), addr)
 
-elif (packetID == GET_SESSIONS): #returns all session associated to class
+elif (packetID == GET_SESSIONS): #returns all session associated to class #TODO DONE
     classID = data_entries[0]
     sessions = db.getSessions(classID)
     command_socket.sendto(returnPacket.formatData(tuple(sessions)), addr)
 
-elif (packetID == GET_CLASS_INFO): #returns instructor
+elif (packetID == GET_CLASS_INFO): #returns instructor #TODO DONE
     classID = data_entries[0]
     result = db.getIntructors(classID) 
     instructor = result[0]
     command_socket.sendto(returnPacket.formatData(instructor), addr)
 
-elif (packetID == JOIN_CLASS): #will update classes table to add more students
+elif (packetID == JOIN_CLASS): #will update classes table to add more students #TODO DONE
     classID = data_entries[0]
     writeDB(db.joinClass, classID, uid) 
     command_socket.sendto(returnPacket.formatData("Successfully joined class!"), addr)
 
-elif (packetID == GET_SESSION_PARTICIPANTS): #returns list of all participants in session
+elif (packetID == GET_SESSION_PARTICIPANTS): #returns list of all participants in session #TODO DONE
     sessionID = data_entries[0] 
     students = db.sessionParticipants(sessionID)
     command_socket.sendto(returnPacket.formatData(tuple(students)), addr)   
 
-elif (packetID == JOIN_SESSION): 
+elif (packetID == JOIN_SESSION): #TODO DONE
     classID = data_entries[0]
     sessionID = data_entries[1]
     #check if session still active
@@ -110,7 +110,7 @@ elif (packetID == JOIN_SESSION):
     else:
         command_socket.sendto(returnPacket.formatData("Session does not exist!"), addr)
 
-elif (packetID == NFC_SIGNIN): #return 0 or 1 for pass fail
+elif (packetID == NFC_SIGNIN): #return 0 or 1 for pass fail #TODO DONE
     sessionID = data_entries[0]
     key = data_entries[1]
     currKey = db.getKey(sessionID)
@@ -130,7 +130,7 @@ elif (packetID == NFC_SIGNIN): #return 0 or 1 for pass fail
     else: 
         command_socket.sendto(returnPacket.formatData("Error: Keys don't match!"), addr)
 
-elif (packetID == CONFIRM_SIGNIN):
+elif (packetID == CONFIRM_SIGNIN): #TODO DONE
     sessionID = data_entries[0]
     currAttendance = db.getAttendanceResult(sessionID, uid)
     if (currAttendance == 0):
