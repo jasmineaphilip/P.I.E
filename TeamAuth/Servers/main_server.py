@@ -467,6 +467,14 @@ def client_accept():
 			classID = data_entries[0]
 			del active_sessions[classID]
 			command_socket.sendto(returnPacket.formatData("Session ended."), addr)
+			
+		elif (packetID = GET_CURRENT_SESSION):
+			classID = data_entries[0]
+			if classID in active_sessions:
+				sessionID = active_sessions[classID]
+			else:
+				sessionID = "There are no active sessions for this class!"
+			command_socket.sendto(returnPacket.formatData(sessionID), addr)
 
 	db.conn.close()
 		

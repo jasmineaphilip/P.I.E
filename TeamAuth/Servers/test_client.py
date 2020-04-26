@@ -5,7 +5,7 @@ from packet import *
 
 ip = "18.220.57.115"
 port = 25595
-student = True
+student = False
 
 global firstname,lastname,token
 
@@ -52,9 +52,24 @@ def join_class_test():
 	data = sock.recvfrom(1024)
 	print (data)
 
+def create_session_test():
+	packet = Packet(CREATE_SESSION)
+	sock.sendto(packet.formatClientData(token, "01:198:214"), (ip, port))
+	data = sock.recvfrom(1024)
+	print (data)
 	
-login_test(True)
-join_class_test()
+def get_sessions_test():
+	packet = Packet(GET_SESSIONS)
+	sock.sendto(packet.formatClientData(token, "01:198:214"), (ip, port))
+	data = sock.recvfrom(1024)
+	print (data[0])
+	
+
+	
+login_test(False)
+create_session_test()
+get_sessions_test()
+
 	
 
 sock.close()

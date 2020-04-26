@@ -145,7 +145,7 @@ def getNewSessionID(class_id):
 	
 def createSession(class_id, session_id):
 	currTime = datetime.datetime.now()
-	currTime = "\'" + str(currTime) + "\'"
+	#currTime = "\'" + str(currTime) + "\'"
 	c.execute('PRAGMA journal_mode=wal')
 	command = 'insert into SESSION values (?,?,?);'
 	c.execute(command, (str(session_id), class_id, currTime,))
@@ -193,20 +193,21 @@ def updateAttendanceResult(session_id,UID,newResult):
 
 
 def getSessions(class_id):
-	class_id = "\'" + class_id + "\'"
-	command = 'select session_Id from Session where class_ID = (?);'
+	#class_id = "\'" + class_id + "\'"
+	
+	command = 'select session_Id from Session where class_ID=?;'
 	c.execute(command, (class_id,))
 	rows = c.fetchall()
 	sessions = []
 	for row in rows:
-		sessions.append(row[0])
+		sessions.append(str(row[0]))
 	
-	datetimes = []
-	command = 'select datetime from Session where class_ID = (?);'
+	command = 'select datetime from Session where class_ID=?;'
 	c.execute(command, (class_id,))
 	rows = c.fetchall()
+	datetimes = []
 	for row in rows:
-	   datetimes.append(row[0])
+	   datetimes.append(str(row[0]))
 	   
 	ret = []
 	for i in range(len(sessions)):
