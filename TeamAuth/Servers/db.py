@@ -119,7 +119,7 @@ def joinClass(class_id, newUID):
     conn.commit()
     return
 
-def getIntructors(class_id):
+def getInstructors(class_id):
     class_id = "\'" + class_id + "\'"
     instructors = []
     command = 'select instructor, other from CLASSES where class_ID = ' + class_id + ';'
@@ -131,21 +131,24 @@ def getIntructors(class_id):
     return instructors #array of instructors
 
 def getNewSessionID(class_id):
-	currTime = datetime.datetime.now()
-	currTime = "\'" + currTime + "\'"
 	class_id = "\'" + class_id + "\'"
 	command = 'select session_id from SESSION where class_id = ' + class_id + ';'
 	#get last session id, increment
 	c.execute(command)
 	row = c.fetchone()
-	last_session = int(row[0])
+	if row == None:
+		last_session = 0
+	else:
+		last_session = int(row[0])
 	session_id = last_session + 1
 	return session_id
 	
 def createSession(class_id, session_id):
-    c.execute('PRAGMA journal_mode=wal')
-    command = 'insert into SESSION values (' + str(session_id) + ',' + class_id + ',' + currTime + ');'
-    c.execute(command)
+	currTime = datetime.datetime.now()
+	currTime = "\'" + str(currTime) + "\'"
+	c.execute('PRAGMA journal_mode=wal')
+    command = 'insert into SESSION values (?,?,?);'
+    c.execute(command, (str(session_id), class_id, currTime,))
     conn.commit()
     return
 
@@ -191,13 +194,26 @@ def updateAttendanceResult(session_id,UID,newResult):
 
 def getSessions(class_id):
     class_id = "\'" + class_id + "\'"
-    command = 'select session_ID from Session where class_ID = ' + class_id + ';'
-    c.execute(command)
+    command = 'select session_Id from Session where class_ID = (?);'
+    c.execute(command, (class_id,))
     rows = c.fetchall()
-    sessions = [] 
+    sessions = []
     for row in rows:
         sessions.append(row[0])
-    return sessions    #return array of sessions
+	
+	datetimes = []
+	command = 'select datetime from Session where class_ID = (?);'
+    c.execute(command, (class_id,))
+    rows = c.fetchall()
+	for row in rows:
+       datetimes.append(row[0])
+	   
+	ret = []
+	for i in range(len(sessions)):
+		ret.append(sessions[i])
+		ret.append(datetimes[i])
+	
+    return ret    #return array of sessions,datetimes	e.g.  [1,2020-04-26 18:39:29.209803,2,2020-05-24 12:23:22.209803]
 
 def sessionParticipants(session_id):
     command = 'select student_id from Attendance where session_ID = ' + str(session_id)  + ' AND result = 3;'    
