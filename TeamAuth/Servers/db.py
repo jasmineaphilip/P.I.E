@@ -3,25 +3,29 @@ import datetime
 import time
 
 
+# WHEN A ROW IS RETURNED FROM A TABLE, IT WILL BE IN THIS FOLLOWING FORMAT:
+# (u'priya', u'parikh')
+# (0, None, 1, u'pp649', u'myHouse', None, u'testGroup') 
+# everything is returned as tuple
 
 def init():
 	global conn, c
-	conn = sqlite3.connect('PIE_DB')
+	conn = sqlite3.connect('PIE_DB',check_same_thread=False)
 	c = conn.cursor()
 
 #TODO ERROR CHECKING: CHECKING IF RESULT OF SELECT == EMPTY
 #TODO CHANGE PRINT STATEMENTS TO RETURNS
 
 #PROFILE & IMAGE FUNCTIONS
-def insertProfile(UID, first, last, user_type, accessibility, classes): #accessibility = 0 (none); 1 (TTS); 2(STT)
+def insertProfile(UID, first, last, user_type, classes): 
     #TODO we need to insert all the classes at once (otherwise its annoying to change) --> just make list of class_ids and convert to string
     UID = "\'" + UID + "\'"
     first = "\'" + first + "\'"
     last = "\'" + last + "\'"
-    user_type = "\'" + user_type + "\'"
+    user_type = "\'" + str(user_type) + "\'"
     classes = "\'" + classes + "\'"
     c.execute('PRAGMA journal_mode=wal')
-    command = 'insert into PROFILES values (' + UID + ',' + last + ',' + first + ',' + classes + ',' + str(accessibility) + ',' + user_type +');'
+    command = 'insert into PROFILES values (' + UID + ',' + last + ',' + first + ',' + classes + ','  + user_type +');'
     c.execute(command)
     conn.commit()
 
@@ -40,7 +44,6 @@ def insertImage(UID, image):
     image = "\'" + image + "\'"
     #TODO run openface to extract feature data; image = path to image file
     conn.commit()
-
     return 
 
 def getClasses(UID):
@@ -49,8 +52,7 @@ def getClasses(UID):
     c.execute(command)
     row = c.fetchone()
     conn.commit()
-
-    print(row)
+    return row #row = array of classes separated 
 
 def getName(UID):
     UID = "\'" + UID + "\'"
@@ -59,10 +61,9 @@ def getName(UID):
     row = c.fetchone()
     print(row)
     firstName = row[0]
-    lastName = row[1] #idk if its an array or not   
+    lastName = row[1]   
     name = firstName + ' ' + lastName
     conn.commit()
-
     return name
 
 def getType(UID):
@@ -71,17 +72,7 @@ def getType(UID):
     c.execute(command)
     row = c.fetchone()
     conn.commit()
-
-    print(row)
-
-def getAccessibility(UID):
-    UID = "\'" + UID + "\'"
-    command = 'select accessibility from PROFILES where UID = ' + UID + ';'
-    c.execute(command)
-    row = c.fetchone()
-    conn.commit()
-
-    print(row)
+    return row[0] #return type = 0 or 1
 
 def getFeatureData(UID):
     UID = "\'" + UID + "\'"
@@ -89,8 +80,7 @@ def getFeatureData(UID):
     c.execute(command)
     row = c.fetchone()
     conn.commit()
-
-    print(row)
+    return row[0] #return feature data as string of array 
 
 #CLASS & SESSION FUNCTIONS
 #TODO WILL EVENTUALLY NEED TO IMPLEMENT INSERTING NFC TAGS WHEN AN INSTRUCTOR ADDS A CLASS
@@ -109,18 +99,17 @@ def createSession(class_id):
     currTime = datetime.datetime.now()
     currTime = "\'" + currTime + "\'"
     class_id = "\'" + class_id + "\'"
-    command = 'select session_id from SESSION where class_id = ' + class_id + ';'
+    command = 'select session_id from SESSION where class_id = ' + str(class_id) + ';'
     #get last session id, increment
     c.execute(command)
     row = c.fetchone()
     last_session = int(row[0])
     session_id = last_session + 1
     c.execute('PRAGMA journal_mode=wal')
-    command = 'insert into SESSION values (' + str(session_id) + ',' + class_id + ',' + currTime + ');'
+    command = 'insert into SESSION values (' + str(session_id) + ',' + str(class_id) + ',' + currTime + ');'
     c.execute(command)
     conn.commit()
-
-    print(session_id)
+    return session_id 
 
 def joinSession(session_id, UID,result):
     #TODO run openface and nfc, let result = && of that; also in server, result should be returned to user
@@ -129,9 +118,7 @@ def joinSession(session_id, UID,result):
     command = 'insert into ATTENDANCE values (' + str(session_id) + ',' + UID + ',' + str(result) + ');'
     c.execute(command)
     conn.commit()
-
-    print(result)
-
+    return result #TODO figure out how this will work
 
 #TODO check current tag key for attendance; 
 
@@ -143,24 +130,26 @@ def getIntructors(class_id):
     instructors.append(row[0]) #appends the instructor
     instructors.append(row[1]) #appends the TAs
     conn.commit()
-
-    print(instructors)
+    return instructors #array of instructors
 
 def getAttendanceResult(session_id, UID):
-    command = 'select result from Attendance where session_ID = ' + str(session_id) + ';'    
+    UID = "\'" + UID + "\'"
+    command = 'select result from Attendance where session_ID = ' + str(session_id) + 'AND student_ID = ' + UID + ';'    
     c.execute(command)
     row = c.fetchone()
     conn.commit()
-
-    print (row[0])
+    return row[0] #return attendance result for given session and uid
 
 def getSessions(class_id):
-    command = 'select session_ID from Session where class_ID = 'str(class_id) + ';'
+    command = 'select session_ID from Session where class_ID = ' + str(class_id) + ';'
     c.execute(command)
     rows = c.fetchall()
+    sessions = [] 
     for row in rows:
-        print(row)
-    
+        sessions.append(row[0])
+    return sessions    #return array of sessions
+
+
 
 #FEEDBACK FUNCTIONS *subset of SESSION
 #TODO do we need feedback_type?
@@ -186,6 +175,7 @@ def getFeedback(session_id):
         f.write(row)
     f.close()
     conn.commit()
+    return filename #returns resulting text file
 
 
 def createStudyGroup(UID, datetime, duration, location, participants,name):
@@ -204,16 +194,26 @@ def createStudyGroup(UID, datetime, duration, location, participants,name):
     command = 'insert into STUDYGROUP values (' + str(group_id) + ',' + datetime + ',' + str(duration) + ',' + UID + ',' + location + ',' + participants + ',' + name + ');'
     c.execute(command)
     conn.commit()
-
-    print(group_id)
+    return group_id
 
 def showStudyGroups():
-    command = 'select * from STUDYGROUP;'
+    command = 'select group_ID from STUDYGROUP;'
     c.execute(command)
     rows = c.fetchall()
+    groups = []
     for row in rows:
-        print(row)
+        groups.append(row[0])
     conn.commit()
+    return groups #return array of group ids
+
+def showGroupInfo(group_ID):
+    command = 'select * from STUDYGROUP where group_ID = ' + str(group_ID)
+    c.execute(command)
+    row = c.fetchone()
+    conn.commit()
+    #TODO maybe return as dictionary?
+    return row #returns all data regarding specific group session as tuple 
+
 
 #BUGS
 def addIssue(UID, issue_type, description):
@@ -231,8 +231,7 @@ def addIssue(UID, issue_type, description):
     command = 'insert into ISSUES values(' + str(issue_id) + ',' + currTime + ',' + UID + ',' + issue_type + ',' + description + ');'
     c.execute(command)
     conn.commit()
-
-    print(issue_id)
+    return issue_id
 
 #TODO UID != netid (maybe add attribute to profiles) and add getNetid method
 
