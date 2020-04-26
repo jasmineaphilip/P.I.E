@@ -101,40 +101,45 @@ class _LoginState extends State<Login> {
               ),
               color: purple,
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 250),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  RaisedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context,
-                          '/instructorHome'); //CHANGE TO REDIRECT TO GOOGLE AUTH
-                    },
-                    child: Text(
-                      'Instructor',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 30),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      RaisedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context,
+                              '/instructorHome'); //CHANGE TO REDIRECT TO GOOGLE AUTH
+                        },
+                        child: Text(
+                          'Instructor',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
+                        color: green,
                       ),
-                    ),
-                    color: green,
-                  ),
-                  RaisedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context,
-                          '/studentHome'); //CHANGE TO REDIRECT TO GOOGLE AUTH
-                    },
-                    child: Text(
-                      'Student',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
+                      RaisedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context,
+                              '/studentHome'); //CHANGE TO REDIRECT TO GOOGLE AUTH
+                        },
+                        child: Text(
+                          'Student',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
+                        color: green,
                       ),
-                    ),
-                    color: green,
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ],

@@ -3,6 +3,8 @@ import 'package:soft_eng/screens/login.dart';
 import 'package:soft_eng/instructorComponents/joinSessionSheet.dart';
 
 class StudentClassView extends StatefulWidget {
+  final String classTitle;
+  StudentClassView({String classTitle}) : this.classTitle = (classTitle != null) ? classTitle : "Class View"; //IF NULL it reports as Class View
   @override
   _StudentClassViewState createState() => _StudentClassViewState();
 }
@@ -12,25 +14,30 @@ class _StudentClassViewState extends State<StudentClassView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('CLASS NAME'),
+        title: Text(widget.classTitle),
         centerTitle: true,
         backgroundColor: green,
       ),
       body: Container(
         child: Center(
-          child: Column(
+          child: ListView(
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.only(
                   top: 30.0,
                   bottom: 10,
                 ),
-                child: Text(
-                  'Class Info',
-                  style: TextStyle(
-                    color: purple,
-                    fontSize: 45.0,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'Class Info',
+                      style: TextStyle(
+                        color: purple,
+                        fontSize: 45.0,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Padding(

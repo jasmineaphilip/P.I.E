@@ -3,8 +3,7 @@ import 'package:soft_eng/screens/login.dart';
 
 class InstructorClassView extends StatefulWidget {
   final String classTitle;
-  //InstructorIntoClass({this.classTitle, Key key}) : super(key: key);
-  InstructorClassView({String classTitle}) : this.classTitle = classTitle;
+  InstructorClassView({String classTitle}) : this.classTitle = (classTitle != null) ? classTitle : "Class View"; //IF NULL it reports as Class View
   @override
   _InstructorClassViewState createState() => _InstructorClassViewState();
 }
@@ -14,25 +13,30 @@ class _InstructorClassViewState extends State<InstructorClassView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('CLASS NAME'),
+        title: Text(widget.classTitle),
         centerTitle: true,
         backgroundColor: green,
       ),
       body: Container(
         child: Center(
-          child: Column(
+          child: ListView(
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.only(
                   top: 30.0,
                   bottom: 10,
                 ),
-                child: Text(
-                  'Class Info',
-                  style: TextStyle(
-                    color: purple,
-                    fontSize: 45.0,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'Class Info',
+                      style: TextStyle(
+                        color: purple,
+                        fontSize: 45.0,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Padding(
