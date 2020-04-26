@@ -150,18 +150,17 @@ def joinSession(session_id, UID):
     conn.commit()
     return 
 
-def getKey(session_id,tag_id):
-    tag_id = "\'" + tag_id + "\'"
-    command = 'select key from NFC where session_id = ' + str(session_id) + ' AND tag_id = ' + tag_id + ';'
+#NOTE tag_id = future id
+def getKey(session_id):
+    command = 'select key from NFC where session_id = ' + str(session_id) + ';'
     c.execute(command)
     row  = c.fetchone()
     conn.commit()
-    return int(row[0]) #int of current key value
+    return row[0] #int of current key value
 
-def updateKey(session_id,tag_id, newKey):
-    tag_id = "\'" + tag_id + "\'"
+def updateKey(session_id, newKey):
     c.execute('PRAGMA journal_mode=wal')
-    command = 'update NFC SET key = ' + str(newKey) + 'where session_id = ' + str(session_id) + ' AND tag_id = ' + tag_id + ';'
+    command = 'update NFC SET key = ' + str(newKey) + 'where session_id = ' + str(session_id) + ';'
     c.execute(command)
     conn.commit()
     return

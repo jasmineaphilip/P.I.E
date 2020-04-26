@@ -36,32 +36,36 @@ def getWordcloud(filename):
     text = open(path.join(filename)).read()
     wordcloud = WordCloud().generate(text)  
     wordcloud.to_file(wordcloud_image)
+    return wordcloud_image
 
 #ATTENDANCE STUFF
-def generate_key(): #TODO large positive number
+def generate_key(): #TODO
     return
 
+
+
+
 def image_signin(image_port, uid, addr): #updated to check current states
-	path = client_recv_image(image_port, uid)
-	passed = compare(uid, path)
-	returnPacket = Packet(IMAGE_RESPONSE)
+    path = client_recv_image(image_port, uid)
+    passed = compare(uid, path)
+    returnPacket = Packet(IMAGE_RESPONSE)
     #check current status of users attendance
     currAttendance = db.getAttendanceResult(sessionID, uid)
-	if passed:
+    if(passed):
+        print (auth.get_user(uid).display_name + " successfully signed in.")
+        command_socket.sendto(returnPacket.formatData("Facial verificatin: Successful!"), addr)
         if (currAttendance == 0):
-            #set value to 1 for facial rec
+        #set value to 1 for facial rec
             writeDB(db.updateAttendanceResult, sessionID, uid, 1) 
         elif (currAttendance == 2):
             #facial and nfc both done, update val to 3
-            writeDB(db.updateAttendanceResult, sessionID, uid, 3)  
-
-		print (auth.get_user(uid).display_name + " successfully signed in.")
-		command_socket.sendto(returnPacket.formatData("Facial verificatin: Successful!"), addr)
-	else:
-		print (auth.get_user(uid).display_name + " failed to signed in.")
-		command_socket.sendto(returnPacket.formatData("Failed"), addr)
+            writeDB(db.updateAttendanceResult, sessionID, uid, 3)
+    else:
+        print (auth.get_user(uid).display_name + " failed to signed in.")
+        command_socket.sendto(returnPacket.formatData("Failed"), addr)
 
 
+########################################################
 if (packetID == -1):
     print("oops this is bad")
 
@@ -97,24 +101,13 @@ elif (packetID == GET_SESSION_PARTICIPANTS): #returns list of all participants i
     students = db.sessionParticipants(sessionID)
     command_socket.sendto(returnPacket.formatData(tuple(students)), addr)   
 
-
-elif (packetID == ADD_CLASS): #updated to add tag #TODO get tag 
-    if db.getType(uid) == db.INSTRUCTOR:
-        class_id = data_entries[0]
-        tag = data_entries[1]
-        writeDB(db.addClass(class_id, uid,tag))
-        print (auth.get_user(uid).display_name + " added class " + class_id + " to database.")
-        command_socket.sendto(returnPacket.formatData("Added class " + class_id + " to database."), addr)
-    else:
-        command_socket.sendto(returnPacket.formatData("You are not an instructor!"), addr)
-
-elif (packetID == JOIN_SESSION): #updated to just create instance in Session db #TODO
+elif (packetID == JOIN_SESSION): 
     classID = data_entries[0]
     sessionID = data_entries[1]
     uid = data_entries[2]
     #check if session still active
     if (classID in active_sessions):
-        writeDB(db.joinSession, sessionID, uid) 
+        writeDB(db.joinSession, sessionID, uid)  #create session instance in db
         command_socket.sendto(returnPacket.formatData("Please continue signing in."), addr)
     else:
         command_socket.sendto(returnPacket.formatData("Session does not exist!"), addr)
@@ -122,12 +115,11 @@ elif (packetID == JOIN_SESSION): #updated to just create instance in Session db 
 elif (packetID == NFC_SIGNIN): #return 0 or 1 for pass fail
     sessionID = data_entries[0]
     uid = data_entries[1]
-    tagID = data_entries[2]
-    key = data_entries[3]
-    currKey = db.getKey(sessionID, tagID)
+    key = data_entries[2]
+    currKey = db.getKey(sessionID)
     if (key == currKey): #current keys match, generate new key and see i
         newKey = generate_key()
-        writeDB(db.updateKey, sessionID, tagID, newKey) 
+        writeDB(db.updateKey, sessionID, newKey) 
         #check current status of users attendance
         currAttendance = db.getAttendanceResult(sessionID, uid)
         if (currAttendance == 0):
@@ -138,7 +130,6 @@ elif (packetID == NFC_SIGNIN): #return 0 or 1 for pass fail
             writeDB(db.updateAttendanceResult, sessionID, uid, 3)  
 
         command_socket.sendto(returnPacket.formatData("NFC: Successful!"), addr)
-
     else: 
         command_socket.sendto(returnPacket.formatData("Error: Keys don't match!"), addr)
 
@@ -156,7 +147,7 @@ elif (packetID == CONFIRM_SIGNIN):
         command_socket.sendto(returnPacket.formatData("You have successfully joined the session!"), addr)
 
 elif (packetID == STOP_SESSION):
-	classID = data_entries[0]
+    classID = data_entries[0]
     del active_sessions[classID]
     command_socket.sendto(returnPacket.formatData("Session ended."), addr)
 
