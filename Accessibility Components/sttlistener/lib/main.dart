@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dart:async'; //Async
+//Async
+import 'dart:async';
+import 'package:mutex/mutex.dart';
+//
 //STT pub
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
@@ -47,8 +50,9 @@ class _STTListenerState extends State<STTListener> {
 
   final FlutterTts flutterTts = FlutterTts(); //Set up STT class
 
-  final SpeechToText _STTRecog = SpeechToText(); //Set up STTR Class
+  final SpeechToText _STTRecog = SpeechToText(); //Set up STT Class
 
+  Mutex lockSTT = Mutex();
   String audioText = ""; //Local String for spoken results
   String StoredText = ""; //Local String for stored results
   String oldText = ""; //Old copy of Stored Text
@@ -56,8 +60,10 @@ class _STTListenerState extends State<STTListener> {
       ""; //a copy of Stored Text to compare for double listener problems
   String internalRef = ""; //Debuging and command mode text
   bool _STTisAvailable = false; //checking for availability
+  bool _STTChecked = false; //if checked for STT once
   bool commandModeSTT = false; //If in command mode
   bool listenerModeSTT = false; //If in command mode
+  bool multListener = false; //If for some reason there's multiple listeners
   double level = 0.0; //sound level i believe unused really.
   String lastError = ""; //Error Holder
   String _currentLocaleId = ""; //used Locale for STT
@@ -65,28 +71,99 @@ class _STTListenerState extends State<STTListener> {
 
   void initState() {
     super.initState();
+    //initSTTState();
   }
+
+  //Fail-STT
+  void _showSTTFail() {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("STT not Recongized"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  // END of Fail-STT
+
+  //Display Commands
+  void _showSTTCommands() {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("STT Commands"),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Commands.'),
+                Text('Go Back.'),
+                Text('Class View.'),
+                Text('Start Session.'),
+                Text('Past Session.'),
+                Text('Read Screen.'),
+                Text('Read Header.'),
+                Text('Read Body.'),
+                Text('Read Bottom.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                multListener = true;
+                lockSTT.release();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  //END of Display Commands
 
   // Start up STT
   Future<void> initSTTState() async {
-    bool STTisAvailable = await _STTRecog.initialize(
-        onError: errorListener,
-        onStatus: statusListener); //returns if there is STT on the smart phone
-    if (STTisAvailable) {
-      //if it is available
-      _localeNames = await _STTRecog
-          .locales(); //retrieve all capable locales (all available lang)
+    if(!_STTChecked && !_STTisAvailable)
+      {
+        bool STTisAvailable = await _STTRecog.initialize(
+            onError: errorListener,
+            onStatus: statusListener); //returns if there is STT on the smart phone
+        if (STTisAvailable) {
 
-      var systemLocale = await _STTRecog.systemLocale(); //Get current locale
-      _currentLocaleId = systemLocale.localeId; //set so.
-    }
+          //if it is available
+          _localeNames = await _STTRecog
+              .locales(); //retrieve all capable locales (all available lang)
 
-    if (!mounted) return;
+          var systemLocale = await _STTRecog.systemLocale(); //Get current locale
+          _currentLocaleId = systemLocale.localeId; //set so.
+        }
 
-    setState(() {
-      //Update app with STT is available
-      _STTisAvailable = STTisAvailable;
-    });
+        if (!mounted) return;
+
+        setState(() {
+          //Update app with STT is available
+          _STTisAvailable = STTisAvailable;
+          _STTChecked = true;
+        });
+      }
   }
   //End of Startup: STT
 
@@ -115,7 +192,7 @@ class _STTListenerState extends State<STTListener> {
   //END Listener Mode toggle
 
   //String to Command function:
-  void detectKey(String key) {
+  void detectKey(String key) async {
     //Phrase Decoding:
     bool detectedKey = false;
     internalRef = "Command: " + key;
@@ -154,7 +231,8 @@ class _STTListenerState extends State<STTListener> {
         MaterialPageRoute(builder: (context) => SecondRoute()),
       );
       detectedKey = true;
-    } else if (key.toLowerCase() == "help") {
+    } else if (key.toLowerCase() == "help" || key.toLowerCase() == "command" || key.toLowerCase() == "commands" ){
+      await lockSTT.acquire();
       StoredText = """
     Commands Available:
       clear history
@@ -170,6 +248,14 @@ class _STTListenerState extends State<STTListener> {
         read all buttons
       turn off command mode
       """;
+      if(!multListener){
+        setState(() {
+          multListener = true;
+        });
+        _showSTTCommands();
+      }
+      else
+        multListener = false;
       detectedKey = true;
     }
     else if (key.toLowerCase() == "read screen"){
@@ -206,7 +292,7 @@ class _STTListenerState extends State<STTListener> {
     }
 
     if(detectedKey) internalRef = "Command detected: " + key;
-    else internalRef = "Unknown Command: " + key;
+    else audioText = "Unknown Command: " + key + " Say: \"Commands\" for list of commands";
     if(key  == "") {
       audioText = "";
       StoredText = oldText;
@@ -353,7 +439,11 @@ class _STTListenerState extends State<STTListener> {
                   ),
                 ],
               ),
-              onPressed: _STTRecog.isListening ? stopListening : null,
+              onPressed: () => setState(() {
+                return AlertDialog(
+                  title: new Text("STT not Recognized"),
+                );
+              })
             ),
             // END Stop Button
             //Start TTS: speak(allTTS: true),
@@ -370,21 +460,17 @@ class _STTListenerState extends State<STTListener> {
             ),
             //END Start TTS
             // Start Button: startListening()
-            RaisedButton(
+            IconButton(
               // Start STT
-              child: Row(
-                children: <Widget>[
-                  Container(
-                    child: Icon(Icons.mic),
-                  ),
-                  Container(
-                    child: Text('Start', style: TextStyle(fontSize: 10)),
-                  ),
-                ],
-              ),
-              onPressed: !_STTisAvailable || _STTRecog.isListening
-                  ? null
-                  : startListening,
+              icon: Icon(_STTisAvailable ? (!_STTRecog.isListening ? Icons.mic : Icons.pause) : Icons.mic_off),
+              tooltip: audioText,
+              onPressed:
+              !_STTRecog.isListening ?
+                  (
+                  !_STTisAvailable
+                      ? _showSTTFail
+                      : startListening)
+                  : stopListening,
             ),
             // END Start Button
           ],
@@ -705,6 +791,9 @@ class _STTListenerState extends State<STTListener> {
       startListening(); //continue new line
     } else if (result.finalResult && commandModeSTT) {
       _STTRecog.cancel(); //to stop old one from timing out
+      setState(() {
+        multListener = false;
+      });
       sleep(Duration(microseconds: 250)); //slight delay to let async cancel
       detectKey(result.recognizedWords); //scan result for command
     } else if(result.finalResult)
