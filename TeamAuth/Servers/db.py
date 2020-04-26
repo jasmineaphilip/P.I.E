@@ -72,7 +72,7 @@ def getType(UID):
     c.execute(command)
     row = c.fetchone()
     conn.commit()
-    return row[0] #return type = 0 or 1
+    return int(row[0]) #return type = 0 or 1
 
 def getFeatureData(UID):
     UID = "\'" + UID + "\'"
@@ -83,46 +83,40 @@ def getFeatureData(UID):
     return row[0] #return feature data as string of array 
 
 #CLASS & SESSION FUNCTIONS
-#TODO WILL EVENTUALLY NEED TO IMPLEMENT INSERTING NFC TAGS WHEN AN INSTRUCTOR ADDS A CLASS
-def addClass(class_id, UID): #TODO add tags, student list, other instructors
+#NOTE class_id is a STRING
+
+def addClass(class_id, UID, tag): #TODO student list, other instructors
     UID = "\'" + UID + "\'"
     class_id = "\'" + class_id + "\'"
+    tag = "\'" + tag + "\'"
     c.execute('PRAGMA journal_mode=wal')
-    command = 'insert into CLASSES (class_id, instructor) values (' + class_id + ',' + UID + ');'
+    command = 'insert into CLASSES (class_id, instructor,tags, students) values (' + class_id + ',' + UID  + ',' + tag + ',\'NONE\');'
     c.execute (command)
     conn.commit()
+    return
 
 
-#TODO def joinClass for students when the time comes
-
-def createSession(class_id):
-    currTime = datetime.datetime.now()
-    currTime = "\'" + currTime + "\'"
+def joinClass(class_id, newUID):
+    newUID = "\'" + newUID + "\'"
     class_id = "\'" + class_id + "\'"
-    command = 'select session_id from SESSION where class_id = ' + str(class_id) + ';'
-    #get last session id, increment
+    command = 'select students from CLASSES where class_id ' + str(class_id) + ';'
     c.execute(command)
     row = c.fetchone()
-    last_session = int(row[0])
-    session_id = last_session + 1
+    students = row[0]
+    #check if any student has enrolled
+    if students == 'NONE':
+        students = newUID
+    else: #add UID to list of students
+        students = students + ',' + newUID
     c.execute('PRAGMA journal_mode=wal')
-    command = 'insert into SESSION values (' + str(session_id) + ',' + str(class_id) + ',' + currTime + ');'
+    #update list of students
+    command = 'update CLASSES SET students = ' + students + ' where class_id = ' + class_id + ';'
     c.execute(command)
     conn.commit()
-    return session_id 
-
-def joinSession(session_id, UID,result):
-    #TODO run openface and nfc, let result = && of that; also in server, result should be returned to user
-    UID = "\'" + UID + "\'"
-    c.execute('PRAGMA journal_mode=wal')
-    command = 'insert into ATTENDANCE values (' + str(session_id) + ',' + UID + ',' + str(result) + ');'
-    c.execute(command)
-    conn.commit()
-    return result #TODO figure out how this will work
-
-#TODO check current tag key for attendance; 
+    return
 
 def getIntructors(class_id):
+    class_id = "\'" + class_id + "\'"
     instructors = []
     command = 'select instructor, other from CLASSES where class_ID = ' + class_id + ';'
     c.execute(command)
@@ -132,16 +126,66 @@ def getIntructors(class_id):
     conn.commit()
     return instructors #array of instructors
 
+def createSession(class_id):
+    currTime = datetime.datetime.now()
+    currTime = "\'" + currTime + "\'"
+    class_id = "\'" + class_id + "\'"
+    command = 'select session_id from SESSION where class_id = ' + class_id + ';'
+    #get last session id, increment
+    c.execute(command)
+    row = c.fetchone()
+    last_session = int(row[0])
+    session_id = last_session + 1
+    c.execute('PRAGMA journal_mode=wal')
+    command = 'insert into SESSION values (' + str(session_id) + ',' + class_id + ',' + currTime + ');'
+    c.execute(command)
+    conn.commit()
+    return session_id 
+
+def joinSession(session_id, UID):
+    UID = "\'" + UID + "\'"
+    c.execute('PRAGMA journal_mode=wal')
+    command = 'insert into ATTENDANCE values (' + str(session_id) + ',' + UID + ', 0);'
+    c.execute(command)
+    conn.commit()
+    return 
+
+def getKey(session_id,tag_id):
+    tag_id = "\'" + tag_id + "\'"
+    command = 'select key from NFC where session_id = ' + str(session_id) + ' AND tag_id = ' + tag_id + ';'
+    c.execute(command)
+    row  = c.fetchone()
+    conn.commit()
+    return int(row[0]) #int of current key value
+
+def updateKey(session_id,tag_id, newKey):
+    tag_id = "\'" + tag_id + "\'"
+    c.execute('PRAGMA journal_mode=wal')
+    command = 'update NFC SET key = ' + str(newKey) + 'where session_id = ' + str(session_id) + ' AND tag_id = ' + tag_id + ';'
+    c.execute(command)
+    conn.commit()
+    return
+
 def getAttendanceResult(session_id, UID):
     UID = "\'" + UID + "\'"
-    command = 'select result from Attendance where session_ID = ' + str(session_id) + 'AND student_ID = ' + UID + ';'    
+    command = 'select result from Attendance where session_ID = ' + str(session_id) + ' AND student_id = ' + UID + ';'    
     c.execute(command)
     row = c.fetchone()
     conn.commit()
-    return row[0] #return attendance result for given session and uid
+    return int(row[0]) #return attendance result for given session and uid
+
+def updateAttendanceResult(session_id,UID,newResult):
+    UID = "\'" + UID + "\'"
+    c.execute('PRAGMA journal_mode=wal')
+    command = 'update ATTENDANCE SET result = ' + str(newResult) + ' where session_id = ' + str(session_id) + ' AND student_id = ' + UID + ';'
+    c.execute(command)
+    conn.commit()
+    return 
+
 
 def getSessions(class_id):
-    command = 'select session_ID from Session where class_ID = ' + str(class_id) + ';'
+    class_id = "\'" + class_id + "\'"
+    command = 'select session_ID from Session where class_ID = ' + class_id + ';'
     c.execute(command)
     rows = c.fetchall()
     sessions = [] 
@@ -149,7 +193,14 @@ def getSessions(class_id):
         sessions.append(row[0])
     return sessions    #return array of sessions
 
-
+def sessionParticipants(session_id):
+    command = 'select student_id from Attendance where session_ID = ' + str(session_id)  + ' AND result = 3;'    
+    c.execute(command)
+    rows = c.fetchall()
+    participants = []
+    for row in rows:
+        participants.append(row[0])
+    return participants #return array of participants
 
 #FEEDBACK FUNCTIONS *subset of SESSION
 #TODO do we need feedback_type?
@@ -161,22 +212,20 @@ def addFeedback(UID, session_id, feedback_type, description):
     command = 'insert into FEEDBACK values (' + str(session_id) + ',' + UID + ',' + feedback_type +',' + description + ');'
     c.execute(command)
     conn.commit()
-
+    return
 
 def getFeedback(session_id):
     #data needs to be inputted into textfile, will be named by session_id
     filename = session_id + ".txt"
     f = open(filename,"w")
-    
     command = 'select type, description from FEEDBACK where session_ID = ' + str(session_id) + ';'
     c.execute(command)
     rows = c.fetchall()
     for row in rows:
-        f.write(row)
+        f.write(row[0])
     f.close()
     conn.commit()
     return filename #returns resulting text file
-
 
 def createStudyGroup(UID, datetime, duration, location, participants,name):
     UID = "\'" + UID + "\'"
@@ -235,23 +284,3 @@ def addIssue(UID, issue_type, description):
 
 #TODO UID != netid (maybe add attribute to profiles) and add getNetid method
 
-#TEST ONE OF THE FUNCTIONS HERE
-'''
-class_id = '01:198:211:04'
-instructor = 'pp649'
-addClass(class_id, instructor)
-
-insertProfile('pp649','priya','parikh','student',0,'198:211')
-getName('pp649')
-conn.commit()
-
-showStudyGroups()
-
-session_id = 0
-netid = 'pp649'
-getAttendanceResult(session_id,netid)
-
-createStudyGroup('pp649', 'today', 1, 'rutgers', 'just me and ryan','the best study group ever')
-
-conn.close()
-'''
