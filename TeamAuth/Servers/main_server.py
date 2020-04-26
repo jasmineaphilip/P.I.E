@@ -445,11 +445,12 @@ def client_accept():
 			location = data_entries[1]
 			duration = data_entries[2]
 			other_netids = data_entries[3]
+			name = data_entries[4]
 			
 			#TODO DID BY PRIYA
-			writeDB(db.createStudyGroup, uid, time, duration, location, other_netids)
+			writeDB(db.createStudyGroup, uid, time, duration, location, other_netids, name)
 			
-			print (auth.get_user(uid).display_name + " created a group session on {} at {}.".format(time, location))
+			print ("Created a group session on {} at {}.".format(time, location))
 			command_socket.sendto(returnPacket.formatData("Created a group session on {} at {}.".format(time, location)), addr)
 		
 		elif (packetID == SHOW_STUDYGROUPS): #returns array of group ids
@@ -460,7 +461,7 @@ def client_accept():
 			issue_type = data_entries[0]
 			desc = data_entries[1]
 			writeDB(db.addIssue, uid, issue_type, desc)
-			print ("Received issue report from " + auth.get_user(uid).display_name + ".")
+			print ("Received issue report.") # from " + auth.get_user(uid).display_name + ".")
 			command_socket.sendto(returnPacket.formatData("The issue has been reported, thank you!"), addr)	
 				
 		elif (packetID == STOP_SESSION):
@@ -468,7 +469,7 @@ def client_accept():
 			del active_sessions[classID]
 			command_socket.sendto(returnPacket.formatData("Session ended."), addr)
 			
-		elif (packetID = GET_CURRENT_SESSION):
+		elif (packetID == GET_CURRENT_SESSION):
 			classID = data_entries[0]
 			if classID in active_sessions:
 				sessionID = active_sessions[classID]

@@ -132,14 +132,11 @@ def getInstructors(class_id):
 
 def getNewSessionID(class_id):
 	class_id = "\'" + class_id + "\'"
-	command = 'select session_id from SESSION where class_id = ' + class_id + ';'
+	command = 'select session_id from SESSION;' # where class_id = ' + class_id + ';'
 	#get last session id, increment
 	c.execute(command)
-	row = c.fetchone()
-	if row == None:
-		last_session = 0
-	else:
-		last_session = int(row[0])
+	rows = c.fetchall()
+	last_session = len(rows)
 	session_id = last_session + 1
 	return session_id
 	
@@ -250,7 +247,7 @@ def getFeedback(session_id):
 	conn.commit()
 	return filename #returns resulting text file
 
-def createStudyGroup(UID, datetime, duration, location, participants,name):
+def createStudyGroup(UID, datetime, duration, location, participants, name):
 	UID = "\'" + UID + "\'"
 	datetime = "\'" + datetime + "\'"   
 	location = "\'" + location + "\'"
@@ -259,8 +256,8 @@ def createStudyGroup(UID, datetime, duration, location, participants,name):
 	command = 'select group_ID from STUDYGROUP;'
 	#get last session id, increment
 	c.execute(command)
-	row = c.fetchone()
-	last_session = int(row[0])
+	rows = c.fetchall()
+	last_session = len(rows)
 	group_id = last_session + 1
 	c.execute('PRAGMA journal_mode=wal')
 	command = 'insert into STUDYGROUP values (' + str(group_id) + ',' + datetime + ',' + str(duration) + ',' + UID + ',' + location + ',' + participants + ',' + name + ');'
@@ -291,7 +288,7 @@ def showGroupInfo(group_ID):
 def addIssue(UID, issue_type, description):
 	currTime = datetime.datetime.now()
 	UID = "\'" + UID + "\'"
-	currTime = "\'" + currTime + "\'"   
+	currTime = "\'" + str(currTime) + "\'"   
 	issue_type = "\'" + issue_type + "\'"
 	description = "\'" + description + "\'"	 
 	command = 'select issue_ID from ISSUES;'
