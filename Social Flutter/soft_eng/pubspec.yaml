@@ -27,6 +27,7 @@ dependencies:
   firebase_core: ^0.4.0+9
   firebase_auth: ^0.14.0+5
   google_sign_in: ^4.4.4
+  nfc_in_flutter: 2.0.2
 
 
 dev_dependencies:
