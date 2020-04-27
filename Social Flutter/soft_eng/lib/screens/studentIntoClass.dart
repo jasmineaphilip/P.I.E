@@ -347,7 +347,7 @@ class _StudentIntoClassState extends State<StudentIntoClass> {
       }
     }
     if (bottomTTS || allTTS) {
-      spokenByTTS += "At the bottom therer are 2 buttons...";
+      spokenByTTS += "At the bottom there are 2 buttons...";
       spokenByTTS += "Left button is Class View...";
       spokenByTTS += "Right button is Join Session...";
     }
@@ -363,7 +363,7 @@ class _StudentIntoClassState extends State<StudentIntoClass> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _pageOptions = [
-      StudentClassView(classTitle: widget.classTitle),
+      StudentClassView(),
       JoinSessionWidget(),
       //Login(),
     ];

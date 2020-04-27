@@ -364,7 +364,7 @@ class _InstructorIntoClassState extends State<InstructorIntoClass> {
       }
     }
     if (bottomTTS || allTTS) {
-      spokenByTTS += "At the bottom therer are 3 buttons...";
+      spokenByTTS += "At the bottom there are 3 buttons...";
       spokenByTTS += "Left button is Class View...";
       spokenByTTS += "Middle button is Start Session...";
       spokenByTTS += "Right button is Past Session...";

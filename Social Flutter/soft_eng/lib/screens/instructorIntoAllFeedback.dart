@@ -363,7 +363,7 @@ class _InstructorIntoAllFeedbackState extends State<InstructorIntoAllFeedback> {
       }
     }
     if (bottomTTS || allTTS) {
-      spokenByTTS += "At the bottom therer are 3 buttons...";
+      spokenByTTS += "At the bottom there are 3 buttons...";
       spokenByTTS += "Left button is All Feedback...";
       spokenByTTS += "Middle button is Past Session...";
       spokenByTTS += "Right button is Class View...";
