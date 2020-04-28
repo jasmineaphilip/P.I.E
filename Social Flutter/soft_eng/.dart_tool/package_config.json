@@ -68,10 +68,28 @@
       "languageVersion": "2.2"
     },
     {
+      "name": "flutter_tts",
+      "rootUri": "file:///C:/Users/parth/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_tts-0.9.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
+      "name": "flutter_web_plugins",
+      "rootUri": "file:///C:/Users/parth/flutter/packages/flutter_web_plugins",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
       "name": "image",
       "rootUri": "file:///C:/Users/parth/flutter/.pub-cache/hosted/pub.dartlang.org/image-2.1.4",
       "packageUri": "lib/",
       "languageVersion": "2.0"
+    },
+    {
+      "name": "json_annotation",
+      "rootUri": "file:///C:/Users/parth/flutter/.pub-cache/hosted/pub.dartlang.org/json_annotation-3.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.6"
     },
     {
       "name": "matcher",
@@ -128,6 +146,12 @@
       "languageVersion": "1.8"
     },
     {
+      "name": "speech_to_text",
+      "rootUri": "file:///C:/Users/parth/flutter/.pub-cache/hosted/pub.dartlang.org/speech_to_text-1.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
       "name": "stack_trace",
       "rootUri": "file:///C:/Users/parth/flutter/.pub-cache/hosted/pub.dartlang.org/stack_trace-1.9.3",
       "packageUri": "lib/",
@@ -182,7 +206,11 @@
       "languageVersion": "2.3"
     }
   ],
+<<<<<<< Updated upstream
   "generated": "2020-04-26T20:13:55.109395Z",
+=======
+  "generated": "2020-04-27T01:31:46.303433Z",
+>>>>>>> Stashed changes
   "generator": "pub",
   "generatorVersion": "2.7.0"
 }

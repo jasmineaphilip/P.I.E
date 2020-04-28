@@ -1,1 +1,5 @@
+<<<<<<< Updated upstream
 {"_info":"// This is a generated file; do not edit or check into version control.","dependencyGraph":[{"name":"nfc_in_flutter","dependencies":[]}]}
+=======
+{"_info":"// This is a generated file; do not edit or check into version control.","dependencyGraph":[{"name":"flutter_tts","dependencies":[]},{"name":"nfc_in_flutter","dependencies":[]},{"name":"speech_to_text","dependencies":[]}]}
+>>>>>>> Stashed changes
