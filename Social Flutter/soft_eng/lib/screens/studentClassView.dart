@@ -254,8 +254,6 @@ class _StudentClassViewState extends State<StudentClassView> {
                 padding: const EdgeInsets.only(top: 5),
                 child: AddClassButton(),
               ),
-              Text(
-                  'idk which join session looks cooler so theres 2 for now lol'),
               MaterialButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/studentFeedbackForm');
