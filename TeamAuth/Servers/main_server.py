@@ -386,10 +386,12 @@ def client_accept():
 		elif (packetID == NFC_SIGNIN): #return 0 or 1 for pass fail
 			sessionID = data_entries[0]
 			key = data_entries[1]
-			currKey = db.getKey(sessionID)
-			if (key == currKey): #current keys match, generate new key and see i
+			currKeys = db.getKey(sessionID) #returns array of keys
+			if key in currKeys: #current keys match, generate new key and see i
 				newKey = generate_key()
 				writeDB(db.updateKey, sessionID, newKey) 
+				command_socket.sendto(returnPacket.formatData(newKey), addr)
+
 				#check current status of users attendance
 				currAttendance = db.getAttendanceResult(sessionID, uid)
 				if (currAttendance == 0):
@@ -399,7 +401,6 @@ def client_accept():
 					#facial and nfc both done, update val to 3
 					writeDB(db.updateAttendanceResult, sessionID, uid, 3)  
 
-				command_socket.sendto(returnPacket.formatData("NFC: Successful!"), addr)
 			else: 
 				command_socket.sendto(returnPacket.formatData("Error: Keys don't match!"), addr)
 
@@ -454,7 +455,7 @@ def client_accept():
 			command_socket.sendto(returnPacket.formatData("Created a group session on {} at {}.".format(time, location)), addr)
 		
 		elif (packetID == SHOW_STUDYGROUPS): #returns array of group ids
-  			groups = db.showStudyGroups()
+			groups = db.showStudyGroups()
 			command_socket.sendto(returnPacket.formatData(tuple(groups)), addr)
 		
 		elif (packetID == REPORT_ISSUE):
