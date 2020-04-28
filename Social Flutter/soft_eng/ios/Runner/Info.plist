@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>NSSpeechRecognitionUsageDescription</key>
-	<string>$(EXECUTABLE_NAME) requests SpeechRecog</string>
-    <key>NSMicrophoneUsageDescription</key>
-	<string>$(EXECUTABLE_NAME) requests Mic</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -45,5 +41,16 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.233904932720-411r1dv5id86dti4rg8kkh82ni1njilt</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

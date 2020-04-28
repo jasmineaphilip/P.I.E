@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:soft_eng/screens/profileScreen.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 Map<int, Color> customGreen = {
   900: Color.fromRGBO(88, 186, 159, 1),
@@ -87,64 +91,154 @@ class _LoginState extends State<Login> {
                 ),
               ),
             ),
-            RaisedButton(
-              onPressed: () {
-                Navigator.pushNamed(context,
-                    '/instructorHome'); //CHANGE TO REDIRECT TO GOOGLE AUTH
-              },
-              child: Text(
-                'Sign up',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                ),
-              ),
-              color: purple,
-            ),
-            Expanded(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      RaisedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context,
-                              '/instructorHome'); //CHANGE TO REDIRECT TO GOOGLE AUTH
-                        },
-                        child: Text(
-                          'Instructor',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                          ),
-                        ),
-                        color: green,
-                      ),
-                      RaisedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context,
-                              '/studentHome'); //CHANGE TO REDIRECT TO GOOGLE AUTH
-                        },
-                        child: Text(
-                          'Student',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                          ),
-                        ),
-                        color: green,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            // RaisedButton(
+            //   onPressed: () {
+            //     Navigator.pushNamed(context,
+            //         '/instructorHome'); //CHANGE TO REDIRECT TO GOOGLE AUTH
+            //   },
+            //   child: Text(
+            //     'Sign up',
+            //     style: TextStyle(
+            //       color: Colors.white,
+            //       fontSize: 20,
+            //     ),
+            //   ),
+            //   color: purple,
+            // ),
+            GoogleSignApp(),
+            // Padding(
+            //   padding: const EdgeInsets.only(top: 250),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //     children: <Widget>[
+            //       RaisedButton(
+            //         onPressed: () {
+            //           Navigator.pushNamed(context,
+            //               '/instructorHome'); //CHANGE TO REDIRECT TO GOOGLE AUTH
+            //         },
+            //         child: Text(
+            //           'Instructor',
+            //           style: TextStyle(
+            //             color: Colors.white,
+            //             fontSize: 20,
+            //           ),
+            //         ),
+            //         color: green,
+            //       ),
+            //       RaisedButton(
+            //         onPressed: () {
+            //           Navigator.pushNamed(context,
+            //               '/studentHome'); //CHANGE TO REDIRECT TO GOOGLE AUTH
+            //         },
+            //         child: Text(
+            //           'Student',
+            //           style: TextStyle(
+            //             color: Colors.white,
+            //             fontSize: 20,
+            //           ),
+            //         ),
+            //         color: green,
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),
     );
   }
+}
+
+class GoogleSignApp extends StatefulWidget {
+  @override
+  _GoogleSignAppState createState() => _GoogleSignAppState();
+}
+
+class _GoogleSignAppState extends State<GoogleSignApp> {
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final GoogleSignIn _googlSignIn = new GoogleSignIn();
+
+  Future<FirebaseUser> _signIn(BuildContext context) async {
+    // Scaffold.of(context).showSnackBar(new SnackBar(
+    //   content: new Text('Sign in'),
+    // ));
+
+    final GoogleSignInAccount googleUser = await _googlSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    FirebaseUser userDetails =
+        await _firebaseAuth.signInWithCredential(credential);
+    ProviderDetails providerInfo = new ProviderDetails(userDetails.providerId);
+
+    List<ProviderDetails> providerData = new List<ProviderDetails>();
+    providerData.add(providerInfo);
+
+    UserDetails details = new UserDetails(
+      userDetails.providerId,
+      userDetails.displayName,
+      userDetails.photoUrl,
+      userDetails.email,
+      providerData,
+    );
+    Navigator.push(
+      context,
+      new MaterialPageRoute(
+        builder: (context) => ProfileScreen(detailsUser: details),
+      ),
+    );
+    return userDetails;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 30, right: 30),
+      child: RaisedButton(
+        shape: RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(30.0)),
+        color: Color(0xffffffff),
+        onPressed: () => _signIn(context)
+            .then((FirebaseUser user) => print(user))
+            .catchError((e) => print(e)),
+        child: Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Icon(
+                FontAwesomeIcons.google,
+                color: purple,
+              ),
+              SizedBox(width: 55),
+              Text(
+                'Sign in with Google',
+                style: TextStyle(color: Colors.black, fontSize: 18.0),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class UserDetails {
+  final String providerDetails;
+  final String userName;
+  final String photoUrl;
+  final String userEmail;
+  final List<ProviderDetails> providerData;
+
+  UserDetails(this.providerDetails, this.userName, this.photoUrl,
+      this.userEmail, this.providerData);
+}
+
+class ProviderDetails {
+  ProviderDetails(this.providerDetails);
+  final String providerDetails;
 }

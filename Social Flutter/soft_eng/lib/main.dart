@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:soft_eng/screens/instructorHome.dart';
 import 'package:soft_eng/screens/login.dart';
+import 'package:soft_eng/screens/profileScreen.dart';
 import 'package:soft_eng/screens/instructorClassView.dart';
 import 'package:soft_eng/screens/instructorStartSession.dart';
 import 'package:soft_eng/screens/instructorliveSession.dart';
@@ -19,6 +20,7 @@ void main() => runApp(MaterialApp(
       routes: {
         //map with key value pairs
         '/': (context) => Login(),
+        '/profileScreen': (context) => ProfileScreen(),
         '/instructorHome': (context) => InstructorHome(),
         '/instructorClassView': (context) => InstructorClassView(),
         '/instructorStartSession': (context) => InstructorStartSession(),
