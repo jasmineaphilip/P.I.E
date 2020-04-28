@@ -20,7 +20,10 @@ import 'package:flutter_tts/flutter_tts.dart';
 //
 class InstructorIntoClass extends StatefulWidget {
   final String classTitle;
-  InstructorIntoClass({String classTitle}) : this.classTitle = (classTitle != null) ? classTitle : "Class View"; //IF NULL it reports as Class View
+  final String classID;
+  InstructorIntoClass({String classTitle, String classID}) :
+        this.classTitle = (classTitle != null) ? classTitle : "Class View",
+        this.classID = (classID != null) ? classID : "123"; //IF NULL it reports as Class View
 
   @override
   _InstructorIntoClassState createState() => _InstructorIntoClassState();
@@ -353,13 +356,25 @@ class _InstructorIntoClassState extends State<InstructorIntoClass> {
     //Body section
     if (bodyTTS || allTTS) {
       if(_selectedPage == 0){
-        spokenByTTS += "Class View Body needs to be edited...";
+        spokenByTTS += "Body Discription info list, from top to bottom:...";
+        spokenByTTS += "Class Info";
+        spokenByTTS += "with Class ID: " + widget.classID + "...";
+        spokenByTTS += "Add meeting times in the times field:";
+        spokenByTTS += "...";
+        spokenByTTS += "Add Location in the location field:";
+        spokenByTTS += "...";
+        spokenByTTS += "Put your name in professor field: ";
+        spokenByTTS += "...";
+        spokenByTTS += "put Teacher Assistant names in the T A fields:";
+        spokenByTTS += "...";
+        spokenByTTS += "Update button on the bottom of the screen:";
+        spokenByTTS += "...";
 
       } else if(_selectedPage == 1){
-        spokenByTTS += "Start Session Body needs to be edited...";
+        spokenByTTS += "here you can Start Session for" + widget.classTitle + " by clicking on the start button...";
 
       } else if(_selectedPage == 2){
-        spokenByTTS += "Past Session Body needs to be edited...";
+        spokenByTTS += "Here is the screen for past sessions...";
 
       }
     }
@@ -379,8 +394,8 @@ class _InstructorIntoClassState extends State<InstructorIntoClass> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _pageOptions = [
-      InstructorClassView(classTitle: widget.classTitle),
-      InstructorStartSession(),
+      InstructorClassView(classTitle: widget.classTitle, classID: widget.classID),
+      InstructorStartSession(classTitle: widget.classTitle),
       InstructorPastSessions(),
       //Login(),t
     ];

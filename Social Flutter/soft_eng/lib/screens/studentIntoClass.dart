@@ -324,33 +324,83 @@ class _StudentIntoClassState extends State<StudentIntoClass> {
       bool startTTS = false,
       bool underBoxTTS = false*/}) async {
     //WE USE "..." to induce a pause between sections
-    if (headerTTS || allTTS) {
-      if(_selectedPage == 0){//Class view
-        (widget.classTitle.toLowerCase() != "class view")
-            ? spokenByTTS +=
-            "You are on the Class View page of " + widget.classTitle + "..."
-            : spokenByTTS += "You are on the Class View page...";
+    if(widget.classTitle.toLowerCase() == "temp class"){ //test class
+      if (headerTTS || allTTS) {
+        if(_selectedPage == 0){//Class view
+          (widget.classTitle.toLowerCase() != "class view")
+              ? spokenByTTS +=
+              "You are on the Class View page of " + widget.classTitle + "..."
+              : spokenByTTS += "You are on the Class View page...";
 
-      } else if(_selectedPage == 1){//Start Session
-        spokenByTTS += "You are on the Join Session Page..." ;
+        } else if(_selectedPage == 1){//Start Session
+          spokenByTTS += "You are on the Join Session Page..." ;
 
+        }
+      }
+      //Body section
+      if (bodyTTS || allTTS) {
+        if(_selectedPage == 0){
+          spokenByTTS += "Body Discription info:...";
+          spokenByTTS += "Class Info";
+          spokenByTTS += "Class ID: 1 2 5 4 3 3 5...";
+          spokenByTTS += "Times:";
+          spokenByTTS += "2 o'clock to 3 20...";
+          spokenByTTS += "Location:";
+          spokenByTTS += "Center of Coding...";
+          spokenByTTS += "Professor: ";
+          spokenByTTS += "Professor Bui...";
+          spokenByTTS += "Teacher Assistant:";
+          spokenByTTS += "Keen...";
+          spokenByTTS += "Button:";
+          spokenByTTS += "Join Session...";
+        } else if(_selectedPage == 1){
+          spokenByTTS += "Body Discription take a selfie for Identification...";
+
+        }
+      }
+      if (bottomTTS || allTTS) {
+        spokenByTTS += "At the bottom there are 2 buttons...";
+        spokenByTTS += "Left button is Class View...";
+        spokenByTTS += "Right button is Join Session...";
+      }
+    } else{
+      if (headerTTS || allTTS) {
+        if(_selectedPage == 0){//Class view
+          (widget.classTitle.toLowerCase() != "class view")
+              ? spokenByTTS +=
+              "You are on the Class View page of " + widget.classTitle + "..."
+              : spokenByTTS += "You are on the Class View page...";
+
+        } else if(_selectedPage == 1){//Start Session
+          spokenByTTS += "You are on the Join Session Page..." ;
+
+        }
+      }
+      //Body section
+      if (bodyTTS || allTTS) {
+        if(_selectedPage == 0){
+          spokenByTTS += "Body Discription info:...";
+          spokenByTTS += "Class Info";
+          spokenByTTS += "Class ID:"+ ""/*classID*/ +" ...";
+          spokenByTTS += "Times:"+ ""/*classTimes*/ +" ...";
+          spokenByTTS += "Location: "+ ""/*classLocal*/ +" ...";
+          spokenByTTS += "Professor: "+ ""/*classProf*/ +" ...";
+          spokenByTTS += "TA: "+ ""/*classTA*/ +" ...";
+          spokenByTTS += "Button:";
+          spokenByTTS += "Join Session...";
+          spokenByTTS += "Preview Session Feedback...";
+        } else if(_selectedPage == 1){
+          spokenByTTS += "Body Discription take a selfie for Identification...";
+
+        }
+      }
+      if (bottomTTS || allTTS) {
+        spokenByTTS += "At the bottom there are 2 buttons...";
+        spokenByTTS += "Left button is Class View...";
+        spokenByTTS += "Right button is Join Session...";
       }
     }
-    //Body section
-    if (bodyTTS || allTTS) {
-      if(_selectedPage == 0){
-        spokenByTTS += "Class View Body needs to be edited...";
 
-      } else if(_selectedPage == 1){
-        spokenByTTS += "Join Session Body needs to be edited...";
-
-      }
-    }
-    if (bottomTTS || allTTS) {
-      spokenByTTS += "At the bottom there are 2 buttons...";
-      spokenByTTS += "Left button is Class View...";
-      spokenByTTS += "Right button is Join Session...";
-    }
     await flutterTts.setLanguage("en-US"); //English only
     await flutterTts.speak(spokenByTTS);
   }
@@ -363,7 +413,7 @@ class _StudentIntoClassState extends State<StudentIntoClass> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _pageOptions = [
-      StudentClassView(),
+      StudentClassView(classTitle: widget.classTitle),
       JoinSessionWidget(),
       //Login(),
     ];
