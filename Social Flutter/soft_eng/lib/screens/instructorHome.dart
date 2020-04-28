@@ -4,6 +4,13 @@ import 'package:soft_eng/screens/instructorIntoClass.dart';
 import 'package:soft_eng/screens/login.dart';
 import 'package:flutter/cupertino.dart';
 
+class Tdata {
+  String className;
+  String classID;
+
+  Tdata(this.className, this.classID);
+}
+
 class InstructorHome extends StatefulWidget {
   //final String className;
   //final String classID;
@@ -16,8 +23,11 @@ class InstructorHome extends StatefulWidget {
 }
 
 class _InstructorHomeState extends State<InstructorHome> {
-  final List<String> classNames = [];
+  final List<Tdata> classNames = [];
   final classNameController = TextEditingController();
+  final classIDController = TextEditingController();
+  String tempName;
+  String tempID;
   //List<String> _classNames = List<String>();
 
   // void updateClassList(List<String> classList) {
@@ -43,82 +53,57 @@ class _InstructorHomeState extends State<InstructorHome> {
         backgroundColor: green,
       ),
       body: Container(
-        child: Center(
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 50.0,
-                ),
-                child: Text(
-                  'Class List',
-                  style: TextStyle(
-                    color: purple,
-                    fontSize: 30.0,
-                    fontFamily: 'Avenir',
+        child: Column(
+          children: <Widget>[
+            Expanded(
+                child: ListView(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: 25.0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'Class List',
+                        style: TextStyle(
+                          color: purple,
+                          fontSize: 30.0,
+                          fontFamily: 'Avenir',
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              // ListView(
-              //   children: classItem
-              //       .map(
-              //         (element) => Text(element),
-              //       )
-              //       .toList(),
-              // ),
-
-              // RaisedButton(
-              //   color: Colors.blue,
-              //   child: Text(
-              //     'Add Class',
-              //     style: TextStyle(color: Colors.white),
-              //   ),
-              //   onPressed: () {
-              //     moveToSecondPage();
-              //   },
-              // ),
-              // TextField(
-              //     controller: classNameController,
-              //     onSubmitted: (className) {
-              //       classNames.add(className);
-              //       classNameController.clear();
-              //       setState(() {});
-              //     }),
-              SizedBox(
-                height: 200,
-                width: 100,
-                // child: ListView(
-                //   shrinkWrap: true,
-                //   children: _classNames
-                //       .map((element) =>
-                //           Text(element, style: TextStyle(color: Colors.black)))
-                //       .toList(),
-                // ),
-                child: ListView.builder(
-                  itemBuilder: (BuildContext context, int index) {
-                    // return Text(classNames[index]);
-                    return InkWell(
-                      onTap: () => {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => InstructorIntoClass(
-                                      classTitle: classNames[index],
-                                    )))
-                      },
-                      child: Column(
-                        children: <Widget>[
-                          Padding(padding: new EdgeInsets.all(3.0)),
-                          Text(classNames[index])
-                        ],
-                      ),
-                    );
-                  },
-                  itemCount: classNames.length,
+                SizedBox(
+                  height: 200,
+                  width: 100,
+                  child: ListView.builder(
+                    itemBuilder: (BuildContext context, int index) {
+                      // return Text(classNames[index]);
+                      return InkWell(
+                        onTap: () => {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => InstructorIntoClass(
+                                    classTitle: classNames[index].className,
+                                    classID: classNames[index].classID,
+                                      )))
+                        },
+                        child: Column(
+                          children: <Widget>[
+                            Padding(padding: new EdgeInsets.all(3.0)),
+                            Text(classNames[index].className)
+                          ],
+                        ),
+                      );
+                    },
+                    itemCount: classNames.length,
+                  ),
                 ),
-              ),
-              Expanded(
-                child: Align(
+                Align(
                   alignment: FractionalOffset.bottomCenter,
                   child: Container(
                     child: Column(
@@ -153,9 +138,8 @@ class _InstructorHomeState extends State<InstructorHome> {
                                   controller: classNameController,
                                   decoration: InputDecoration.collapsed(
                                       hintText: 'Class Name'),
-                                  onSubmitted: (className) {
-                                    classNames.add(className);
-                                    classNameController.clear();
+                                  onChanged: (inputName) {
+                                    tempName = inputName;
                                     setState(() {});
                                   },
                                 ),
@@ -170,29 +154,59 @@ class _InstructorHomeState extends State<InstructorHome> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: TextField(
-                                  //controller: classIDTextController,
+                                  controller: classIDController,
                                   decoration: InputDecoration.collapsed(
                                       hintText: 'Class ID'),
-
+                                  onChanged: (inputID) {
+                                    tempID = inputID;
+                                    setState(() {});
+                                  },
                                   // onChanged: (classID) {
                                   //   classIDs.add(classID);
                                   // },
                                 ),
                               ),
-                              SizedBox(
-                                width: 100,
-                                child: MaterialButton(
-                                    onPressed: () {
-                                      classNameController.clear();
-                                    },
-                                    minWidth: 10.0,
-                                    color: green,
-                                    child: Text(
-                                      'Cancel',
-                                      style: TextStyle(
-                                        color: Colors.white,
+                              Expanded(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    MaterialButton(
+                                      onPressed: () {
+                                        classNames.add(Tdata(tempName,tempID));
+                                        tempName = "";
+                                        tempID = "";
+                                        classNameController.clear();
+                                        classIDController.clear();
+                                        setState(() {});
+                                      },
+                                      minWidth: 10.0,
+                                      color: green,
+                                      child: Text(
+                                        'Create Class',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                    )),
+                                    ),
+                                    MaterialButton(
+                                      onPressed: () {
+                                        tempName = "";
+                                        tempID = "";
+                                        classNameController.clear();
+                                        classIDController.clear();
+                                        setState(() {});
+                                      },
+                                      minWidth: 10.0,
+                                      color: green,
+                                      child: Text(
+                                        'Cancel',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               )
                             ],
                           ),
@@ -201,15 +215,15 @@ class _InstructorHomeState extends State<InstructorHome> {
                     ),
                   ),
                 ),
-              ),
-              // FlatButton(
-              //   onPressed: () {
-              //     Navigator.pushNamed(context, '/instructorIntoClass');
-              //   },
-              //   child: Text('Class View temp button'),
-              // ),
-            ],
-          ),
+              ],
+            )),
+            // FlatButton(
+            //   onPressed: () {
+            //     Navigator.pushNamed(context, '/instructorIntoClass');
+            //   },
+            //   child: Text('Class View temp button'),
+            // ),
+          ],
         ),
       ),
     );

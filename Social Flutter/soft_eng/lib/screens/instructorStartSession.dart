@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:soft_eng/screens/login.dart';
 
 class InstructorStartSession extends StatefulWidget {
+  final String classTitle;
+  InstructorStartSession({String classTitle}) :
+        this.classTitle = (classTitle != null) ? classTitle : "Class Name"; //IF NULL it reports as Class View
   @override
   _InstructorStartSessionState createState() => _InstructorStartSessionState();
 }
@@ -25,7 +28,7 @@ class _InstructorStartSessionState extends State<InstructorStartSession> {
                   bottom: 75,
                 ),
                 child: Text(
-                  'Start Session for \n CLASS NAME?',
+                  'Start Session for \n' + widget.classTitle,
                   style: TextStyle(
                     color: purple,
                     fontSize: 30.0,

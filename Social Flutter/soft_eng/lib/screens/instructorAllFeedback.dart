@@ -32,7 +32,7 @@ class _InstructorAllFeedbackState extends State<InstructorAllFeedback> {
         backgroundColor: green,
       ),
       body: Container(
-        child: Column(
+        child: ListView(
           children: <Widget>[
             // Container(
             //   height: 100.0,

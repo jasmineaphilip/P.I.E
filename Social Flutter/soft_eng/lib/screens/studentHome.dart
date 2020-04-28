@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:soft_eng/instructorComponents/joinClassSheet.dart';
+import 'package:soft_eng/screens/studentIntoClass.dart';
 import 'package:soft_eng/screens/login.dart';
+
+class Tdata {
+  final String className;
+  final String classID;
+
+  Tdata(this.className, this.classID);
+}
 
 class StudentHome extends StatefulWidget {
   final List<String> classNames;
@@ -46,7 +54,12 @@ class _StudentHomeState extends State<StudentHome> {
                 ),
                 FlatButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/studentIntoClass');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => StudentIntoClass(
+                                  classTitle: "Temp Class",
+                                )));
                   },
                   child: Text('Class View temp button'),
                 ),
@@ -92,7 +105,12 @@ class _StudentHomeState extends State<StudentHome> {
                 ),
                 FlatButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/studentIntoClass');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => StudentIntoClass(
+                                  classTitle: "Temp Class",
+                                )));
                   },
                   child: Text('Class View temp button STUDENT'),
                 ),

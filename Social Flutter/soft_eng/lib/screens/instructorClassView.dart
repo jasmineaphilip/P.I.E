@@ -3,8 +3,10 @@ import 'package:soft_eng/screens/login.dart';
 
 class InstructorClassView extends StatefulWidget {
   final String classTitle;
-  //InstructorIntoClass({this.classTitle, Key key}) : super(key: key);
-  InstructorClassView({String classTitle}) : this.classTitle = classTitle;
+  final String classID;
+  InstructorClassView({String classTitle, String classID}) :
+        this.classTitle = (classTitle != null) ? classTitle : "Class View",
+        this.classID = (classID != null) ? classID : "Connect to ID"; //IF NULL it reports as Class View
   @override
   _InstructorClassViewState createState() => _InstructorClassViewState();
 }
@@ -14,25 +16,30 @@ class _InstructorClassViewState extends State<InstructorClassView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('CLASS NAME'),
+        title: Text(widget.classTitle),
         centerTitle: true,
         backgroundColor: green,
       ),
       body: Container(
         child: Center(
-          child: Column(
+          child: ListView(
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.only(
                   top: 30.0,
                   bottom: 10,
                 ),
-                child: Text(
-                  'Class Info',
-                  style: TextStyle(
-                    color: purple,
-                    fontSize: 45.0,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'Class Info',
+                      style: TextStyle(
+                        color: purple,
+                        fontSize: 45.0,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Padding(
@@ -45,7 +52,7 @@ class _InstructorClassViewState extends State<InstructorClassView> {
                           color: purple,
                           fontSize: 20.0,
                         )),
-                    Text('connect to ID',
+                    Text(widget.classID,
                         style: TextStyle(
                           color: darkPurple,
                           fontSize: 20.0,

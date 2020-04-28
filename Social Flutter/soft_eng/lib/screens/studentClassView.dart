@@ -3,34 +3,54 @@ import 'package:soft_eng/screens/login.dart';
 import 'package:soft_eng/instructorComponents/joinSessionSheet.dart';
 
 class StudentClassView extends StatefulWidget {
+  final String classTitle;
+  StudentClassView({String classTitle}) : this.classTitle = (classTitle != null) ? classTitle : "Class View"; //IF NULL it reports as Class View
   @override
   _StudentClassViewState createState() => _StudentClassViewState();
 }
 
 class _StudentClassViewState extends State<StudentClassView> {
+  String classID = "connect to ID";
+  String times = "Insert Meeting Times";
+  String location = "insert Locations";
+  String prof = "Insert Professor";
+  String teacherA = "Insert TAs";
   @override
   Widget build(BuildContext context) {
+    if(widget.classTitle == "Temp Class")
+      {
+        classID = "1254335";
+        times = "2:00 to 3:20";
+        location = "Center of Coding";
+        prof = "Professor Bui";
+        teacherA = "Keen";
+      }
     return Scaffold(
       appBar: AppBar(
-        title: Text('CLASS NAME'),
+        title: Text(widget.classTitle),
         centerTitle: true,
         backgroundColor: green,
       ),
       body: Container(
         child: Center(
-          child: Column(
+          child: ListView(
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.only(
                   top: 30.0,
                   bottom: 10,
                 ),
-                child: Text(
-                  'Class Info',
-                  style: TextStyle(
-                    color: purple,
-                    fontSize: 45.0,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'Class Info',
+                      style: TextStyle(
+                        color: purple,
+                        fontSize: 45.0,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Padding(
@@ -43,7 +63,7 @@ class _StudentClassViewState extends State<StudentClassView> {
                           color: purple,
                           fontSize: 20.0,
                         )),
-                    Text('connect to ID',
+                    Text(classID,
                         style: TextStyle(
                           color: darkPurple,
                           fontSize: 20.0,
@@ -80,7 +100,7 @@ class _StudentClassViewState extends State<StudentClassView> {
                               decoration: new InputDecoration(
                                 filled: true,
                                 fillColor: Colors.white,
-                                hintText: 'Insert Meeting Times',
+                                hintText: times,
                                 contentPadding: const EdgeInsets.only(
                                     left: 14.0, bottom: 8.0, top: 8.0),
                                 focusedBorder: OutlineInputBorder(
@@ -124,7 +144,7 @@ class _StudentClassViewState extends State<StudentClassView> {
                               decoration: new InputDecoration(
                                 filled: true,
                                 fillColor: Colors.white,
-                                hintText: 'Insert Location',
+                                hintText: location,
                                 contentPadding: const EdgeInsets.only(
                                     left: 14.0, bottom: 8.0, top: 8.0),
                                 focusedBorder: OutlineInputBorder(
@@ -168,7 +188,7 @@ class _StudentClassViewState extends State<StudentClassView> {
                               decoration: new InputDecoration(
                                 filled: true,
                                 fillColor: Colors.white,
-                                hintText: 'Insert Professor',
+                                hintText: prof,
                                 contentPadding: const EdgeInsets.only(
                                     left: 14.0, bottom: 8.0, top: 8.0),
                                 focusedBorder: OutlineInputBorder(
@@ -212,7 +232,7 @@ class _StudentClassViewState extends State<StudentClassView> {
                               decoration: new InputDecoration(
                                 filled: true,
                                 fillColor: Colors.white,
-                                hintText: 'Insert TAs',
+                                hintText: teacherA,
                                 contentPadding: const EdgeInsets.only(
                                     left: 14.0, bottom: 8.0, top: 8.0),
                                 focusedBorder: OutlineInputBorder(
@@ -234,8 +254,6 @@ class _StudentClassViewState extends State<StudentClassView> {
                 padding: const EdgeInsets.only(top: 5),
                 child: AddClassButton(),
               ),
-              Text(
-                  'idk which join session looks cooler so theres 2 for now lol'),
               MaterialButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/studentFeedbackForm');

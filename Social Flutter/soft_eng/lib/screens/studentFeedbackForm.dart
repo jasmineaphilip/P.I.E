@@ -134,19 +134,24 @@ class _StudentFeedbackFormState extends State<StudentFeedbackForm> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 200),
-              child: SizedBox(
-                width: 150,
-                height: 50,
-                child: MaterialButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  color: darkPurple,
-                  child: Text(
-                    'Submit',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 30),
+                  child: SizedBox(
+                    width: 150,
+                    height: 50,
+                    child: MaterialButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      color: darkPurple,
+                      child: Text(
+                        'Submit',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    ),
                   ),
                 ),
               ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:soft_eng/screens/login.dart';
 
 class InstructorPastSessions extends StatefulWidget {
+  final String classTitle;
+  InstructorPastSessions({Key key, this.classTitle}) : super(key: key);
   @override
   _InstructorPastSessionsState createState() => _InstructorPastSessionsState();
 }
