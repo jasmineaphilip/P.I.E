@@ -4,6 +4,7 @@ import 'package:soft_eng/screens/login.dart';
 import 'package:soft_eng/screens/InstructorStartSession.dart';
 import 'package:soft_eng/screens/InstructorPastSessions.dart';
 import 'package:soft_eng/screens/InstructorClassView.dart';
+import 'package:soft_eng/Packet.dart';
 //ACCESSIBILITY TEAM
 //Async
 import 'dart:async';
@@ -393,6 +394,7 @@ class _InstructorIntoClassState extends State<InstructorIntoClass> {
   int _selectedPage = 0;
   @override
   Widget build(BuildContext context) {
+    Packet.currentContext = context;
     List<Widget> _pageOptions = [
       InstructorClassView(classTitle: widget.classTitle, classID: widget.classID),
       InstructorStartSession(classTitle: widget.classTitle),

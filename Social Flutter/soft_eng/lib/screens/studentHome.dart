@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:soft_eng/instructorComponents/joinClassSheet.dart';
 import 'package:soft_eng/screens/studentIntoClass.dart';
 import 'package:soft_eng/screens/login.dart';
+import 'package:soft_eng/Packet.dart';
 
 class Tdata {
   final String className;
@@ -21,6 +22,7 @@ class StudentHome extends StatefulWidget {
 class _StudentHomeState extends State<StudentHome> {
   @override
   Widget build(BuildContext context) {
+    Packet.currentContext = context;
     print('from home');
     print(widget.classNames);
     if (widget.classNames == null) {

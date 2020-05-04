@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:soft_eng/screens/instructorClassView.dart';
 import 'package:soft_eng/screens/login.dart';
+import 'package:soft_eng/Packet.dart';
 
 class InstructorLiveSession extends StatefulWidget {
   @override
@@ -26,6 +27,7 @@ class _InstructorLiveSessionState extends State<InstructorLiveSession> {
   ];
   @override
   Widget build(BuildContext context) {
+    Packet.currentContext = context;
     return Scaffold(
       appBar: AppBar(
         title: Text('Live Session'),

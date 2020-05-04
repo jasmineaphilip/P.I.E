@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\parth\\Documents\\GitHub\\Software-Engineering\\Social Flutter\\soft_eng\\build\\app\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-watch-v20\\values-watch-v20.xml",
+            "outputFile": "C:\\Users\\rdavis\\Software-Engineering\\Social Flutter\\soft_eng\\build\\app\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-watch-v20\\values-watch-v20.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\parth\\.gradle\\caches\\transforms-2\\files-2.1\\bd0a8d594382285b193ad052a2a47f34\\jetified-play-services-auth-16.0.1\\res\\values-watch-v20\\values.xml",
+                    "source": "C:\\Users\\rdavis\\.gradle\\caches\\transforms-2\\files-2.1\\85fde53d188cd68ab5488bb78634bd86\\jetified-play-services-auth-16.0.1\\res\\values-watch-v20\\values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11",
                         "startColumns": "0,0,0,0,0,0,0,0",

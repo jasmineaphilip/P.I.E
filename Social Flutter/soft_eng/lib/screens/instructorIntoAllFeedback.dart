@@ -3,6 +3,7 @@ import 'package:soft_eng/screens/login.dart';
 import 'package:soft_eng/screens/instructorAllFeedback.dart';
 import 'package:soft_eng/screens/instructorClassView.dart';
 import 'package:soft_eng/screens/instructorPastSessions.dart';
+import 'package:soft_eng/Packet.dart';
 
 //ACCESSIBILITY TEAM
 //Async
@@ -383,6 +384,7 @@ class _InstructorIntoAllFeedbackState extends State<InstructorIntoAllFeedback> {
   ];
   @override
   Widget build(BuildContext context) {
+    Packet.currentContext = context;
     return Scaffold(
       // appBar: AppBar(
       //   title: Text('CLASS NAME'),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:soft_eng/screens/login.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:soft_eng/Packet.dart';
 
 class ProfileScreen extends StatelessWidget {
   final UserDetails detailsUser;
@@ -10,6 +11,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Packet.currentContext = context;
     final GoogleSignIn _gSignIn = GoogleSignIn();
 
     return Scaffold(
@@ -31,7 +33,7 @@ class ProfileScreen extends StatelessWidget {
               onPressed: () {
                 _gSignIn.signOut();
                 print('Signed out');
-                Navigator.pop(context);
+                Navigator.popUntil(context, ModalRoute.withName("/"));
               },
             ),
           ],

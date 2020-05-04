@@ -3,6 +3,6 @@
 3    package="io.flutter.plugins.firebaseauth" >
 4
 5    <uses-sdk android:minSdkVersion="16" />
-5-->C:\Users\parth\flutter\.pub-cache\hosted\pub.dartlang.org\firebase_auth-0.8.4+5\android\src\main\AndroidManifest.xml
+5-->C:\Users\rdavis\AppData\Local\Pub\Cache\hosted\pub.dartlang.org\firebase_auth-0.8.4+5\android\src\main\AndroidManifest.xml
 6
 7</manifest>

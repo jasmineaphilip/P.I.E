@@ -3,6 +3,7 @@ import 'package:soft_eng/instructorComponents/addClassSheet.dart';
 import 'package:soft_eng/screens/instructorIntoClass.dart';
 import 'package:soft_eng/screens/login.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:soft_eng/Packet.dart';
 
 class Tdata {
   String className;
@@ -45,6 +46,7 @@ class _InstructorHomeState extends State<InstructorHome> {
 
   @override
   Widget build(BuildContext context) {
+    Packet.currentContext = context;
     //print(_classNames);
     return Scaffold(
       appBar: AppBar(

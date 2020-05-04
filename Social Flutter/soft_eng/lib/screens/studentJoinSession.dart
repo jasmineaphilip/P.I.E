@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:soft_eng/screens/login.dart';
+import 'package:soft_eng/Packet.dart';
 
 class JoinClassWidget extends StatefulWidget {
   @override
@@ -9,6 +10,7 @@ class JoinClassWidget extends StatefulWidget {
 class _JoinClassWidgetState extends State<JoinClassWidget> {
   @override
   Widget build(BuildContext context) {
+    Packet.currentContext = context;
     return Container(
       margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 100),
       height: 200,
@@ -59,6 +61,8 @@ class _JoinClassWidgetState extends State<JoinClassWidget> {
                         minWidth: 10.0,
                         color: green,
                         onPressed: () {
+                          Packet p = new Packet(Packet.IMAGE_SIGNIN, Packet.token, [""]);
+                          sendPacket(p);
                           Navigator.pop(context); //CONNECT TO CAMERA LATER ONNN
                         },
                         child: Text(

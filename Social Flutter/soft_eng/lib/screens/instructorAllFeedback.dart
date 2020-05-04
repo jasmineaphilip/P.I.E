@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:soft_eng/screens/login.dart';
+import 'package:soft_eng/Packet.dart';
 
 class InstructorAllFeedback extends StatefulWidget {
   @override
@@ -25,6 +26,7 @@ class _InstructorAllFeedbackState extends State<InstructorAllFeedback> {
   ];
   @override
   Widget build(BuildContext context) {
+    Packet.currentContext = context;
     return Scaffold(
       appBar: AppBar(
         title: Text('All Feedback'),

@@ -3,6 +3,7 @@ import 'package:soft_eng/screens/profileScreen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:soft_eng/Packet.dart';
 
 Map<int, Color> customGreen = {
   900: Color.fromRGBO(88, 186, 159, 1),
@@ -42,6 +43,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
+    Packet.currentContext = context;
     return Scaffold(
       appBar: AppBar(
         title: Text('Login'),
@@ -151,6 +153,7 @@ class _LoginState extends State<Login> {
 
 class GoogleSignApp extends StatefulWidget {
   @override
+
   _GoogleSignAppState createState() => _GoogleSignAppState();
 }
 
@@ -174,6 +177,9 @@ class _GoogleSignAppState extends State<GoogleSignApp> {
 
     FirebaseUser userDetails =
         await _firebaseAuth.signInWithCredential(credential);
+
+    //FirebaseUser user = await _firebaseAuth.currentUser();
+
     ProviderDetails providerInfo = new ProviderDetails(userDetails.providerId);
 
     List<ProviderDetails> providerData = new List<ProviderDetails>();
@@ -186,13 +192,18 @@ class _GoogleSignAppState extends State<GoogleSignApp> {
       userDetails.email,
       providerData,
     );
-    Navigator.push(
-      context,
-      new MaterialPageRoute(
-        builder: (context) => ProfileScreen(detailsUser: details),
-      ),
-    );
+
+    Packet.userDetails = details;
+    Navigator.push(context, new MaterialPageRoute(builder: (context) => ProfileScreen(detailsUser: details)));
+
     return userDetails;
+  }
+
+  void joinServer(FirebaseUser user) async
+  {
+    Packet.token = await user.getIdToken();
+    Packet p = new Packet(Packet.JOIN, Packet.token, [""]);
+    sendPacket(p);
   }
 
   @override
@@ -204,28 +215,33 @@ class _GoogleSignAppState extends State<GoogleSignApp> {
             borderRadius: new BorderRadius.circular(30.0)),
         color: Color(0xffffffff),
         onPressed: () => _signIn(context)
-            .then((FirebaseUser user) => print(user))
+            .then((FirebaseUser user)
+            {
+               print(user);
+               joinServer(user);
+            })
             .catchError((e) => print(e)),
         child: Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Icon(
-                FontAwesomeIcons.google,
-                color: purple,
-              ),
-              SizedBox(width: 55),
-              Text(
-                'Sign in with Google',
-                style: TextStyle(color: Colors.black, fontSize: 18.0),
-              ),
-            ],
-          ),
+        child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+        Icon(
+        FontAwesomeIcons.google,
+        color: purple,
         ),
-      ),
-    );
+        SizedBox(width: 55),
+        Text(
+        'Sign in with Google',
+        style: TextStyle(color: Colors.black, fontSize: 18.0),
+        ),
+        ],
+        ),
+        ),
+        ),
+        );
+        }
   }
-}
+
 
 class UserDetails {
   final String providerDetails;

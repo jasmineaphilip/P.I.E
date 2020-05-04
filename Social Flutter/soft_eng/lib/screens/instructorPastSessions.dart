@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:soft_eng/screens/login.dart';
+import 'package:soft_eng/Packet.dart';
 
 class InstructorPastSessions extends StatefulWidget {
   final String classTitle;
@@ -29,6 +30,7 @@ class _InstructorPastSessionsState extends State<InstructorPastSessions> {
   ];
   @override
   Widget build(BuildContext context) {
+    Packet.currentContext = context;
     return Scaffold(
       appBar: AppBar(
         title: Text('Past Sessions'),

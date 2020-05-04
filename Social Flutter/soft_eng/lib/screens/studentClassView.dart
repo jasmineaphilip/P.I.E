@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:soft_eng/screens/login.dart';
 import 'package:soft_eng/instructorComponents/joinSessionSheet.dart';
+import 'package:soft_eng/Packet.dart';
 
 class StudentClassView extends StatefulWidget {
   final String classTitle;
   StudentClassView({String classTitle}) : this.classTitle = (classTitle != null) ? classTitle : "Class View"; //IF NULL it reports as Class View
   @override
   _StudentClassViewState createState() => _StudentClassViewState();
+
 }
 
 class _StudentClassViewState extends State<StudentClassView> {
@@ -17,6 +19,7 @@ class _StudentClassViewState extends State<StudentClassView> {
   String teacherA = "Insert TAs";
   @override
   Widget build(BuildContext context) {
+    Packet.currentContext = context;
     if(widget.classTitle == "Temp Class")
       {
         classID = "1254335";

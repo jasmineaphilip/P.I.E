@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:soft_eng/screens/login.dart';
+import 'package:soft_eng/Packet.dart';
 
 class InstructorClassView extends StatefulWidget {
   final String classTitle;
@@ -14,6 +15,7 @@ class InstructorClassView extends StatefulWidget {
 class _InstructorClassViewState extends State<InstructorClassView> {
   @override
   Widget build(BuildContext context) {
+    Packet.currentContext = context;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.classTitle),

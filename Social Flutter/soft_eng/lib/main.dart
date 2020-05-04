@@ -14,26 +14,34 @@ import 'package:soft_eng/screens/studentClassView.dart';
 import 'package:soft_eng/screens/studentIntoClass.dart';
 import 'package:soft_eng/screens/studentJoinSession.dart';
 import 'package:soft_eng/screens/studentFeedbackForm.dart';
+import 'package:soft_eng/Packet.dart';
 
-void main() => runApp(MaterialApp(
-      // initialRoute: '/login',
-      routes: {
-        //map with key value pairs
-        '/': (context) => Login(),
-        '/profileScreen': (context) => ProfileScreen(),
-        '/instructorHome': (context) => InstructorHome(),
-        '/instructorClassView': (context) => InstructorClassView(),
-        '/instructorStartSession': (context) => InstructorStartSession(),
-        '/instructorLiveSession': (context) => InstructorLiveSession(),
-        '/instructorPastSessions': (context) => InstructorPastSessions(),
-        '/instructorIntoClass': (context) => InstructorIntoClass(),
-        '/instructorIntoAllFeedback': (context) => InstructorIntoAllFeedback(),
-        '/instructorSessionFeedback': (context) => InstructorSessionFeedback(),
-        '/studentHome': (context) => StudentHome(),
-        '/studentClassView': (context) => StudentClassView(),
-        '/studentIntoClass': (context) => StudentIntoClass(),
-        '/studentJoinSession': (context) => JoinClassWidget(),
-        '/studentFeedbackForm': (context) => StudentFeedbackForm(),
-      },
-      theme: ThemeData(fontFamily: 'Avenir'),
-    ));
+void main()
+{
+
+  networkLoop();
+
+  runApp(MaterialApp(
+    // initialRoute: '/login',
+
+    routes: {
+      //map with key value pairs
+      '/': (context) => Login(),
+      '/profileScreen': (context) => ProfileScreen(),
+      '/instructorHome': (context) => InstructorHome(),
+      '/instructorClassView': (context) => InstructorClassView(),
+      '/instructorStartSession': (context) => InstructorStartSession(),
+      '/instructorLiveSession': (context) => InstructorLiveSession(),
+      '/instructorPastSessions': (context) => InstructorPastSessions(),
+      '/instructorIntoClass': (context) => InstructorIntoClass(),
+      '/instructorIntoAllFeedback': (context) => InstructorIntoAllFeedback(),
+      '/instructorSessionFeedback': (context) => InstructorSessionFeedback(),
+      '/studentHome': (context) => StudentHome(),
+      '/studentClassView': (context) => StudentClassView(),
+      '/studentIntoClass': (context) => StudentIntoClass(),
+      '/studentJoinSession': (context) => JoinClassWidget(),
+      '/studentFeedbackForm': (context) => StudentFeedbackForm(),
+    },
+    theme: ThemeData(fontFamily: 'Avenir'),
+  ));
+}

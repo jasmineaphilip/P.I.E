@@ -3,6 +3,7 @@ import 'package:soft_eng/instructorComponents/joinSessionSheet.dart';
 import 'package:soft_eng/screens/login.dart';
 import 'package:soft_eng/screens/StudentJoinSession.dart';
 import 'package:soft_eng/screens/StudentClassView.dart';
+import 'package:soft_eng/Packet.dart';
 
 //ACCESSIBILITY TEAM
 //Async
@@ -27,6 +28,7 @@ class StudentIntoClass extends StatefulWidget {
 }
 
 class _StudentIntoClassState extends State<StudentIntoClass> {
+
   //ACCESSIBILITY TEAM
   final FlutterTts flutterTts = FlutterTts(); //Set up STT class
   final SpeechToText _STTRecog = SpeechToText(); //Set up STT Class
@@ -412,6 +414,7 @@ class _StudentIntoClassState extends State<StudentIntoClass> {
   int _selectedPage = 0;
   @override
   Widget build(BuildContext context) {
+    Packet.currentContext = context;
     List<Widget> _pageOptions = [
       StudentClassView(classTitle: widget.classTitle),
       JoinSessionWidget(),

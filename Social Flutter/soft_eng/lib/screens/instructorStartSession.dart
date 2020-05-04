@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:soft_eng/screens/login.dart';
+import 'package:soft_eng/Packet.dart';
 
 class InstructorStartSession extends StatefulWidget {
   final String classTitle;
@@ -12,6 +13,7 @@ class InstructorStartSession extends StatefulWidget {
 class _InstructorStartSessionState extends State<InstructorStartSession> {
   @override
   Widget build(BuildContext context) {
+    Packet.currentContext = context;
     return Scaffold(
       appBar: AppBar(
         title: Text('Start Session'),
