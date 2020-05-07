@@ -1,31 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:soft_eng/screens/login.dart';
 
+import 'instructorSessionFeedbackKeywords.dart';
+
 class InstructorPastSessions extends StatefulWidget {
-  final String classTitle;
-  InstructorPastSessions({Key key, this.classTitle}) : super(key: key);
   @override
   _InstructorPastSessionsState createState() => _InstructorPastSessionsState();
 }
 
 class _InstructorPastSessionsState extends State<InstructorPastSessions> {
   List<String> sessionItemsTemp = [
-    'march 10',
-    'march 11',
-    'april 4',
-    'april 4',
-    'april 4',
-    'april 4',
-    'april 4',
-    'april 4',
-    'april 4',
-    'april 4',
-    'april 4',
-    'april 4',
-    'april 4',
-    'april 4',
-    'april 4',
-    'april 4',
+    'January 28',
+    'January 30',
+    'February 4',
+    'February 6',
+    'February 11',
+    'February 13',
+    'February 18',
+    'February 20',
+    'February 25',
+    'February 27',
+    'March 3',
+    'March 5',
+    'March 10',
+    'March 12',
+    'March 24',
+    'March 26',
+    'March 31',
+    'April 2',
+    'April 7',
+    'April 9',
+    'April 14',
+    'April 16',
+    'April 21',
+    'April 23',
+    'April 28',
+    'April 30',
+    'May 5',
+    'May 7',
+    'May 12',
   ];
   @override
   Widget build(BuildContext context) {
@@ -86,31 +99,48 @@ class _InstructorPastSessionsState extends State<InstructorPastSessions> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
+                  Text(''),
                   Text('Session Date'),
-                  Text('# Joined'),
+                  Text(''),
                 ],
               ),
             ),
-            Expanded(
-              child: SizedBox(
-                height: 200.0,
-                child: ListView.separated(
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (context, index) => Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Center(
-                      child: Text(
-                        sessionItemsTemp[index],
+            SizedBox(
+                height: 450,
+                width: 200,
+                // child: ListView(
+                //   shrinkWrap: true,
+                //   children: _classNames
+                //       .map((element) =>
+                //           Text(element, style: TextStyle(color: Colors.black)))
+                //       .toList(),
+                // ),
+                child: ListView.builder(
+                  itemBuilder: (BuildContext context, int index) {
+                    // return Text(classNames[index]);
+                    return InkWell(
+                      onTap: () => {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => InstructorSessionFeedbackKeywords(
+                                      // classTitle: sessionItemsTemp[index],
+                                    )))
+                      },
+                      child: Column(
+                        children: <Widget>[
+                          Padding(padding: new EdgeInsets.all(3.0)),
+                          Text(sessionItemsTemp[index],
+                          style: TextStyle(
+                        fontSize: 20,
+                      ),)
+                        ],
                       ),
-                    ),
-                  ),
-                  separatorBuilder: (context, index) => Divider(
-                    color: Colors.black,
-                  ),
+                    );
+                  },
                   itemCount: sessionItemsTemp.length,
                 ),
               ),
-            ),
             MaterialButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/instructorIntoAllFeedback');

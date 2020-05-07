@@ -10,15 +10,15 @@
 		</data>
 		<key>flutter_assets/AssetManifest.json</key>
 		<data>
-		zVfvOg533dpOpVv8VwiRWdnvqfs=
+		e7nhYGqVJvpEm8BgH2ssw0mXu5Q=
 		</data>
 		<key>flutter_assets/FontManifest.json</key>
 		<data>
-		Eo6rKFdbIKdhFdob9pUmChT236Y=
+		6DnAcHXavXp8NpNVsBGWuV2OY5E=
 		</data>
 		<key>flutter_assets/LICENSE</key>
 		<data>
-		TTHkJne5daZ4JC4nENS/OYDJU5I=
+		zOSbTavSbsMxoaC/OPaAO8SP9xU=
 		</data>
 		<key>flutter_assets/fonts/AvenirLTStd-Book.otf</key>
 		<data>
@@ -46,19 +46,31 @@
 		</data>
 		<key>flutter_assets/isolate_snapshot_data</key>
 		<data>
-		6Q7gJUs/xoGfGSssJQF4HSQt+tg=
+		KOMcQdw7AgysBT6dE5+xCfnnPFE=
 		</data>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<data>
-		Iq0FD89hBsGkSPx+Omozy1dkMIg=
+		0aIrJScJ02ks7Y4NwuRgJK1Xf7I=
 		</data>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
 		<data>
 		TdRNbRcrlXQQgeiweLFizPmk92g=
 		</data>
+		<key>flutter_assets/packages/font_awesome_flutter/lib/fonts/fa-brands-400.ttf</key>
+		<data>
+		h2ve7Dz4TWJ1usMYDS+bcuVFA9M=
+		</data>
+		<key>flutter_assets/packages/font_awesome_flutter/lib/fonts/fa-regular-400.ttf</key>
+		<data>
+		7VWHvtpQ/AiaEbH7Y+khWClfQA8=
+		</data>
+		<key>flutter_assets/packages/font_awesome_flutter/lib/fonts/fa-solid-900.ttf</key>
+		<data>
+		tqaiOTlimqkkPi51IVwIegSfksE=
+		</data>
 		<key>flutter_assets/vm_snapshot_data</key>
 		<data>
-		9/Sg3xz36iaqQAEPm7T0k2zXcgk=
+		yYi4BJdGlIFJfw4GiO1LmGm+lCo=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -67,33 +79,33 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			zVfvOg533dpOpVv8VwiRWdnvqfs=
+			e7nhYGqVJvpEm8BgH2ssw0mXu5Q=
 			</data>
 			<key>hash2</key>
 			<data>
-			9zP0PnU02tdBRhdG83wHFnvMgo7hHsUJFeZ6OYXn3/U=
+			3/kVrIT8JHm7575qqf/lhmxPzV9LnjzFbp0SvHwR0mc=
 			</data>
 		</dict>
 		<key>flutter_assets/FontManifest.json</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			Eo6rKFdbIKdhFdob9pUmChT236Y=
+			6DnAcHXavXp8NpNVsBGWuV2OY5E=
 			</data>
 			<key>hash2</key>
 			<data>
-			TPDGn6LjJE8hFQF1c7A+b9fcXTHMMmhGv3JEMBIbepA=
+			niUcKlikZGhqg6R1Y362J1ijzIqj5yfzmVAfZAXqYv8=
 			</data>
 		</dict>
 		<key>flutter_assets/LICENSE</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			TTHkJne5daZ4JC4nENS/OYDJU5I=
+			zOSbTavSbsMxoaC/OPaAO8SP9xU=
 			</data>
 			<key>hash2</key>
 			<data>
-			dGUw7X6d/8XEtf1sOAI5m8uTDqw16FPLyawaGj5YO/g=
+			SfopHz18NoHFMGEhZ4uwtOPlmJL7LkaxIq0vWOYpxpc=
 			</data>
 		</dict>
 		<key>flutter_assets/fonts/AvenirLTStd-Book.otf</key>
@@ -166,22 +178,22 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			6Q7gJUs/xoGfGSssJQF4HSQt+tg=
+			KOMcQdw7AgysBT6dE5+xCfnnPFE=
 			</data>
 			<key>hash2</key>
 			<data>
-			h6j2w4UCVTMupMkHzYN0Y6PvYOJbFAVOfvWo7xh8mC8=
+			QOJld01vOiDxU80o6RDzeF+EceRys0Pi6tMMfubyE+I=
 			</data>
 		</dict>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			Iq0FD89hBsGkSPx+Omozy1dkMIg=
+			0aIrJScJ02ks7Y4NwuRgJK1Xf7I=
 			</data>
 			<key>hash2</key>
 			<data>
-			QE5rCSKl0dFI4gmLDnTE9W/EtBsxhF5YSTH4OvLdTg0=
+			TNdBNuNvufFphSd1/Ien9v0sdXFqtEeIfAlEVB6usNo=
 			</data>
 		</dict>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
@@ -195,15 +207,48 @@
 			d6fK2iHuml40zu1xSV3HnoE9PVFhQREGOzVfduySSBY=
 			</data>
 		</dict>
+		<key>flutter_assets/packages/font_awesome_flutter/lib/fonts/fa-brands-400.ttf</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			h2ve7Dz4TWJ1usMYDS+bcuVFA9M=
+			</data>
+			<key>hash2</key>
+			<data>
+			CRTsDR60FdSR+SrAzLsZEpc3FdD0SzKmmuE0mZTobeY=
+			</data>
+		</dict>
+		<key>flutter_assets/packages/font_awesome_flutter/lib/fonts/fa-regular-400.ttf</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			7VWHvtpQ/AiaEbH7Y+khWClfQA8=
+			</data>
+			<key>hash2</key>
+			<data>
+			k8gtpUH7Xtt5pVlOX+JQpH0m2HECsCJbK+Ol4/Pr1Fo=
+			</data>
+		</dict>
+		<key>flutter_assets/packages/font_awesome_flutter/lib/fonts/fa-solid-900.ttf</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			tqaiOTlimqkkPi51IVwIegSfksE=
+			</data>
+			<key>hash2</key>
+			<data>
+			XBPKoX2/zlXNCv5LTc9/viareD/OFfF93kT6a1K8s2w=
+			</data>
+		</dict>
 		<key>flutter_assets/vm_snapshot_data</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			9/Sg3xz36iaqQAEPm7T0k2zXcgk=
+			yYi4BJdGlIFJfw4GiO1LmGm+lCo=
 			</data>
 			<key>hash2</key>
 			<data>
-			D6DyCLPkZxFO4v3Insr+wJXtdDwBQpE12Cia0eqJyuQ=
+			uLRGf397YvghS2/Zfd0rKmwMBeVFmNC2kdtKq2REI5g=
 			</data>
 		</dict>
 	</dict>
