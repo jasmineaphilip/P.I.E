@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:soft_eng/screens/StudentHome.dart';
 import 'package:soft_eng/screens/login.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
+import 'package:soft_eng/Packet.dart';
 
 class JoinSessionWidget extends StatefulWidget {
   const JoinSessionWidget({Key key}) : super(key: key);
@@ -81,6 +82,8 @@ class _JoinSessionWidgetState extends State<JoinSessionWidget> {
         NDEFRecord record = message.records[1];
         print("Record '${record.id ?? "[NO ID]"}' with TNF '${record.tnf}', type '${record.type}', payload '${record.payload}' and data '${record.data}' and language code '${record.languageCode}'");
         key = record.payload;
+        Packet p = new Packet(Packet.NFC_SIGNIN, Packet.token,[key]);
+        sendPacket(p);
 
       });
     });
@@ -107,7 +110,7 @@ class _JoinSessionWidgetState extends State<JoinSessionWidget> {
     _stopScanning();
   }
 
-  String _authenticate() {
+  Future<String> _authenticate() async {
     _toggleScan();
     Future.delayed(const Duration(seconds : 2));
 
@@ -119,7 +122,8 @@ class _JoinSessionWidgetState extends State<JoinSessionWidget> {
     //PRIYA RYAN
     //Call to Server here giving classID and key here.
     //put server's return value into variable newKey
-    newKey = "<SERVER RETURN VALUE HERE>";
+    Packet p = await receivePacket(Packet.NFC_SIGNIN);
+    newKey = p.getDataEntries()[0];
 
     if(newKey.isEmpty){
       print("Failed to get return value from Server");
@@ -138,41 +142,12 @@ class _JoinSessionWidgetState extends State<JoinSessionWidget> {
     return "1";
   }
 
-  int counter = 0;
-  void __authenticate(){
-    switch(counter){
-      case 0:
-        print("Scanning NFC Card...");
-        counter++;
-        break;
-      case 1:
-        print("Read nfc record with key: '12345'");
-        counter++;
-        break;
-      case 2:
-        print("Sending session ID '192:332' and key '12345' to server");
-        print("...");
-        counter++;
-        break;
-      case 3:
-        print("...");
-        counter++;
-        break;
-      case 4:
-        print("Student has been authenticated");
-        print("Server returned newKey: '54321' ");
-        counter++;
-        break;
-      case 5:
-        print("newKey '54321' has been written to tag");
-        counter = 0;
-        break;
-
-    }
-  }
-
 
   //--------------------------/ParthNFC-----------------------------
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -282,7 +257,7 @@ class _JoinSessionWidgetState extends State<JoinSessionWidget> {
                         minWidth: 15.0,
                         color: green,
                         onPressed: () {
-                          __authenticate();
+                          _authenticate();
                         },
                         child: Text(
                           'Scan NFC',

@@ -104,6 +104,18 @@ void sendFile(String path, int port) async
   s.close();
 }
 
+Future<Packet> receivePacket(int id) async
+{
+  var codec = new Utf8Codec();
+  final resp = await Packet.socket.receive();
+  Packet p = new Packet.fromServer(codec.decode(resp.data));
+  if (p.getPacketID() == id)
+  {
+    return p;
+  }
+  return null;
+}
+
 void networkLoop() async
 {
   WidgetsFlutterBinding.ensureInitialized();
