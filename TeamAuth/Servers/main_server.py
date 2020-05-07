@@ -18,13 +18,35 @@ import piexif
 from packet import *
 import db
 import Queue
+import hashlib
+from os import path
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+
+
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+
+### Hazardous things we are intentionally not addressing ###
+#
+# 1. not checking if our writeDB operations are actually going throughs
+# 		a. We are just sending them off to the writeDB thread
+#		b. can potentially cause serious errors if a write operation fails or stalls for too long
+# 2. checking against the clients list if a user is currently signed in each time we receive a packet
+#		a. this isnt too too bad, the firebase tokens atleast ensure they are who they say they are
+#		b. errors could arise if something fucks up on the client end where the user does not send a login packet and has never used our service before, thus never receiving the SIGNUP instructions
+# 3. JOIN_CLASS - checking if a student is already enrolled in a class before they join, checking user has student role
+
+
 
 ### Init Our Firebase Admin SDK ###
 cred = credentials.Certificate("/root/pie-auth-firebase-adminsdk-4rbmo-2d6c76da9f.json")
 firebase_admin.initialize_app(cred)
 ###################################
+
+# Currently active sessions {class_id: session_id}
+active_sessions = {}
 
 class Client:
 	def __init__(self, addr, id_token, uid):
@@ -106,7 +128,7 @@ def scale_image(path):
 	image.save(path)
 
 def writeDB(*args):
-	db_write_queue.put((*args))
+	db_write_queue.put(args)
 	db_command_avail.set()
 
 def extract_features(path, uid):
@@ -183,17 +205,59 @@ def image_signup(image_port, uid, addr):
 	print (auth.get_user(uid).display_name + " added an image to their profile.")
 	command_socket.sendto(returnPacket.formatData("Image Received"), addr)
 
-def image_signin(image_port, uid, addr):
-	
-	path = client_recv_image(image_port, uid)
-	passed = compare(uid, path)
-	returnPacket = Packet(IMAGE_RESPONSE)
-	if passed:
-		print (auth.get_user(uid).display_name + " successfully signed in.")
-		command_socket.sendto(returnPacket.formatData("Success"), addr)
-	else:
-		print (auth.get_user(uid).display_name + " failed to signed in.")
-		command_socket.sendto(returnPacket.formatData("Failed"), addr)
+def image_signin(image_port, uid, addr): #updated to check current states
+    path = client_recv_image(image_port, uid)
+    passed = compare(uid, path)
+    returnPacket = Packet(IMAGE_RESPONSE)
+    #check current status of users attendance
+    currAttendance = db.getAttendanceResult(sessionID, uid)
+    if(passed):
+        print (auth.get_user(uid).display_name + " successfully signed in.")
+        command_socket.sendto(returnPacket.formatData("Facial verificatin: Successful!"), addr)
+        if (currAttendance == 0):
+        #set value to 1 for facial rec
+            writeDB(db.updateAttendanceResult, sessionID, uid, 1) 
+        elif (currAttendance == 2):
+            #facial and nfc both done, update val to 3
+            writeDB(db.updateAttendanceResult, sessionID, uid, 3)
+    else:
+        print (auth.get_user(uid).display_name + " failed to signed in.")
+        command_socket.sendto(returnPacket.formatData("Failed"), addr)
+
+#KEYWORD EXTRACTRION
+
+def getAllFeedback(filename):
+    f = open(filename, "r")
+    lines = f.readlines()
+    feedbackArray = []
+    for line in lines:
+        feedbackArray.append(line) 
+    f.close()
+
+def getKeywords(filename,session_id):
+    #define filename for simplicity
+    phrases_filename = str(session_id) + "_phrases.txt"
+
+    #first run phrases.py and store result in [session_id]_phrases.txt
+    os.system("python3 phrases.py " + filename + " > " + phrases_filename) 
+    #result is an array converted to string
+    f = open(phrases_filename, "r")
+    line = f.readline()
+    keywords = line.replace("\n","").split(',')
+    return keywords #return array of key phrases
+
+def getWordcloud(filename,session_id):
+    wordcloud_image = session_id + ".jpg"
+    #make cloud
+    text = open(path.join(filename)).read()
+    wordcloud = WordCloud().generate(text)  
+    wordcloud.to_file(wordcloud_image)
+    return wordcloud_image
+
+#ATTENDANCE STUFF
+def generate_key(): 
+    newKey = hashlib.sha256().hexdigest()
+    return newKey
 
 def getOpenImagePort():
 	while (1):
@@ -219,10 +283,10 @@ def getFirstLastNameFromUID(uid):
 	return auth.get_user(uid).display_name.split(" ")
 	
 def db_write_operations():
-	db.init()
+	#db.init()
 	while (running):
 		db_command_avail.wait()
-		while (not db_queue.isEmpty()):
+		while (not db_write_queue.empty()):
 			command = db_write_queue.get()
 			func = command[0]
 			args = command[1:]
@@ -253,67 +317,167 @@ def client_accept():
 				command_socket.sendto(signupPacket.formatData("You have not registered with our service yet, please follow the sign up process.", names[0], names[1]), addr)
 		elif (packetID == SIGNUP):
 			# data entries: first_name, last_name, role, accessability_access
-			# maybe check again if the profile exists (just in case we read an outdated entry and the table was updated before this client responded)
-			# e.g. if two clients for the same account try to signup at the same time
-			writeDB(db.insertProfile, uid, data_entries[0], data_entries[1], data_entries[2], data_entries[3], "")
+			writeDB(db.insertProfile, uid, data_entries[0], data_entries[1], data_entries[2], data_entries[3])
 			joinSuccessPacket = Packet(JOIN)
 			command_socket.sendto(joinSuccessPacket.formatData("Join Success"), addr)
+		
+		#elif (packetID == LEAVE):
+		#TODO - close connection			
+
 		elif (packetID == IMAGE_SIGNUP):
 			image_port = getOpenImagePort()
 			command_socket.sendto(returnPacket.formatData(image_port), addr)
 			t = threading.Thread(target=image_signup, args=(image_port, uid, addr))
-			t.start();
+			t.start()
 			
+		elif (packetID == ADD_CLASS):
+			if int(db.getType(uid)) == db.INSTRUCTOR:
+				class_id = data_entries[0]
+				writeDB(db.addClass, class_id, uid)
+				print ("Added class " + class_id + " to database.")
+				command_socket.sendto(returnPacket.formatData("Added class " + class_id + " to database."), addr)
+			else:
+				command_socket.sendto(returnPacket.formatData("You are not an instructor!"), addr)
+
+		elif (packetID == GET_CLASS_INFO):
+			classID = data_entries[0]
+			instructors = db.getIntructors(classID) 
+			command_socket.sendto(returnPacket.formatData(tuple(instructors)), addr)
+
+		elif (packetID == JOIN_CLASS):
+			classID = data_entries[0]
+			writeDB(db.joinClass, classID, uid) 
+			command_socket.sendto(returnPacket.formatData("Successfully joined class!"), addr)
+
+		elif (packetID == CREATE_SESSION):
+			class_id = data_entries[0]
+			instructors = db.getInstructors(class_id)
+			if (uid in instructors):
+				if (class_id in active_sessions):
+					command_socket.sendto(returnPacket.formatData("A session for this class is already running!"), addr)
+				else:
+					session_id = db.getNewSessionID(class_id)
+					active_sessions.update({class_id:session_id})
+					writeDB(db.createSession, class_id, session_id)
+					command_socket.sendto(returnPacket.formatData("Created a new session for " + class_id + "!"), addr)
+			else:
+				command_socket.sendto(returnPacket.formatData("You are not an instructor for this class!"), addr)
+		
+		elif (packetID == GET_SESSIONS): #returns all session associated to class
+			classID = data_entries[0]
+			sessions = db.getSessions(classID)
+			command_socket.sendto(returnPacket.formatData(tuple(sessions)), addr)
+
+		elif (packetID == JOIN_SESSION):
+			classID = data_entries[0]
+			sessionID = data_entries[1]
+			#check if session still active
+			if (classID in active_sessions):
+				writeDB(db.joinSession, sessionID, uid)  #create session instance in db
+				command_socket.sendto(returnPacket.formatData("Please continue signing in."), addr)
+			else:
+				command_socket.sendto(returnPacket.formatData("Session does not exist!"), addr)
+		
+		elif (packetID == GET_SESSION_PARTICIPANTS): #returns list of all participants in session
+			sessionID = data_entries[0] 
+			students = db.sessionParticipants(sessionID)
+			command_socket.sendto(returnPacket.formatData(tuple(students)), addr) 
+		
+		elif (packetID == NFC_SIGNIN): #return 0 or 1 for pass fail
+			sessionID = data_entries[0]
+			key = data_entries[1]
+			currKeys = db.getKey(sessionID) #returns array of keys
+			if key in currKeys: #current keys match, generate new key and see i
+				newKey = generate_key()
+				writeDB(db.updateKey, sessionID, newKey) 
+				command_socket.sendto(returnPacket.formatData(newKey), addr)
+
+				#check current status of users attendance
+				currAttendance = db.getAttendanceResult(sessionID, uid)
+				if (currAttendance == 0):
+					#set value to 2 for nfc
+					writeDB(db.updateAttendanceResult, sessionID, uid, 2) 
+				elif (currAttendance == 1):
+					#facial and nfc both done, update val to 3
+					writeDB(db.updateAttendanceResult, sessionID, uid, 3)  
+
+			else: 
+				command_socket.sendto(returnPacket.formatData("Error: Keys don't match!"), addr)
+
 		elif (packetID == IMAGE_SIGNIN):
 			image_port = getOpenImagePort()
 			command_socket.sendto(returnPacket.formatData(image_port), addr)
 			t = threading.Thread(target=image_signin, args=(image_port, uid, addr))
-			t.start();
+			t.start()
 			
-		elif (packetID == ADD_CLASS):
-			#if db.getType(uid) == "instructor":
-			class_id = getPacketDataEntries(data)[0]
-				# addClass(class_id, uid)
-			print (auth.get_user(uid).display_name + " added class " + class_id + " to database.")
-			command_socket.sendto(returnPacket.formatData("Added class " + class_id + " to database."), addr)
-			#else:
-			#	command_socket.sendto(returnPacket.formatData("Improper user role!"), addr)
-		elif (packetID == CREATE_SESSION):
-			# check if user is an instructor for this specific class
-			# check if a session already exists
-			# createSession(class_id)
-			class_id = data
-			print (auth.get_user(uid).display_name + " created a new session for " + class_id+".")
-			command_socket.sendto(returnPacket.formatData("Created a new session!"), addr)
-		elif (packetID == JOIN_SESSION):
-			# check if user is fully authenticated (face rec + nfc)
-			# joinSession(session_id, uid)
-			session_id = 2394
-			print (auth.get_user(uid).display_name + " joined session " + str(session_id))
-			command_socket.sendto(returnPacket.formatData("Successfully joined session!"), addr)
+		elif (packetID == CONFIRM_SIGNIN): 
+			sessionID = data_entries[0]
+			currAttendance = db.getAttendanceResult(sessionID, uid)
+			if (currAttendance == 0):
+				command_socket.sendto(returnPacket.formatData("Please start the attendance process."), addr)
+			elif (currAttendance == 1):
+				command_socket.sendto(returnPacket.formatData("Please complete the NFC sign-in."), addr)
+			elif (currAttendance == 2):
+				command_socket.sendto(returnPacket.formatData("Please complete the facial authentication sign-in."), addr)
+			else:
+				command_socket.sendto(returnPacket.formatData("You have successfully joined the session!"), addr)
+				
 		elif (packetID == ADD_FEEDBACK):
 			# addFeedback(uid, session_id, desc)
-			session_id = 2394 # getCurrentSession(uid)
+			#session_id = 2394 # getCurrentSession(uid)
+			
+			#TODO DID BY PRIYA:
+			session_id = data_entries[0]
+			description = data_entries[1]
+			writeDB(db.addFeedback, uid, session_id, "example feedback_type", description)
+			
 			print (auth.get_user(uid).display_name + " sent feedback for session " + str(session_id) +".")
 			command_socket.sendto(returnPacket.formatData("Added feedback for this session!"), addr)
+		
+		elif (packetID == GET_FEEDBACK): #returns keyword array #TODO need to work with jman and radhe 
+			sessionID = data_entries[0]
+			rawFile = db.getFeedback(sessionID)
+			keywords = getKeywords(rawFile,sessionID) 
+			command_socket.sendto(returnPacket.formatData(tuple(keywords)), addr)
+
 		elif (packetID == CREATE_GROUP):
 			#createGroupSession(uid, date/time, duration, location, other_netids)
 			time = data_entries[0]
 			location = data_entries[1]
 			duration = data_entries[2]
 			other_netids = data_entries[3]
+			name = data_entries[4]
 			
-			print (auth.get_user(uid).display_name + " created a group session on {} at {}.".format(time, location))
+			#TODO DID BY PRIYA
+			writeDB(db.createStudyGroup, uid, time, duration, location, other_netids, name)
+			
+			print ("Created a group session on {} at {}.".format(time, location))
 			command_socket.sendto(returnPacket.formatData("Created a group session on {} at {}.".format(time, location)), addr)
+		
+		elif (packetID == SHOW_STUDYGROUPS): #returns array of group ids
+			groups = db.showStudyGroups()
+			command_socket.sendto(returnPacket.formatData(tuple(groups)), addr)
+		
 		elif (packetID == REPORT_ISSUE):
-			type = data_entries[0]
-			description = data_entries[1]
-			#db.addIssue(uid, type, desc)
-			print ("Received issue report from " + auth.get_user(uid).display_name + ".")
-			command_socket.sendto(returnPacket.formatData("The issue has been reported, thank you!"), addr)
-		
-		elif (
-		
+			issue_type = data_entries[0]
+			desc = data_entries[1]
+			writeDB(db.addIssue, uid, issue_type, desc)
+			print ("Received issue report.") # from " + auth.get_user(uid).display_name + ".")
+			command_socket.sendto(returnPacket.formatData("The issue has been reported, thank you!"), addr)	
+				
+		elif (packetID == STOP_SESSION):
+			classID = data_entries[0]
+			del active_sessions[classID]
+			command_socket.sendto(returnPacket.formatData("Session ended."), addr)
+			
+		elif (packetID == GET_CURRENT_SESSION):
+			classID = data_entries[0]
+			if classID in active_sessions:
+				sessionID = active_sessions[classID]
+			else:
+				sessionID = "There are no active sessions for this class!"
+			command_socket.sendto(returnPacket.formatData(sessionID), addr)
+
 	db.conn.close()
 		
 
@@ -323,10 +487,16 @@ print("\n")
 while (not(com=="quit")):
 	com = raw_input("")
 	print("\n")
-	t = threading.Thread(target=client_accept)
-	t.daemon = True
+	
+	client_accept_thread = threading.Thread(target=client_accept)
+	client_accept_thread.daemon = True
+	db_write_operations_thread = threading.Thread(target=db_write_operations)
+	db_write_operations_thread.daemon = True
+	
 	if (com == "start"):
-		t.start()
+		client_accept_thread.start()
+		db_write_operations_thread.start()
+		
 	if (com == "quit"):
 		command_socket.close()
 		running = False
