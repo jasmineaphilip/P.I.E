@@ -8,20 +8,13 @@ class InstructorAllFeedback extends StatefulWidget {
 
 class _InstructorAllFeedbackState extends State<InstructorAllFeedback> {
   List<String> sessionItemsTemp = [
-    'this class sucks',
-    'ivan heart eyes',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
+    'Excellent course! It was really nice to have a high-level course, and I feel like this course makes a great substitute for the Computer Architecture course offered in my university.',
+    'The way of Professor is teaching is fabulous !! Content of the course is amazing. He has planned the course in such a way that new students can also understand the concepts',
+    'The course presents advanced material, not easily found elsewhere. Labs would have definitely facilitated the learning in this case and I hope they will be added in the future.',
+    'The course material (lecture slides) for "Computer Architecture" is almost identical to that of the other top universities, so you can be confident in its quality. Professor is clearly experienced in both teaching and the subject. I really enjoyed the lectures. I am really grateful for the opportunity to take this course.',
+    'the course is extremely useful in giving an overview of the existing technologies and introducing needed terminology and basic blocks.',
+    'Quite intense but also quite rewarding. Dr. Wentzlaffs class are captivating and well prepared. The exames are a little bit exhausting, but effectively measure what was learned.',
+    'Nice course, learnt a lot of new information. If practical part is also included in this course, this this course will even be more good.',
   ];
   @override
   Widget build(BuildContext context) {

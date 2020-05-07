@@ -8,6 +8,8 @@ import 'package:soft_eng/screens/instructorliveSession.dart';
 import 'package:soft_eng/screens/instructorPastSessions.dart';
 import 'package:soft_eng/screens/instructorIntoClass.dart';
 import 'package:soft_eng/screens/instructorIntoAllFeedback.dart';
+import 'package:soft_eng/screens/instructorWordcloud.dart';
+import 'package:soft_eng/screens/instructorSessionFeedbackKeywords.dart';
 import 'package:soft_eng/screens/instructorSessionFeedback.dart';
 import 'package:soft_eng/screens/studentHome.dart';
 import 'package:soft_eng/screens/studentClassView.dart';
@@ -29,6 +31,8 @@ void main() => runApp(MaterialApp(
         '/instructorIntoClass': (context) => InstructorIntoClass(),
         '/instructorIntoAllFeedback': (context) => InstructorIntoAllFeedback(),
         '/instructorSessionFeedback': (context) => InstructorSessionFeedback(),
+        '/instructorWordcloud': (context) => InstructorWordcloud(),
+        '/instructorSessionFeedbackKeywords': (context) => InstructorSessionFeedbackKeywords(),
         '/studentHome': (context) => StudentHome(),
         '/studentClassView': (context) => StudentClassView(),
         '/studentIntoClass': (context) => StudentIntoClass(),

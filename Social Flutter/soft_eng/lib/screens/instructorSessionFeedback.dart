@@ -9,20 +9,8 @@ class InstructorSessionFeedback extends StatefulWidget {
 
 class _InstructorSessionFeedbackState extends State<InstructorSessionFeedback> {
   List<String> sessionItemsTemp = [
-    'this class sucks',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
-    'blah blah feedback',
+    'The course material (lecture slides) for "Computer Architecture" is almost identical to that of the other top universities, so you can be confident in its quality. Professor is clearly experienced in both teaching and the subject. I really enjoyed the lectures. I am really grateful for the opportunity to take this course.',
+    'The curriculum is excellent and I found the lecture slides extremely helpful.',
   ];
   @override
   Widget build(BuildContext context) {
