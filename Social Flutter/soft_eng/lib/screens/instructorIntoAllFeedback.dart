@@ -355,11 +355,26 @@ class _InstructorIntoAllFeedbackState extends State<InstructorIntoAllFeedback> {
     //Body section
     if (bodyTTS || allTTS) {
       if (_selectedPage == 0) {
-        spokenByTTS += "All FeedBack Body needs to be edited...";
+        spokenByTTS += "Here is the screen for all feedback...";
+        spokenByTTS += "you can Sort feedback via the options shown...";
+        spokenByTTS += "There is a word cloud that shows keywords...";
       } else if (_selectedPage == 1) {
-        spokenByTTS += "Past Session Body needs to be edited...";
+        spokenByTTS += "Here is the screen for past sessions...";
+        spokenByTTS += "This page shows you list of sessions...";
       } else if (_selectedPage == 2) {
-        spokenByTTS += "Class View Body needs to be edited...";
+        spokenByTTS += "Body Discription info list, from top to bottom:...";
+        spokenByTTS += "Class Info";
+        spokenByTTS += "with Class ID: " + widget.classID + "...";
+        spokenByTTS += "Add meeting times in the times field:";
+        spokenByTTS += "...";
+        spokenByTTS += "Add Location in the location field:";
+        spokenByTTS += "...";
+        spokenByTTS += "Put your name in professor field: ";
+        spokenByTTS += "...";
+        spokenByTTS += "put Teacher Assistant names in the T A fields:";
+        spokenByTTS += "...";
+        spokenByTTS += "Update button on the bottom of the screen:";
+        spokenByTTS += "...";
       }
     }
     if (bottomTTS || allTTS) {
