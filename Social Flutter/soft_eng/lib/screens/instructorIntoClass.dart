@@ -349,7 +349,9 @@ class _InstructorIntoClassState extends State<InstructorIntoClass> {
         spokenByTTS += "You are on the Start Session Page..." ;
 
       } else if(_selectedPage == 2){//Past Session
-        spokenByTTS += "You are on the Past Session Page..." ;
+        spokenByTTS += "Here is the screen for past sessions...";
+        spokenByTTS += "This page shows you list of sessions...";
+
 
       }
     }
